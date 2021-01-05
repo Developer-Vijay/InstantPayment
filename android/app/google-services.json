@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "872059223707",
+    "project_id": "netly-d4eb9",
+    "storage_bucket": "netly-d4eb9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872059223707:android:5bd8c0bce2e5497a3f903e",
+        "android_client_info": {
+          "package_name": "com.webphiser.netly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "872059223707-2sj8427jsdq10jp2jbt4f8e60qih3g35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXQPydFWmHXbdTvG8P6LCpNJ-c16iWWn0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "872059223707-2sj8427jsdq10jp2jbt4f8e60qih3g35.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
