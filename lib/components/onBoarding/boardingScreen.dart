@@ -1,43 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:netly/components/Dashboard.dart/dashboard.dart';
+import 'package:netly/components/Dashboard/dashboard.dart';
 import 'package:netly/components/screens/constants.dart';
 
-class onboardingScreen extends StatelessWidget {
-
-    
-
-      // Navigation to Dashboard Screen
-       void onIntroEnd(context) {
-    
-     Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => Dashboard()),
-  );
+ 
+class OnboardingScreen extends StatelessWidget {
+  // Navigation to Dashboard Screen
+  void onIntroEnd(context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Dashboard()),
+    );
   }
-      // Asset Image Function 
+
+  // Asset Image Function
   Widget buildImage(String assetName) {
     return Align(
       child: Image.asset('assets/images/$assetName.png', width: 180.0),
       alignment: Alignment.bottomCenter,
-      
     );
   }
+
   @override
   Widget build(BuildContext context) {
 
-   Size size = MediaQuery.of(context).size;
-   
-
-     const  bodyStyle = TextStyle(fontSize:19,color: boardingTextColor,fontWeight: FontWeight.w600);
+    const bodyStyle = TextStyle(
+        fontSize: 19, color: boardingTextColor, fontWeight: FontWeight.w600);
     const Decoration = const PageDecoration(
-      
-      titleTextStyle: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700,color: boardinglabelColor),
-      bodyTextStyle:bodyStyle ,
-      
+      titleTextStyle: TextStyle(
+          fontSize: 24.0,
+          fontWeight: FontWeight.w700,
+          color: boardinglabelColor),
+      bodyTextStyle: bodyStyle,
       descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: Colors.white,
-      
       imagePadding: EdgeInsets.zero,
     );
     return IntroductionScreen(
