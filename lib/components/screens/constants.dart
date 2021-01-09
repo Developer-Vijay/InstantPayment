@@ -1,10 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// Color Section
 
-const PrimaryColor = const Color(0xff7ab9e5);
-const SecondaryColor = const Color(0xff3576fd);
-const TextColor = const Color(0xFF929794);
-const boardingTextColor = const Color(0xFF8a97c1);
-const boardinglabelColor = const Color(0xFF3576fd);
+class Apptheme{
+
+Apptheme._();
+
+
+static const PrimaryColor = const Color(0xff7ab9e5);
+static const SecondaryColor = const Color(0xff3576fd);
+static const TextColor = const Color(0xFF929794);
+static const boardingTextColor = const Color(0xFF8a97c1);
+static const boardinglabelColor = const Color(0xFF3576fd);
+
+static final TextStyle loginPageTitle=TextStyle(
+  fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold);
+
+}
+ 
+
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:netly/Components/Auth/login.dart';
 import 'package:netly/components/Dashboard/dashboard.dart';
 import 'package:netly/components/screens/constants.dart';
 
@@ -9,7 +10,7 @@ class OnboardingScreen extends StatelessWidget {
   void onIntroEnd(context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Dashboard()),
+      MaterialPageRoute(builder: (context) => Login()),
     );
   }
 
@@ -25,12 +26,12 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     const bodyStyle = TextStyle(
-        fontSize: 19, color: boardingTextColor, fontWeight: FontWeight.w600);
+        fontSize: 19, color: Apptheme.boardingTextColor, fontWeight: FontWeight.w600);
     const Decoration = const PageDecoration(
       titleTextStyle: TextStyle(
           fontSize: 24.0,
           fontWeight: FontWeight.w700,
-          color: boardinglabelColor),
+          color: Apptheme.boardinglabelColor),
       bodyTextStyle: bodyStyle,
       descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: Colors.white,
