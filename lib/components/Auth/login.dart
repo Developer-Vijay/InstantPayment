@@ -1,180 +1,192 @@
 import 'package:flutter/material.dart';
-import 'package:netly/Components/Screens/constants.dart';
-import 'package:netly/Components/Screens/strings.dart';
+import 'package:netly/Components/Resources/images.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
+import 'package:netly/Components/Resources/strings.dart';
+import 'package:netly/Components/Resources/styling.dart';
+import 'package:netly/Screen/home_screen.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  bool isValidate = false;
+
+  var isNameValidate;
+  var isPasswordValidate;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LoginPage(),
-    );
-  }
-}
-
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-            
-      child: ListView(
-        children: [
-          Column(
-            children: [
-              Container(
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.only(bottomLeft: Radius.circular(100)),
-                    gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [Colors.blue, Colors.blueAccent]),
+        body: ListView(
+      children: [
+        SizedBox(
+          height: 3 * SizeConfig.heightMultiplier,
+        ),
+        Center(
+          child: Container(
+              height: 40 * SizeConfig.imageSizeMultiplier,
+              child: Image.asset(Images.loginImage)),
+        ),
+        SizedBox(
+          height: 3 * SizeConfig.heightMultiplier,
+        ),
+        Container(
+          alignment: Alignment.center,
+          child: Text(
+            Strings.loginpageheadingtitile,
+            style: TextStyle(
+                fontFamily: 'Orelega One',
+                fontWeight: FontWeight.w400,
+                fontSize: 2.571 * SizeConfig.textMultiplier),
+          ),
+        ),
+        SizedBox(
+          height: 2 * SizeConfig.heightMultiplier,
+        ),
+        Container(
+          alignment: Alignment.center,
+          child: Text(
+            Strings.loginPageTitle,
+            style: Apptheme.loginPageTitle,
+          ),
+        ),
+        SizedBox(
+          height: 8 * SizeConfig.heightMultiplier,
+        ),
+        // Username
+        Container(
+            margin: EdgeInsets.only(
+                left: 5 * SizeConfig.widthMultiplier,
+                right: 5 * SizeConfig.widthMultiplier),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 3,
+                      blurRadius: 3,
+                      offset: Offset(1, 1),
+                      color: Apptheme.whitetextcolor)
+                ]),
+            child: TextField(
+              controller: _usernameController,
+              autocorrect: false,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                  errorText: isNameValidate,
+                  labelStyle: TextStyle(fontFamily: 'Orelega One'),
+                  contentPadding: EdgeInsets.all(5),
+                  suffixIcon: Icon(
+                    Icons.person,
+                    size: 2.6 * SizeConfig.heightMultiplier,
                   ),
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  height: 320,
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 100),
-                        child: Center(
-                          child: 
-                            
-                            Image.asset("assets/images/user-1633249_640.png",
-                            width: 100,)
-                          
-                        ),
-                      ),
-                      SizedBox(height: 60),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(right: 30),
-                            child: Text(
-                              Strings.loginPageTitle,
-                              style: Apptheme.loginPageTitle,
-                            ),
-                          )
-                        ],
-                      )
-                    ],
-                  )),
-              SizedBox(height: 50),
-
-              // Container For Text Field
-
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(34),
-                    color: Colors.white),
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(left: 20),
-                child: TextField(
-                  autocorrect: false,
-                  style: TextStyle(fontSize: 20, color: Colors.black),
-                  decoration: InputDecoration(
-                    labelText: "Email or Phone Number ",
-                    labelStyle: TextStyle(color: Colors.grey[700]),
-                    icon: Icon(Icons.email_outlined),
-                    contentPadding: EdgeInsets.only(left: 2),
-                    border: InputBorder.none,
+                  labelText: "Username"),
+            )),
+        SizedBox(
+          height: 6 * SizeConfig.heightMultiplier,
+        ),
+        // Password Validation
+        Container(
+            margin: EdgeInsets.only(
+                left: 5 * SizeConfig.widthMultiplier,
+                right: 5 * SizeConfig.widthMultiplier),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 3,
+                      blurRadius: 3,
+                      offset: Offset(1, 1),
+                      color: Apptheme.whitetextcolor)
+                ]),
+            child: TextField(
+              controller: _passwordController,
+              autocorrect: false,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                  errorText: isPasswordValidate,
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.w100, fontFamily: 'Orelega One'),
+                  contentPadding: EdgeInsets.all(6),
+                  suffixIcon: Icon(
+                    Icons.lock,
+                    size: 2.6 * SizeConfig.heightMultiplier,
                   ),
-                ),
-              ),
-
-              // Textfield For Password
-
-              SizedBox(
-                height: 50,
-              ),
-
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(34),
-                    color: Colors.white),
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(left: 20),
-                child: TextField(
-                  autocorrect: false,
-                  obscureText: true,
-                  style: TextStyle(fontSize: 20, color: Colors.black),
-                  decoration: InputDecoration(
-                    labelText: "Password ",
-                    labelStyle: TextStyle(color: Colors.grey[700]),
-                    icon: Icon(Icons.lock_outlined),
-                    contentPadding: EdgeInsets.only(left: 2),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 20),
-                    child: FlatButton(
-                      child: Text("Forgot Password ?",
-                          style: TextStyle(fontWeight: FontWeight.w700)),
-                      onPressed: () {},
-                    ),
-                  )
-                ],
-              ),
-              // Login Button
-              MaterialButton(
-                onPressed: () {},
-                child: Text("Login", style: TextStyle(fontSize: 20)),
-                padding: EdgeInsets.only(top: 2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-                
-                textColor: Colors.white,
-                elevation: 2,
-                minWidth: 360,
-                height: 45,
-                
-                color: Colors.blueAccent[700],
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              // Text
-              Padding(
-                padding: EdgeInsets.only(right: 29),
-              ),
-              Text(
-                "Don't have an Account ?",
+                  labelText: "Password"),
+            )),
+        SizedBox(
+          height: 7 * SizeConfig.heightMultiplier,
+        ),
+        Container(
+          margin: EdgeInsets.only(
+              left: 5 * SizeConfig.widthMultiplier,
+              right: 5 * SizeConfig.widthMultiplier),
+          child: MaterialButton(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            height: 6.2 * SizeConfig.heightMultiplier,
+            color: Apptheme.PrimaryColor,
+            onPressed: () {
+              login();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
+            },
+            child: Text(
+              "LOGIN",
+              style: TextStyle(
+                  fontFamily: 'Orelega One',
+                  fontSize: 2.2 * SizeConfig.textMultiplier,
+                  color: Apptheme.whitetextcolor),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 2.5 * SizeConfig.heightMultiplier,
+        ),
+        Container(
+            alignment: Alignment.center,
+            child: FlatButton(
+              onPressed: () {},
+              child: Text(
+                "Forgot Password ?",
                 style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.blueGrey[600],
-                    fontWeight: FontWeight.bold),
+                    fontFamily: 'Orelega One',
+                    color: Apptheme.blacktextColor,
+                    fontWeight: FontWeight.w400),
               ),
-              SizedBox(
-                width: 10
-              ),
-              // Create New Account Button
-              FlatButton(
-                onPressed: () {
-                 
-                },
-                hoverColor: Colors.green,
-                padding: EdgeInsets.only(right: 14),
-                child: Text(
-                  "Create New Account",
-                  style: TextStyle(
-                      color: Colors.blueGrey[900],
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-              )
-              ]),
-            ],
-          )
-        ],
-      ),
-    );
+            ))
+      ],
+    ));
+  }
+
+  Future login() async {
+    // name Validation
+
+    if (_usernameController.text.isEmpty) {
+      setState(() {
+        isNameValidate = "username cannot be empty";
+        isValidate = true;
+      });
+    } else {
+      setState(() {
+        isNameValidate = null;
+        isValidate = false;
+      });
+    }
+
+    // password Validation
+    if (_passwordController.text.isEmpty) {
+      setState(() {
+        isPasswordValidate = "password cannot be empty";
+        isValidate = true;
+      });
+    } else {
+      setState(() {
+        isPasswordValidate = null;
+        isValidate = false;
+      });
+    }
   }
 }
