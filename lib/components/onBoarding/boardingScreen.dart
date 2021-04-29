@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/SetPassword/set_passsword.dart';
 
@@ -42,7 +43,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget buildImage(String assetName) {
     return Align(
-      child: Image.asset('assets/images/$assetName.png', width: 180.0),
+      child: Image.asset('assets/images/$assetName.png', width: 45.0 * SizeConfig.imageSizeMultiplier),
       alignment: Alignment.bottomCenter,
     );
   }
@@ -55,7 +56,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         fontWeight: FontWeight.w600);
     const Decoration = const PageDecoration(
       titleTextStyle: TextStyle(
-          fontSize: 24.0,
+          fontSize: 24.0 ,
           fontWeight: FontWeight.w700,
           color: Apptheme.boardinglabelColor),
       bodyTextStyle: bodyStyle,

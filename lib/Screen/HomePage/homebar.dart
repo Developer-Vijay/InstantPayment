@@ -1,8 +1,8 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/HomePage/banners.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class Homebar extends StatefulWidget {
@@ -20,12 +20,12 @@ class _HomebarState extends State<Homebar> {
             ClipPath(
               clipper: OvalBottomBorderClipper(),
               child: Container(
-                height: 280,
+                height: 38 * SizeConfig.heightMultiplier,
                 color: Apptheme.PrimaryColor,
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 12,
+                      height: 1.6 * SizeConfig.heightMultiplier,
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 10),
@@ -36,17 +36,17 @@ class _HomebarState extends State<Homebar> {
                             style: TextStyle(
                                 color: Apptheme.PrimaryColor,
                                 fontWeight: FontWeight.w500,
-                                fontSize: 24),
+                                fontSize: 3.4 * SizeConfig.textMultiplier),
                             children: [
                               TextSpan(
                                 style: TextStyle(
-                                    fontFamily: 'Orelega One',
+                                    // fontFamily: 'Orelega One',
                                     color: Apptheme.whitetextcolor),
                                 text: "Instant",
                               ),
                               TextSpan(
                                   style: TextStyle(
-                                      fontFamily: 'Orelega One',
+                                      // fontFamily: 'Orelega One',
                                       color: Apptheme.whitetextcolor),
                                   text: "Payments"),
                             ],
@@ -61,7 +61,8 @@ class _HomebarState extends State<Homebar> {
                               badgeContent: Text(
                                 "3",
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 14),
+                                    color: Colors.white,
+                                    fontSize: 1.6 * SizeConfig.textMultiplier),
                               ),
                               child: Icon(
                                 Icons.notifications,
@@ -73,7 +74,7 @@ class _HomebarState extends State<Homebar> {
                       ),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 2.5 * SizeConfig.heightMultiplier,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -83,27 +84,26 @@ class _HomebarState extends State<Homebar> {
                           children: [
                             Container(
                                 margin: EdgeInsets.only(
-                                  left: 10,
+                                  left: 2.4 * SizeConfig.widthMultiplier,
                                 ),
                                 child: Text("Total Balance",
                                     style: TextStyle(
-                                        fontSize: 22,
+                                        fontSize: 3 * SizeConfig.textMultiplier,
                                         fontWeight: FontWeight.w800,
                                         color: Apptheme.whitetextcolor))),
                             SizedBox(
-                              height: 6,
+                              height: 2.1 * SizeConfig.heightMultiplier,
                             ),
                             Container(
                                 margin: EdgeInsets.only(left: 10),
                                 child: Text(
-                                  "₹ 10000",
+                                  "₹ 12000",
                                   style: TextStyle(
-                                      fontSize: 22,
+                                      fontFamily: 'arvo',
+                                      fontSize: 3 * SizeConfig.textMultiplier,
                                       color: Apptheme.whitetextcolor),
                                 )),
-                            SizedBox(
-                              height: 8,
-                            ),
+                            SizedBox(height: 2.1 * SizeConfig.heightMultiplier),
                           ],
                         ),
                       ),

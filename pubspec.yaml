@@ -45,7 +45,9 @@ dependencies:
   date_format:
   flutter_screen_lock:
   badges:
-  shared_preferences:   
+  shared_preferences:
+  flutter_spinkit:
+  percent_indicator:       
                    
 
 dev_dependencies:
