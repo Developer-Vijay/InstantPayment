@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/list.dart';
 
@@ -65,7 +66,7 @@ class _FilterState extends State<Filter> {
           ),
           Divider(),
           SizedBox(
-            height: 6,
+            height: 2 * SizeConfig.heightMultiplier,
           ),
           Row(
             children: [
@@ -75,7 +76,7 @@ class _FilterState extends State<Filter> {
                   "Select From Date",
                   style: TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
+                      fontSize: 2.2 * SizeConfig.textMultiplier,
                       fontWeight: FontWeight.w600),
                 ),
               ),
@@ -83,8 +84,8 @@ class _FilterState extends State<Filter> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                    width: 155,
-                    height: 40,
+                    width: 40 * SizeConfig.widthMultiplier,
+                    height: 5.4 * SizeConfig.heightMultiplier,
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(10)),
@@ -108,7 +109,7 @@ class _FilterState extends State<Filter> {
                   "Select To Date",
                   style: TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
+                      fontSize: 2.2 * SizeConfig.textMultiplier,
                       fontWeight: FontWeight.w600),
                 ),
               ),
@@ -116,8 +117,8 @@ class _FilterState extends State<Filter> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                    width: 155,
-                    height: 40,
+                  width: 40 * SizeConfig.widthMultiplier,
+                    height: 5.4 * SizeConfig.heightMultiplier,
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(10)),

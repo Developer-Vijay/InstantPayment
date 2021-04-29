@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Dth {
   var logo;
@@ -92,3 +93,90 @@ List<Plans> plandata = [
       price: "₹555",
       validity: "84 Days"),
 ];
+
+class Transfer {
+  var number;
+  var mode;
+  var imps;
+  var neft;
+  var accountNumber;
+  var bankName;
+  var firstName;
+  var lastName;
+  var spent;
+  var limit;
+  var verification;
+  var bulktransfer;
+
+  Transfer(
+      {this.bulktransfer,
+      this.imps,
+      this.mode,
+      this.accountNumber,
+      this.bankName,
+      this.limit,
+      this.spent,
+      this.neft,
+      this.firstName,
+      this.lastName,
+      this.number,
+      this.verification});
+}
+
+List<Transfer> add = [
+  Transfer(
+      accountNumber: "1546245621456215",
+      bankName: "State Bank of India",
+      bulktransfer: true,
+      firstName: "Carl",
+      imps: true,
+      lastName: "woase",
+      limit: "20000",
+      mode: "Active",
+      neft: false,
+      number: "9818069709",
+      spent: "10",
+      verification: true)
+];
+
+class BankDetails {
+  var name;
+  var accountNumber;
+  var bankName;
+  BankDetails({this.accountNumber, this.bankName, this.name});
+}
+
+List<BankDetails> banklist = [
+  BankDetails(
+      accountNumber: 12546789451203560,
+      bankName: "STATE BANK OF INDIA (SBI)",
+      name: "Mr Carlwoase"),
+  BankDetails(
+      accountNumber: 98745612345604646,
+      bankName: "ICICI BANK LTD",
+      name: "Shivam Singal"),
+  BankDetails(
+      accountNumber: 45612306478914204,
+      bankName: "INDUSIND BANK",
+      name: "Prakash Raut"),
+];
+
+class ReportList {
+  var title;
+  var icon;
+  var subtitle;
+
+  ReportList({this.icon, this.subtitle, this.title});
+}
+
+List<ReportList> reportlist=[
+  ReportList(icon: "assets/icon/bill.svg",title:"Mobile Recharge",subtitle: "See Mobile Recharge Report" ),
+  ReportList(icon: "assets/icon/parabolic-dishes.svg",title:"Dth Recharge",subtitle: "See Dth Recharge Report" ),
+  ReportList(icon: "assets/icon/tower.svg",title:"Electricity bill",subtitle: "See Electricity Report" ),
+  ReportList(icon: "assets/icon/card.svg",title:"Data Card bill",subtitle: "See Data Card bill Report" ),
+  ReportList(icon:"assets/icon/gas.svg",title: "Gas bill",subtitle: "See Gas bill Report " ),
+  ReportList(icon: "assets/icon/money-transfer.svg",title:"Money Transfer Report",subtitle: "See Money Transfer Report" ),
+  ReportList(icon: "assets/icon/aep.svg",title:"AEPS Report",subtitle: "See AEPS Report" ),
+  ReportList(icon: "assets/icon/atm-machine.svg",title:"Micro Atm Report",subtitle: "See Micro Atm Report" ),
+];
+

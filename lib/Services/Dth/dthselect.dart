@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
-import 'package:netly/list.dart';
-
 import '../serviceslist.dart';
 
 class DthSelect extends StatefulWidget {
@@ -60,23 +58,6 @@ class _DthSelectState extends State<DthSelect> {
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
-                    // shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(100)),
-                    // leading: Container(
-                    //   child: Card(
-                    //     shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(100)),
-                    //     elevation: 10,
-                    //     child: CircleAvatar(
-                    //       backgroundColor: Apptheme.whitetextcolor,
-                    //       radius: 6 * SizeConfig.heightMultiplier,
-                    //       child: ClipRRect(
-                    //           borderRadius: BorderRadius.circular(100),
-                    //           child: dthlist[index].logo),
-                    //     ),
-                    //   ),
-                    // ),
-                    // title:
                   ),
                 ),
                 Divider(),

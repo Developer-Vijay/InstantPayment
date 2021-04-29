@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
+import 'package:netly/Services/Aeps/aeps_machine.dart';
+import 'package:netly/Services/DataCard/datacard.dart';
 import 'package:netly/Services/Dth/select_dth_operator.dart';
+import 'package:netly/Services/Electricity/electricity_page.dart';
+import 'package:netly/Services/Money%20Transfer/money_transfer_main_page.dart';
 import 'package:netly/Services/Recharge/mobile_recharge.dart';
 import 'package:netly/list.dart';
 
@@ -40,6 +45,31 @@ class _ServicesState extends State<Services> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => SelectDthOperator()));
+                    } else if (data[index].index == 2) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ElectricityPage()));
+                    } else if (data[index].index == 3) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DataCardPage()));
+                    } else if (data[index].index == 4) {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => DataCardPage()));
+                    } else if (data[index].index == 5) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MoneyTransferMainPage()));
+                    } else if (data[index].index == 6) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AepsChoice()));
                     }
                   },
                   child: Container(
@@ -49,7 +79,7 @@ class _ServicesState extends State<Services> {
                           child: data[index].icon,
                         ),
                         SizedBox(
-                          height: 12,
+                          height: 2 * SizeConfig.heightMultiplier,
                         ),
                         Text(
                           data[index].title,

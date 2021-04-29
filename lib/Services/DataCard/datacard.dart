@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 
-class SelectDthOperator extends StatefulWidget {
+class DataCardPage extends StatefulWidget {
   @override
-  _SelectDthOperatorState createState() => _SelectDthOperatorState();
+  _DataCardPageState createState() => _DataCardPageState();
 }
 
-class _SelectDthOperatorState extends State<SelectDthOperator> {
+class _DataCardPageState extends State<DataCardPage> {
   String dropdownValue = 'Operator';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("DTH"),
+        title: Text("Data Card"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -44,48 +44,40 @@ class _SelectDthOperatorState extends State<SelectDthOperator> {
                       onSelected: (value) {
                         if (value == 0) {
                           setState(() {
-                            dropdownValue = "Tata Sky";
+                            dropdownValue = "Airtel";
                           });
                         } else if (value == 1) {
                           setState(() {
-                            dropdownValue = "Airtel Digital Tv";
+                            dropdownValue = "Jio";
                           });
                         } else if (value == 2) {
                           setState(() {
-                            dropdownValue = "Dish Tv";
+                            dropdownValue = "Lava";
                           });
                         } else if (value == 3) {
                           setState(() {
-                            dropdownValue = "D2H";
-                          });
-                        } else if (value == 4) {
-                          setState(() {
-                            dropdownValue = "Sun Direct";
+                            dropdownValue = "D-Link";
                           });
                         }
                       },
                       icon: Icon(Icons.arrow_drop_down),
                       itemBuilder: (context) => [
                         PopupMenuItem(
-                          child: Text("Tata sky"),
+                          child: Text("Airtel"),
                           value: 0,
                         ),
                         PopupMenuItem(
-                          child: Text("Airtel Digital Tv"),
+                          child: Text("Jio"),
                           value: 1,
                         ),
                         PopupMenuItem(
-                          child: Text("Dish Tv"),
+                          child: Text("Lava"),
                           value: 2,
                         ),
                         PopupMenuItem(
-                          child: Text("D2H"),
+                          child: Text("D-Link"),
                           value: 3,
                         ),
-                        PopupMenuItem(
-                          child: Text("Sun Direct"),
-                          value: 4,
-                        )
                       ],
                     )),
               ),
@@ -100,7 +92,7 @@ class _SelectDthOperatorState extends State<SelectDthOperator> {
                   maxLength: 10,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                      counterText: "", labelText: "Registered Mobile Number"),
+                      counterText: "", labelText: "Account No."),
                 ),
               ),
             ),
@@ -112,7 +104,9 @@ class _SelectDthOperatorState extends State<SelectDthOperator> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: "Amounts"),
+                  decoration: InputDecoration(
+                   
+                      labelText: "Pay"),
                 ),
               ),
             ),

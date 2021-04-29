@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/SetPassword/change_password.dart';
 import 'package:netly/list.dart';
@@ -17,14 +18,14 @@ class _ProfilePageState extends State<ProfilePage> {
         body: ListView(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 20),
+              margin: EdgeInsets.only(left: 7 * SizeConfig.widthMultiplier),
               padding: EdgeInsets.only(top: 20),
               child: Row(
                 children: [
                   Stack(
                     children: [
                       CircleAvatar(
-                        radius: 50,
+                        radius: 6.77 * SizeConfig.heightMultiplier,
                         backgroundColor: Colors.red,
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(60),
@@ -37,50 +38,50 @@ class _ProfilePageState extends State<ProfilePage> {
                               imageUrl:
                                   "https://images.unsplash.com/photo-1509668521827-dd7d42a587e2?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzV8fHVzZXJ8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60",
                               fit: BoxFit.fitWidth,
-                              width: 100,
+                              width: 33 * SizeConfig.widthMultiplier,
                               errorWidget: (context, url, error) =>
                                   Icon(Icons.error),
                             )),
                       ),
                       Positioned(
-                        top: 65,
-                        left: 80,
+                        top: 8.7 * SizeConfig.heightMultiplier,
+                        left: 20.2 * SizeConfig.widthMultiplier,
                         child: CircleAvatar(
-                          radius: 10,
+                          radius: 1.39 * SizeConfig.heightMultiplier,
                           child: Icon(
                             Icons.edit,
-                            size: 12,
+                            size: 3 * SizeConfig.imageSizeMultiplier,
                           ),
                         ),
                       )
                     ],
                   ),
                   SizedBox(
-                    width: 12,
+                    width: 4 * SizeConfig.widthMultiplier,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "9871224515",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        style: TextStyle(color: Colors.black, fontSize: 2.6 * SizeConfig.textMultiplier),
                       ),
                       SizedBox(
-                        height: 12,
+                        height: 1.5 * SizeConfig.heightMultiplier,
                       ),
                       Text(
                         "Carl Woase",
                         style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                            fontSize: 2 * SizeConfig.textMultiplier, fontWeight: FontWeight.bold),
                       ),
                       Text("carlwoase@gmail.com"),
                       SizedBox(
-                        height: 8,
+                        height: 1 * SizeConfig.heightMultiplier,
                       ),
                       Row(
                         children: [
                           SizedBox(
-                            width: 100,
+                            width: 25 * SizeConfig.widthMultiplier,
                           ),
                           InkWell(
                               onTap: () {},
@@ -89,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 style: TextStyle(
                                     color: Apptheme.textColor2,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12),
+                                    fontSize: 1.6 * SizeConfig.textMultiplier),
                               )),
                         ],
                       ),
@@ -99,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             SizedBox(
-              height: 10,
+              height: 1.2 * SizeConfig.heightMultiplier,
             ),
             Divider(),
             ListView.builder(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
-import 'package:netly/Services/Recharge/plans.dart';
 import 'package:netly/Services/serviceslist.dart';
 
 class MobileRecharge extends StatefulWidget {

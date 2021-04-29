@@ -6,10 +6,11 @@ import 'package:flutter_screen_lock/configurations/secrets_config.dart';
 import 'package:flutter_screen_lock/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Screen/HomePage/homebar.dart';
 import 'package:netly/Screen/HomePage/menu.dart';
 import 'package:netly/Screen/HomePage/services.dart';
+import 'package:netly/SetPassword/change_password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,18 +58,18 @@ class _HomePageState extends State<HomePage> {
           children: [
             Homebar(),
             SizedBox(
-              height: 12,
+              height: 1.5 * SizeConfig.heightMultiplier,
             ),
             SizedBox(
               height: 0,
             ),
             Menu(),
             SizedBox(
-              height: 12,
+              height: 1.5 * SizeConfig.heightMultiplier,
             ),
             Container(
                 color: Colors.grey[200],
-                margin: EdgeInsets.only(left: 10, right: 10),
+                margin: EdgeInsets.only(left: 2 * SizeConfig.widthMultiplier, right: 2 * SizeConfig.widthMultiplier),
                 child: Services()),
           ],
         ),
@@ -143,9 +144,13 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.only(top: 20),
           child: InkWell(
               onTap: () {
-                Fluttertoast.showToast(msg: "Pin is Working");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangePasscode(),
+                    ));
               },
-              child: Text("Reset Pin")),
+              child: Text("Reset Passcode")),
         ));
   }
 }

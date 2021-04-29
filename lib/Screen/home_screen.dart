@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/HomePage/home_page.dart';
 import 'package:netly/Screen/ProfilePage/profile_list.dart';
+import 'package:netly/Screen/ReportPage/ReportPageMain/report_page_main.dart';
 import 'package:netly/Screen/ReportPage/report_page.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     passcode = prefs.getString('passcode');
   }
 
-  List _pages = [HomePage(), ReportPage(), ProfilePage(), Text("Data4")];
+  List _pages = [HomePage(), ReportPageMain(), ProfilePage(), Text("Data4")];
   int _currentIndex = 0;
   Future<bool> _onbackPressed() async {
     return showDialog(
