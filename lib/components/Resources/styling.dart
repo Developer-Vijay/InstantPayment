@@ -20,7 +20,8 @@ class Apptheme {
       brightness: Brightness.light,
       textTheme: LightTextTheme);
 
-  static final LightTextTheme = TextTheme(title: maintextColor);
+  // ignore: non_constant_identifier_names
+  static final LightTextTheme = TextTheme(headline6: maintextColor);
 
   static final TextStyle loginPageTitle = TextStyle(
       fontSize: 3 * SizeConfig.textMultiplier,

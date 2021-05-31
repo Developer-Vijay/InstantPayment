@@ -19,8 +19,8 @@ class _BannersState extends State<Banners> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Container(
-              height: 18.99 * SizeConfig.heightMultiplier,
-              width: 166.2 * SizeConfig.widthMultiplier,
+              height: 16 * SizeConfig.heightMultiplier,
+              width: 140 * SizeConfig.widthMultiplier,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Swiper(
@@ -28,6 +28,7 @@ class _BannersState extends State<Banners> {
                   itemCount: imageslist.length,
                   itemBuilder: (context, index) {
                     return CachedNetworkImage(
+                      fit: BoxFit.cover,
                       placeholder: (context, url) {
                         return Center(
                           child: CircularProgressIndicator(),

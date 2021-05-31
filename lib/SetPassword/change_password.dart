@@ -66,33 +66,6 @@ class _ChangePasscodeState extends State<ChangePasscode> {
                   color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: TextField(
                 keyboardType: TextInputType.number,
-                controller: oldPasscodeController,
-                maxLength: 4,
-                maxLines: 1,
-                enabled: true,
-                obscureText: true,
-                decoration: InputDecoration(
-                  counterText: "",
-                  contentPadding: EdgeInsets.only(left: 10),
-                  border: InputBorder.none,
-                  errorText: oldValidate,
-                  suffixIcon: Icon(
-                    Icons.lock,
-                    size: 2.4 * SizeConfig.heightMultiplier,
-                  ),
-                  labelText: "Old Passcode",
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 4 * SizeConfig.heightMultiplier),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
-              child: TextField(
-                keyboardType: TextInputType.number,
                 controller: newPasscodeController,
                 maxLength: 4,
                 maxLines: 1,
@@ -112,7 +85,7 @@ class _ChangePasscodeState extends State<ChangePasscode> {
               ),
             ),
           ),
-          SizedBox(height: 5 * SizeConfig.heightMultiplier),
+          SizedBox(height: 4 * SizeConfig.heightMultiplier),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: MaterialButton(
@@ -135,27 +108,6 @@ class _ChangePasscodeState extends State<ChangePasscode> {
 
   Future changePin() async {
     final prefs = await SharedPreferences.getInstance();
-    if (oldPasscodeController.text.isEmpty) {
-      setState(() {
-        oldValidate = "please enter the old pin";
-        isValidate = true;
-      });
-    } else if (oldPasscodeController.text != passcode.toString()) {
-      setState(() {
-        oldValidate = "old passcode is wrong";
-        isValidate = true;
-      });
-    } else if (oldPasscodeController.text.length < 4) {
-      setState(() {
-        oldValidate = "passcode should be of 4 digits";
-        isValidate = true;
-      });
-    } else {
-      setState(() {
-        oldValidate = null;
-        isValidate = false;
-      });
-    }
 
     if (newPasscodeController.text.isEmpty) {
       setState(() {
@@ -174,7 +126,7 @@ class _ChangePasscodeState extends State<ChangePasscode> {
       });
     }
 
-    if (isValidate == false && oldPasscodeController.text ==passcode) {
+    if (isValidate == false) {
       prefs.setString('passcode', newPasscodeController.text.toString());
       Fluttertoast.showToast(msg: "Password Changed Sucessfully");
 

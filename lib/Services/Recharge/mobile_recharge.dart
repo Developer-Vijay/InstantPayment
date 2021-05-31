@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Services/serviceslist.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../constants.dart';
+import '../../rechargesuccesspage.dart';
 
 class MobileRecharge extends StatefulWidget {
   @override
@@ -9,17 +15,154 @@ class MobileRecharge extends StatefulWidget {
 }
 
 class _MobileRechargeState extends State<MobileRecharge> {
-  String dropdownValue = "Select Operator";
+  TextEditingController mobilenumberController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
+
+  bool _isValidate = false;
+  var mobileNumberValidate;
+  var operatorValidate;
+  var amountValidate;
+
   int selectedradiotile;
+
+  @override
   void initState() {
     super.initState();
     selectedradiotile = 0;
+    Future.delayed(Duration.zero, () {
+      getPrepaidList();
+    });
   }
 
+  int selected;
   setSelectedradioTile(int value) {
     setState(() {
       selectedradiotile = value;
     });
+  }
+
+  String sessionToken;
+  var logindata;
+  var retrieveLogin;
+  int k;
+  var responsed;
+  var jsonresponse;
+  var operatorId;
+  var operatorName;
+  var responseData;
+  var totalData;
+  var data;
+  var postPaidResponseData;
+  bool showPostpaid = false;
+  bool checker = false;
+  bool checker2 = false;
+
+// postpaid
+  getPostpaidList() async {
+    final prefs = await SharedPreferences.getInstance();
+    var retrieveLogin = prefs.getString('loginInfo');
+    var loginData = jsonDecode(retrieveLogin);
+    String session = loginData['sessionToken'];
+    try {
+      var response = await http.get(
+          Uri.parse(ADMIN_API +
+              '/getOperatorList' +
+              '?operatorType=Postpaid&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": session
+          });
+      postPaidResponseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(postPaidResponseData);
+        setState(() {
+          showPostpaid = true;
+        });
+      } else {
+        Fluttertoast.showToast(msg: "Erroer");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+// prepaid
+  getPrepaidList() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    retrieveLogin = prefs.getString('loginInfo');
+
+    logindata = jsonDecode(retrieveLogin);
+
+    sessionToken = logindata['sessionToken'];
+    try {
+      var response = await http.get(
+          Uri.parse(ADMIN_API +
+              '/getOperatorList' +
+              '?operatorType=Prepaid&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken
+          });
+      responseData = jsonDecode(response.body);
+      print("loading...");
+      if (response.statusCode == 200) {
+        setState(() {
+          checker = true;
+          checker2 = false;
+        });
+        // Fluttertoast.showToast(msg: "data fetched Successfully");
+        print(responseData);
+        k = responseData.length;
+        print('//////');
+        print(k);
+
+        print("/////");
+      } else {
+        setState(() {
+          checker = true;
+          checker2 = true;
+        });
+        print(response.statusCode);
+        print("not fetched");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  var operatorsId;
+// operator details
+  getOperartordetails(var id) async {
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    try {
+      var response = await http.get(
+          Uri.parse(SERVICE_API +
+              '/getApiOperatorCode' +
+              '?apiOperatorCodeId=$id&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken
+          });
+      responsed = jsonDecode(response.body);
+      jsonresponse = (response.body);
+      if (response.statusCode == 200) {
+        setState(() {
+          operatorsId = responsed['_id'];
+        });
+        // Fluttertoast.showToast(msg: "operator details Fetched Successfully");
+        // Navigator.pop(context);
+        print(jsonresponse);
+      } else {
+        Navigator.pop(context);
+        // Fluttertoast.showToast(msg: "error in fetching");
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -51,6 +194,16 @@ class _MobileRechargeState extends State<MobileRecharge> {
                     value: rechqarge[index].value,
                     groupValue: selectedradiotile,
                     onChanged: (value) {
+                      if (value == 0) {
+                        getPrepaidList();
+                        setState(() {
+                          showPostpaid = false;
+                        });
+                      } else if (value == 1) {
+                        getPostpaidList();
+                      } else {
+                        Fluttertoast.showToast(msg: "Something went wrong");
+                      }
                       setSelectedradioTile(value);
                     },
                     selected: true,
@@ -65,56 +218,75 @@ class _MobileRechargeState extends State<MobileRecharge> {
                 height: 5 * SizeConfig.heightMultiplier,
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8)
-                      // borderRadius: BorderRadius.only(topLeft: Radius.circular(20)
-                      // )
-                      ),
-                  child: TextField(
-                    readOnly: true,
-                    decoration: InputDecoration(
-
-                        // border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(8),
-                        hintText: dropdownValue,
-                        hintStyle: TextStyle(fontWeight: FontWeight.w600),
-                        suffixIcon: PopupMenuButton(
-                          onSelected: (value) {
-                            if (value == 0) {
-                              setState(() {
-                                dropdownValue = "Airtel";
-                              });
-                            } else if (value == 1) {
-                              setState(() {
-                                dropdownValue = "Jio";
-                              });
-                            } else if (value == 2) {
-                              setState(() {
-                                dropdownValue = "Vodafone";
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.arrow_drop_down),
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              child: Text("Airtel"),
-                              value: 0,
-                            ),
-                            PopupMenuItem(
-                              child: Text("Jio"),
-                              value: 1,
-                            ),
-                            PopupMenuItem(
-                              child: Text("Voda Phone"),
-                              value: 2,
-                            )
-                          ],
-                        )),
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: responseData == null
+                    ? Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(8)),
+                        child: DropdownButtonFormField(
+                          hint: Text("Select an Operator"),
+                          items: [],
+                          isDense: false,
+                          isExpanded: true,
+                          onChanged: (value) {},
+                        ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(8)),
+                        child: showPostpaid == false
+                            ? DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                    errorText: operatorValidate),
+                                isDense: false,
+                                isExpanded: true,
+                                hint: Text("Select an Operator"),
+                                value: selected,
+                                items: List.generate(
+                                  k,
+                                  (index) => DropdownMenuItem(
+                                      value: index,
+                                      child: Text(responseData[index]['name'])),
+                                ),
+                                onChanged: (value) {
+                                  int index = value;
+                                  setState(() {
+                                    selected = index;
+                                    operatorId = responseData[index]
+                                        ['activeAPIOperatorCodeId'];
+                                    print(operatorId);
+                                    operatorName = responseData[index]['name'];
+                                    getOperartordetails(operatorId);
+                                  });
+                                })
+                            : DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                    errorText: operatorValidate),
+                                isDense: false,
+                                isExpanded: true,
+                                hint: Text("Select an Operator"),
+                                value: selected,
+                                items: List.generate(
+                                  postPaidResponseData.length,
+                                  (index) => DropdownMenuItem(
+                                      value: index,
+                                      child: Text(
+                                          postPaidResponseData[index]['name'])),
+                                ),
+                                onChanged: (value) {
+                                  int index = value;
+                                  setState(() {
+                                    selected = index;
+                                    operatorId = postPaidResponseData[index]
+                                        ['activeAPIOperatorCodeId'];
+                                    print(operatorId);
+                                    operatorName =
+                                        postPaidResponseData[index]['name'];
+                                    getOperartordetails(operatorId);
+                                  });
+                                })),
               ),
               SizedBox(
                 height: 5 * SizeConfig.heightMultiplier,
@@ -126,9 +298,11 @@ class _MobileRechargeState extends State<MobileRecharge> {
                       color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(10)),
                   child: TextField(
+                    controller: mobilenumberController,
                     maxLength: 10,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
+                        errorText: mobileNumberValidate,
                         contentPadding: EdgeInsets.only(left: 12),
                         counterText: "",
                         labelText: "Mobile Number"),
@@ -145,37 +319,11 @@ class _MobileRechargeState extends State<MobileRecharge> {
                       color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(20)),
                   child: TextField(
+                    controller: amountController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                        // prefixIcon: Icon(Icons.attach_money),
+                        errorText: amountValidate,
                         contentPadding: EdgeInsets.only(left: 12),
-                        // border: InputBorder.none,
-                        // suffix: InkWell(
-                        //   // onTap: () {
-                        //   //   showModalBottomSheet(
-                        //   //     context: context,
-                        //   //     isScrollControlled: true,
-                        //   //     builder: (context) => Container(
-                        //   //       height: 600,
-                        //   //       child: MobilePlan()),
-                        //   //   );
-                        //   // },
-                        //   child: Row(
-                        //     mainAxisSize: MainAxisSize.min,
-                        //     children: [
-                        //       Text(
-                        //         "See all plans",
-                        //         style: TextStyle(
-                        //             fontSize: 2 * SizeConfig.textMultiplier,
-                        //             fontWeight: FontWeight.bold),
-                        //       ),
-                        //       Icon(
-                        //         Icons.arrow_forward_ios,
-                        //         size: 4 * SizeConfig.imageSizeMultiplier,
-                        //       )
-                        //     ],
-                        //   ),
-                        // ),
                         labelText: "Amounts"),
                   ),
                 ),
@@ -191,7 +339,9 @@ class _MobileRechargeState extends State<MobileRecharge> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   color: Apptheme.PrimaryColor,
-                  onPressed: () {},
+                  onPressed: () {
+                    recharge();
+                  },
                   child: Text(
                     "Recharge",
                     style: TextStyle(
@@ -205,5 +355,142 @@ class _MobileRechargeState extends State<MobileRecharge> {
         ),
       ),
     );
+  }
+
+  show() async {
+    Map data = {
+      "performed by": "1234528",
+      "operatorName": operatorName,
+      "ServiceName": "Recharge",
+      "billPay": true
+    };
+    var firstJson = responsed;
+    var secondJson = data;
+
+    var json = {...firstJson, ...secondJson};
+    (json['requiredParams'] as List<dynamic>).forEach((item) {
+      item['value'] = mobilenumberController.text;
+    });
+    json['transactionAmount'] = int.parse(amountController.text);
+
+    print(jsonEncode(json));
+  }
+
+  Future recharge() async {
+    var loginid;
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    loginid = logindata['user']['_id'];
+    if (selected == null) {
+      setState(() {
+        operatorValidate = "Please select the operator";
+        _isValidate = true;
+      });
+    } else {
+      operatorValidate = null;
+      _isValidate = false;
+    }
+
+    if (mobilenumberController.text.isEmpty) {
+      setState(() {
+        mobileNumberValidate = "Please enter the mobilenumber";
+        _isValidate = true;
+      });
+    } else {
+      setState(() {
+        mobileNumberValidate = null;
+        _isValidate = false;
+      });
+    }
+
+    if (amountController.text.isEmpty) {
+      setState(() {
+        amountValidate = "Please enter the amount";
+        _isValidate = true;
+      });
+    } else {
+      setState(() {
+        amountValidate = null;
+        _isValidate = false;
+      });
+    }
+    Map data = {
+      "performed by": loginid,
+      "operatorName": operatorName,
+      "ServiceName": "Recharge",
+      "billPay": true
+    };
+    var firstJson = responsed;
+    var secondJson = data;
+
+    var jsonbody = {...firstJson, ...secondJson};
+
+    (jsonbody['requiredParams'] as List<dynamic>).forEach((item) {
+      item['value'] = mobilenumberController.text;
+    });
+    jsonbody['transactionAmount'] = int.parse(amountController.text);
+    print("//////");
+    print(jsonbody);
+    print("//////");
+    var responsebody = jsonEncode(jsonbody);
+    print(responsebody);
+    if (_isValidate == false) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => new AlertDialog(
+                  content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text("Loading"),
+                  ),
+                ],
+              )));
+      try {
+        var response = await http.post(Uri.parse(SERVICE_API + '/getRecharge'),
+            body: responsebody,
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken
+            });
+        var responsedData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          if (responsedData['errorExist'] == false) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RechargeSuccessPage(
+                    responseData: responsedData,
+                    amount: amountController.text,
+                    number: mobilenumberController.text,
+                    orderId: operatorsId,
+                    date: DateTime.now(),
+                  ),
+                ));
+            print(responsedData);
+          } else {
+            Fluttertoast.showToast(
+                msg: "${responsedData['message']}",
+                backgroundColor: Colors.green,
+                toastLength: Toast.LENGTH_LONG,
+                textColor: Apptheme.whitetextcolor);
+            Navigator.pop(context);
+          }
+        } else {
+          Navigator.pop(context);
+          Fluttertoast.showToast(
+              msg: "${responsedData['message']}",
+              backgroundColor: Apptheme.textColo1r,
+              toastLength: Toast.LENGTH_LONG,
+              textColor: Apptheme.whitetextcolor);
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
   }
 }

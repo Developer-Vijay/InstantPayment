@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/SetPassword/change_password.dart';
 import 'package:netly/list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -11,6 +14,29 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  var retrieveLogin;
+  var logindata;
+  var email;
+  var name;
+  var phonenumber;
+  var photo;
+  void getUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    setState(() {
+      name = logindata['user']['userName'];
+      email = logindata['user']['email'];
+      photo = logindata['user']['imageInfo'][0]['path'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -62,19 +88,35 @@ class _ProfilePageState extends State<ProfilePage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "9871224515",
-                        style: TextStyle(color: Colors.black, fontSize: 2.6 * SizeConfig.textMultiplier),
+                      Container(
+                        child: Text(
+                          "9818069709",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 2.6 * SizeConfig.textMultiplier),
+                        ),
                       ),
                       SizedBox(
                         height: 1.5 * SizeConfig.heightMultiplier,
                       ),
-                      Text(
-                        "Carl Woase",
-                        style: TextStyle(
-                            fontSize: 2 * SizeConfig.textMultiplier, fontWeight: FontWeight.bold),
-                      ),
-                      Text("carlwoase@gmail.com"),
+                      Container(
+                          child: name == null
+                              ? Text(
+                                  "Carl Woase",
+                                  style: TextStyle(
+                                      fontSize: 2 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  name,
+                                  style: TextStyle(
+                                      fontSize: 2 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                      Container(
+                          child: email == null
+                              ? Text("carlwoase@gmail.com")
+                              : Text(email)),
                       SizedBox(
                         height: 1 * SizeConfig.heightMultiplier,
                       ),

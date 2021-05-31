@@ -4,8 +4,7 @@ import 'package:netly/Components/Resources/styling.dart';
 import '../serviceslist.dart';
 
 class DthSelect extends StatefulWidget {
-  var data;
-  DthSelect({this.data});
+  
   @override
   _DthSelectState createState() => _DthSelectState();
 }

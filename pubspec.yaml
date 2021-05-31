@@ -33,21 +33,27 @@ dependencies:
   cupertino_icons: ^1.0.0
   
   
-  introduction_screen: ^1.0.9
+  introduction_screen:
   google_fonts:
   salomon_bottom_bar:
   flutter_swiper:
   cached_network_image:
-  flutter_svg:
-  local_auth:
+  flutter_svg: 
   fluttertoast:
   flutter_custom_clippers:
-  date_format:
   flutter_screen_lock:
   badges:
   shared_preferences:
+  percent_indicator:
+  http: 
+  pin_code_fields:
+  menu_button:
+  image_picker:
+  socket_io_client:
   flutter_spinkit:
-  percent_indicator:       
+         
+         
+         
                    
 
 dev_dependencies:
