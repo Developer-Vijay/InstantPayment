@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_screen_lock/configurations/input_button_config.dart';
 import 'package:flutter_screen_lock/configurations/screen_lock_config.dart';
 import 'package:flutter_screen_lock/configurations/secret_config.dart';
@@ -12,28 +13,98 @@ import 'package:netly/Screen/HomePage/menu.dart';
 import 'package:netly/Screen/HomePage/services.dart';
 import 'package:netly/SetPassword/change_password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
+import '../../constants.dart';
+
+// ignore: must_be_immutable
 class HomePage extends StatefulWidget {
+  var walletMoney;
+  HomePage({Key key, this.walletMoney}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  ScrollController scrollController = ScrollController();
-
-  bool isAuthenticated = false;
-
-  var storedPasscode = '123456';
-
   @override
   void initState() {
     super.initState();
 
     getdata();
-    Future.delayed(Duration(minutes: 10), () {
-      screenlock();
-    });
   }
+
+  var retrieveLogin;
+  var sessionToken;
+  var refreshToken;
+  var loginId;
+  var logindata;
+  var responseData;
+  var walletAmount;
+  var amount;
+  bool status = false;
+
+  Future getWalletDetails() async {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Container(
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 120),
+                    child: Image.asset(
+                      "assets/images/nplogo.png",
+                      height: 25 * SizeConfig.imageSizeMultiplier,
+                    ),
+                  ),
+                ],
+              ),
+            ));
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    refreshToken = logindata['refreshToken'];
+    loginId = logindata['user']['_id'];
+    print("?????????");
+    print(loginId);
+    print("?????????");
+
+    try {
+      var response = await http.get(
+          Uri.parse(
+            COMMON_API +
+                '/getWalletAmount' +
+                '?userId=$loginId&subdomain=instantpay',
+          ),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken,
+            "refreshToken": refreshToken
+          });
+      responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        setState(() {
+          walletAmount = responseData['walletAmount'];
+          prefs.setInt("amount", walletAmount);
+          status = true;
+        });
+        print(responseData['walletAmount']);
+        Navigator.pop(context);
+      } else {
+        print("error");
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  ScrollController scrollController = ScrollController();
+
+  bool isAuthenticated = false;
+
+  var storedPasscode = '123456';
 
   var passcode;
   void getdata() async {
@@ -56,7 +127,9 @@ class _HomePageState extends State<HomePage> {
           controller: scrollController,
           shrinkWrap: true,
           children: [
-            Homebar(),
+            Homebar(
+              walletAmount: walletAmount,
+            ),
             SizedBox(
               height: 1.5 * SizeConfig.heightMultiplier,
             ),
@@ -69,7 +142,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
                 color: Colors.grey[200],
-                margin: EdgeInsets.only(left: 2 * SizeConfig.widthMultiplier, right: 2 * SizeConfig.widthMultiplier),
+                margin: EdgeInsets.only(
+                    left: 2 * SizeConfig.widthMultiplier,
+                    right: 2 * SizeConfig.widthMultiplier),
                 child: Services()),
           ],
         ),

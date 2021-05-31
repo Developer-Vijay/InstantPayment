@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:netly/Components/Auth/login.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
-import 'package:netly/SetPassword/set_passsword.dart';
 
 class OnboardingScreen extends StatefulWidget {
   // Navigation to Dashboard Screen
@@ -18,13 +18,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         builder: (contex) => AlertDialog(
               title: Text("Do you Really want to exit"),
               actions: [
-                FlatButton(
+                TextButton(
                   child: Text("Yes"),
                   onPressed: () {
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                 ),
-                FlatButton(
+                TextButton(
                   child: Text("No"),
                   onPressed: () {
                     Navigator.pop(context, false);
@@ -37,7 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void onIntroEnd(context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SetPasscode()),
+      MaterialPageRoute(builder: (context) => Login()),
     );
   }
 

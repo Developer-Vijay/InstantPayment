@@ -1,16 +1,103 @@
+import 'dart:convert';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/HomePage/banners.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Homebar extends StatefulWidget {
+  final walletAmount;
+  const Homebar({Key key, this.walletAmount}) : super(key: key);
   @override
   _HomebarState createState() => _HomebarState();
 }
 
-class _HomebarState extends State<Homebar> {
+class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () {
+      getWalletDetails();
+    });
+  }
+
+  var retrieveLogin;
+  var sessionToken;
+  var refreshToken;
+  var loginId;
+  var logindata;
+  var responseData;
+  var walletAmount;
+  var amount;
+  var status;
+
+  Future getWalletDetails() async {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Container(
+          color: Apptheme.PrimaryColor,
+          child: Center(
+            child: SpinKitRotatingCircle(
+                color: Colors.white,
+                size: 50.0,
+                controller: AnimationController(
+                    vsync: this, duration: const Duration(milliseconds: 1200))),
+          )),
+    );
+
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    refreshToken = logindata['refreshToken'];
+    print(refreshToken);
+    print(sessionToken);
+    loginId = logindata['user']['_id'];
+    status = prefs.getBool('walletStatus');
+    print("?????????");
+    print(loginId);
+    print("?????????");
+
+    try {
+      var response = await http.get(
+          Uri.parse(COMMON_API +
+              '/getWalletAmount' +
+              '?userId=$loginId&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken,
+            "refreshToken": refreshToken
+          });
+      responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        setState(() {
+          walletAmount = responseData['walletAmount'];
+          prefs.setInt("amount", walletAmount);
+          status = true;
+        });
+        print(responseData['walletAmount']);
+        print("??????");
+        print("2222");
+        Navigator.pop(context);
+      } else {
+        print("error");
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print(e);
+    }
+    setState(() {
+      prefs.setBool("walletStatus", false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -40,13 +127,13 @@ class _HomebarState extends State<Homebar> {
                             children: [
                               TextSpan(
                                 style: TextStyle(
-                                    // fontFamily: 'Orelega One',
+                                    fontFamily: 'arvo',
                                     color: Apptheme.whitetextcolor),
                                 text: "Instant",
                               ),
                               TextSpan(
                                   style: TextStyle(
-                                      // fontFamily: 'Orelega One',
+                                      fontFamily: 'arvo',
                                       color: Apptheme.whitetextcolor),
                                   text: "Payments"),
                             ],
@@ -82,28 +169,52 @@ class _HomebarState extends State<Homebar> {
                         alignment: Alignment.center,
                         child: Column(
                           children: [
-                            Container(
-                                margin: EdgeInsets.only(
-                                  left: 2.4 * SizeConfig.widthMultiplier,
-                                ),
-                                child: Text("Total Balance",
-                                    style: TextStyle(
-                                        fontSize: 3 * SizeConfig.textMultiplier,
-                                        fontWeight: FontWeight.w800,
-                                        color: Apptheme.whitetextcolor))),
+                            // Container(
+                            //     margin: EdgeInsets.only(
+                            //       left: 2.4 * SizeConfig.widthMultiplier,
+                            //     ),
+                            //     child: Text("Total Balance",
+                            //         style: TextStyle(
+                            //             fontSize: 3 * SizeConfig.textMultiplier,
+                            //             fontWeight: FontWeight.w800,
+                            //             color: Apptheme.whitetextcolor))),
                             SizedBox(
                               height: 2.1 * SizeConfig.heightMultiplier,
                             ),
                             Container(
                                 margin: EdgeInsets.only(left: 10),
-                                child: Text(
-                                  "₹ 12000",
-                                  style: TextStyle(
-                                      fontFamily: 'arvo',
-                                      fontSize: 3 * SizeConfig.textMultiplier,
-                                      color: Apptheme.whitetextcolor),
-                                )),
-                            SizedBox(height: 2.1 * SizeConfig.heightMultiplier),
+                                child: walletAmount != null
+                                    ? RichText(
+                                        text: TextSpan(
+                                        style: TextStyle(
+                                            color: Apptheme.PrimaryColor,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize:
+                                                5 * SizeConfig.textMultiplier),
+                                        children: [
+                                          TextSpan(
+                                            style: TextStyle(
+                                                fontFamily: 'arvo',
+                                                color: Apptheme.whitetextcolor),
+                                            text: "₹",
+                                          ),
+                                          TextSpan(
+                                              style: TextStyle(
+                                                  fontFamily: 'arvo',
+                                                  color:
+                                                      Apptheme.whitetextcolor),
+                                              text: " $walletAmount.00"),
+                                        ],
+                                      ))
+                                    : Text(
+                                        "₹ 0",
+                                        style: TextStyle(
+                                            fontFamily: 'arvo',
+                                            fontSize:
+                                                3 * SizeConfig.textMultiplier,
+                                            color: Apptheme.whitetextcolor),
+                                      )),
+                            SizedBox(height: 1.4 * SizeConfig.heightMultiplier),
                           ],
                         ),
                       ),
@@ -112,13 +223,9 @@ class _HomebarState extends State<Homebar> {
                 ),
               ),
             ),
-            Container(
-              height: 50,
-              color: Colors.white,
-            )
           ],
         ),
-        Align(alignment: Alignment.bottomCenter, child: Banners())
+        Align(alignment: Alignment.center, child: Banners())
       ],
     );
   }

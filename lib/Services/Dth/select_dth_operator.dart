@@ -1,6 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
+import 'package:http/http.dart' as http;
+import 'package:netly/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectDthOperator extends StatefulWidget {
   @override
@@ -8,135 +13,366 @@ class SelectDthOperator extends StatefulWidget {
 }
 
 class _SelectDthOperatorState extends State<SelectDthOperator> {
+  TextEditingController operatorController = TextEditingController();
+  TextEditingController numberController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
+  bool _isValidate = false;
+  var operatorValidate;
+  var numberValidate;
+  var amountValidate;
   String dropdownValue = 'Operator';
+  String operatorName;
+  String operatorId;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      getDthOperatorList();
+    });
+  }
+
+// variable inializer
+  String sessionToken;
+  String refreshtoken;
+  var logindata;
+  var retrieveLogin;
+  var responseData;
+  var jsonResponse;
+  int selected;
+  bool checker = false;
+  bool checker2 = false;
+  var responsed;
+  String loginId;
+  var jsonresponse;
+// Dth Operator Api
+
+  getDthOperatorList() async {
+    //  showDialog(
+    //       barrierDismissible: false,
+    //       context: context,
+    //       builder: (_) => Container(
+    //         color: Colors.white,
+    //             child: Center(child: CircularProgressIndicator(),)
+    //           ));
+    //  showDialog(
+    //         barrierDismissible: false,
+    //         context: context,
+    //         builder: (_) => new AlertDialog(
+    //                 content: Row(
+    //               children: [
+    //                 CircularProgressIndicator(),
+    //                 Padding(
+    //                   padding: const EdgeInsets.symmetric(horizontal: 12),
+    //                   child: Text("Loading"),
+    //                 ),
+    //               ],
+    //             )));
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    refreshtoken = logindata['refreshToken'];
+    loginId = logindata['user']['_id'];
+    print(refreshtoken);
+    try {
+      var response = await http.get(
+          Uri.parse(ADMIN_API +
+              '/getOperatorList' +
+              '?operatorType=DTH&subdomain=instantpay'),
+          headers: {
+            'Content-type': 'application/json',
+            'authorization': sessionToken,
+            'refreshToken': refreshtoken
+          });
+      responseData = jsonDecode(response.body);
+      jsonResponse = response.body;
+      if (response.statusCode == 200) {
+        setState(() {
+          checker = true;
+          checker2 = false;
+        });
+        // Fluttertoast.showToast(msg: "Operator List Fetched Successfully");
+        // Navigator.pop(context);
+      } else {
+        // Navigator.pop(context);
+        setState(() {
+          checker = true;
+          checker2 = true;
+        });
+        // Fluttertoast.showToast(msg: "Sorry Something went wrong");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  getOperatorDetails(var id) async {
+    // showDialog(
+    //     barrierDismissible: false,
+    //     context: context,
+    //     builder: (_) => new AlertDialog(
+    //             content: Row(
+    //           children: [
+    //             CircularProgressIndicator(),
+    //             Padding(
+    //               padding: const EdgeInsets.symmetric(horizontal: 12),
+    //               child: Text("Loading"),
+    //             ),
+    //           ],
+    //         )));
+    try {
+      var response = await http.get(
+          Uri.parse(SERVICE_API +
+              '/getApiOperatorCode' +
+              '?apiOperatorCodeId=$id&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken,
+            "refreshToken": refreshtoken
+          });
+      jsonResponse = response.body;
+      responsed = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print("fetched");
+      } else {
+        print("not Fetched");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("DTH"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 30.0, left: 20, bottom: 10),
-              child: Text(
-                "Select an Operator",
-                style: TextStyle(
-                    fontSize: 2 * SizeConfig.textMultiplier,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-            SizedBox(
-              height: 5 * SizeConfig.heightMultiplier,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(8),
-                    hintText: dropdownValue,
-                    hintStyle: TextStyle(fontWeight: FontWeight.w600),
-                    suffixIcon: PopupMenuButton(
-                      onSelected: (value) {
-                        if (value == 0) {
-                          setState(() {
-                            dropdownValue = "Tata Sky";
-                          });
-                        } else if (value == 1) {
-                          setState(() {
-                            dropdownValue = "Airtel Digital Tv";
-                          });
-                        } else if (value == 2) {
-                          setState(() {
-                            dropdownValue = "Dish Tv";
-                          });
-                        } else if (value == 3) {
-                          setState(() {
-                            dropdownValue = "D2H";
-                          });
-                        } else if (value == 4) {
-                          setState(() {
-                            dropdownValue = "Sun Direct";
-                          });
-                        }
-                      },
-                      icon: Icon(Icons.arrow_drop_down),
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          child: Text("Tata sky"),
-                          value: 0,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Airtel Digital Tv"),
-                          value: 1,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Dish Tv"),
-                          value: 2,
-                        ),
-                        PopupMenuItem(
-                          child: Text("D2H"),
-                          value: 3,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Sun Direct"),
-                          value: 4,
-                        )
-                      ],
-                    )),
-              ),
-            ),
-            SizedBox(
-              height: 5 * SizeConfig.heightMultiplier,
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  maxLength: 10,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      counterText: "", labelText: "Registered Mobile Number"),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 5 * SizeConfig.heightMultiplier,
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: "Amounts"),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 5 * SizeConfig.heightMultiplier,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: MaterialButton(
-                height: 7 * SizeConfig.heightMultiplier,
-                textColor: Apptheme.whitetextcolor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                color: Apptheme.PrimaryColor,
-                onPressed: () {},
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("DTH"),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0, left: 20, bottom: 10),
                 child: Text(
-                  "Recharge",
-                  style: TextStyle(fontSize: 2.2 * SizeConfig.textMultiplier),
+                  "Select an Operator",
+                  style: TextStyle(
+                      fontSize: 2 * SizeConfig.textMultiplier,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
-            )
-          ],
+              SizedBox(
+                height: 5 * SizeConfig.heightMultiplier,
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: responseData != null
+                      ? DropdownButtonFormField(
+                          decoration:
+                              InputDecoration(errorText: operatorValidate),
+                          isDense: false,
+                          isExpanded: true,
+                          hint: Text("Select an Operator"),
+                          value: selected,
+                          items: List.generate(
+                            responseData.length,
+                            (index) => DropdownMenuItem(
+                                value: index,
+                                child: Text(responseData[index]['name'])),
+                          ),
+                          onChanged: (value) {
+                            int index = value;
+                            setState(() {
+                              selected = index;
+                              operatorId = responseData[index]
+                                  ['activeAPIOperatorCodeId'];
+                              print(operatorId);
+                              operatorName = responseData[index]['name'];
+                              getOperatorDetails(operatorId);
+                            });
+                          })
+                      : DropdownButtonFormField(
+                          decoration:
+                              InputDecoration(errorText: operatorValidate),
+                          isDense: false,
+                          isExpanded: true,
+                          hint: Text("Select an Operator"),
+                          value: selected,
+                          items: [],
+                          onChanged: (value) {})),
+              SizedBox(
+                height: 5 * SizeConfig.heightMultiplier,
+              ),
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: numberController,
+                    maxLength: 10,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        errorText: numberValidate,
+                        counterText: "",
+                        labelText: "Registered Mobile Number"),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 5 * SizeConfig.heightMultiplier,
+              ),
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: amountController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        errorText: amountValidate, labelText: "Amounts"),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 5 * SizeConfig.heightMultiplier,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: MaterialButton(
+                  height: 7 * SizeConfig.heightMultiplier,
+                  textColor: Apptheme.whitetextcolor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  color: Apptheme.PrimaryColor,
+                  onPressed: () {
+                    dthrecharge();
+                  },
+                  child: Text(
+                    "Recharge",
+                    style: TextStyle(fontSize: 2.2 * SizeConfig.textMultiplier),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  show() {
+    Map data = {
+      "performedBy": loginId,
+      "operatorName": operatorName,
+      "serviceName": "Recharge",
+      "billPay": true
+    };
+    var firstJson = responsed;
+    var secondJson = data;
+
+    var dthJson = {...firstJson, ...secondJson};
+
+    (dthJson['requiredParams'] as List<dynamic>).forEach((item) {
+      item['value'] = numberController.text;
+    });
+    dthJson['transactionAmount'] = int.parse(amountController.text);
+    print(jsonEncode(dthJson));
+  }
+
+  Future dthrecharge() async {
+    if (selected == null) {
+      setState(() {
+        operatorValidate = "it cannot be empty";
+        _isValidate = true;
+      });
+    } else {
+      setState(() {
+        operatorValidate = null;
+        _isValidate = false;
+      });
+    }
+    if (numberController.text.isEmpty) {
+      setState(() {
+        numberValidate = "it cannot be empty";
+        _isValidate = true;
+      });
+    } else {
+      setState(() {
+        numberValidate = null;
+        _isValidate = false;
+      });
+    }
+    if (amountController.text.isEmpty) {
+      setState(() {
+        amountValidate = "it cannot be empty";
+        _isValidate = true;
+      });
+    } else {
+      setState(() {
+        amountValidate = null;
+        _isValidate = false;
+      });
+    }
+    if (_isValidate == false) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => new AlertDialog(
+                  content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text("Loading"),
+                  ),
+                ],
+              )));
+      Map data = {
+        "performedBy": loginId,
+        "operatorName": operatorName,
+        "serviceName": "Recharge",
+        "billPay": true
+      };
+      var firstJson = responsed;
+      var secondJson = data;
+
+      var dthJson = {...firstJson, ...secondJson};
+
+      (dthJson['requiredParams'] as List<dynamic>).forEach((item) {
+        item['value'] = numberController.text;
+      });
+      dthJson['transactionAmount'] = int.parse(amountController.text);
+      print(dthJson);
+
+      var dthJsonBody = jsonEncode(dthJson);
+      try {
+        var response = await http.post(Uri.parse(SERVICE_API + '/getRecharge'),
+            body: dthJsonBody,
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken,
+              "refreshToken": refreshtoken
+            });
+        var responsedData = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(
+              msg: "${responsedData['message']}",
+              textColor: Apptheme.whitetextcolor,
+              backgroundColor: Colors.green);
+          Navigator.pop(context);
+        } else {
+          print(response.statusCode);
+          Navigator.pop(context);
+          Fluttertoast.showToast(
+              msg: "${responsedData['message']}",
+              textColor: Apptheme.whitetextcolor,
+              backgroundColor: Apptheme.textColo1r);
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
   }
 }

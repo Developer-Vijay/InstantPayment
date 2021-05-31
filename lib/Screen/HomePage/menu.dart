@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_screen_lock/configurations/input_button_config.dart';
 import 'package:flutter_screen_lock/configurations/screen_lock_config.dart';
@@ -22,7 +23,7 @@ class _MenuState extends State<Menu> {
     super.initState();
 
     getdata();
-    screenlock();
+    // screenlock();
   }
 
   var passcode;
@@ -30,7 +31,27 @@ class _MenuState extends State<Menu> {
     final prefs = await SharedPreferences.getInstance();
     passcode = prefs.getString('passcode');
   }
-
+  Future<bool> _onbackPressed() async {
+    return showDialog(
+        context: context,
+        builder: (contex) => AlertDialog(
+              title: Text("Do you Really want to exit"),
+              actions: [
+                TextButton(
+                  child: Text("Yes"),
+                  onPressed: () {
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  },
+                ),
+                TextButton(
+                  child: Text("No"),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                ),
+              ],
+            ));
+  }
   int retries = 3;
   @override
   Widget build(BuildContext context) {
@@ -187,29 +208,32 @@ class _MenuState extends State<Menu> {
             height: 2.2 * SizeConfig.heightMultiplier,
             width: 4 * SizeConfig.widthMultiplier,
             build: (context, {config, enabled}) {
-              return SizedBox(
-                child: Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 2,
-                          color: Colors.grey,
-                          spreadRadius: 2,
-                          offset: Offset(0, 0))
-                    ],
-                    borderRadius: BorderRadius.circular(20),
-                    color: enabled ? config.enabledColor : config.disabledColor,
-                    border: Border.all(
-                      width: config.borderSize,
-                      color: config.borderColor,
+              return WillPopScope(
+                onWillPop: _onbackPressed,
+                child: SizedBox(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 2,
+                            color: Colors.grey,
+                            spreadRadius: 2,
+                            offset: Offset(0, 0))
+                      ],
+                      borderRadius: BorderRadius.circular(20),
+                      color: enabled ? config.enabledColor : config.disabledColor,
+                      border: Border.all(
+                        width: config.borderSize,
+                        color: config.borderColor,
+                      ),
                     ),
+                    padding: EdgeInsets.all(10),
+                    width: config.width,
+                    height: config.height,
                   ),
-                  padding: EdgeInsets.all(10),
                   width: config.width,
                   height: config.height,
                 ),
-                width: config.width,
-                height: config.height,
               );
             },
           ),

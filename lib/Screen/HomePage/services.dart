@@ -5,9 +5,10 @@ import 'package:netly/Services/Aeps/aeps_machine.dart';
 import 'package:netly/Services/DataCard/datacard.dart';
 import 'package:netly/Services/Dth/select_dth_operator.dart';
 import 'package:netly/Services/Electricity/electricity_page.dart';
-import 'package:netly/Services/Money%20Transfer/money_transfer_main_page.dart';
+import 'package:netly/Services/Money%20Transfer/login_user.dart';
 import 'package:netly/Services/Recharge/mobile_recharge.dart';
 import 'package:netly/list.dart';
+
 
 class Services extends StatefulWidget {
   @override
@@ -15,6 +16,11 @@ class Services extends StatefulWidget {
 }
 
 class _ServicesState extends State<Services> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,7 +70,7 @@ class _ServicesState extends State<Services> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MoneyTransferMainPage()));
+                              builder: (context) => LoginUser()));
                     } else if (data[index].index == 6) {
                       Navigator.push(
                           context,

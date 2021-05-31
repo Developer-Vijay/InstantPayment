@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screen_lock/configurations/input_button_config.dart';
@@ -5,37 +6,61 @@ import 'package:flutter_screen_lock/configurations/screen_lock_config.dart';
 import 'package:flutter_screen_lock/configurations/secret_config.dart';
 import 'package:flutter_screen_lock/configurations/secrets_config.dart';
 import 'package:flutter_screen_lock/functions.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:netly/Components/Auth/login.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/HomePage/home_page.dart';
 import 'package:netly/Screen/ProfilePage/profile_list.dart';
 import 'package:netly/Screen/ReportPage/ReportPageMain/report_page_main.dart';
-import 'package:netly/Screen/ReportPage/report_page.dart';
+import 'package:netly/SetPassword/change_password.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
+  final walletAmount;
+  const HomeScreen({Key key, this.walletAmount}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var passcode;
+
+  var data;
   @override
   void initState() {
-    getdata();
     super.initState();
+    checkDateAndTime();
+    data = widget.walletAmount;
     Future.delayed(Duration.zero, () {
-      screenlock();
+      this.screenlock(context);
     });
   }
 
-  var passcode;
-  void getdata() async {
+  var getDate = DateTime.now();
+  var loginDate;
+  var currentDate;
+  checkDateAndTime() async {
     final prefs = await SharedPreferences.getInstance();
     passcode = prefs.getString('passcode');
+    loginDate = prefs.getString("LoginDate");
+    currentDate = DateFormat("dd/MM/yyyy").format(getDate);
+
+    if (currentDate == loginDate) {
+      print("The Current Date is  $currentDate");
+      print("The Login Date is $loginDate");
+      print("Login");
+    } else {
+      print("The Current Date is  $currentDate");
+      print("The Login Date is $loginDate");
+      setState(() {
+        prefs.setBool("Authenticated", false);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Login()));
+      });
+    }
   }
 
-  List _pages = [HomePage(), ReportPageMain(), ProfilePage(), Text("Data4")];
   int _currentIndex = 0;
   Future<bool> _onbackPressed() async {
     return showDialog(
@@ -43,13 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (contex) => AlertDialog(
               title: Text("Do you Really want to exit"),
               actions: [
-                FlatButton(
+                TextButton(
                   child: Text("Yes"),
                   onPressed: () {
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                 ),
-                FlatButton(
+                TextButton(
                   child: Text("No"),
                   onPressed: () {
                     Navigator.pop(context, false);
@@ -64,40 +89,44 @@ class _HomeScreenState extends State<HomeScreen> {
     return WillPopScope(
       onWillPop: _onbackPressed,
       child: SafeArea(
-        child: Scaffold(
-            bottomNavigationBar: SalomonBottomBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              items: [
-                // Home
-                SalomonBottomBarItem(
-                  icon: Icon(Icons.home),
-                  title: Text("Dashboard"),
-                  selectedColor: Apptheme.PrimaryColor,
-                ),
-
-                //Report
-                SalomonBottomBarItem(
-                    icon: Icon(Icons.notes),
-                    title: Text("Reports"),
-                    selectedColor: Apptheme.textColo1r),
-                // Profile
-                SalomonBottomBarItem(
-                    icon: Icon(Icons.person),
-                    title: Text("Profile"),
-                    selectedColor: Apptheme.textColor2),
-              ],
+          child: Scaffold(
+        bottomNavigationBar: SalomonBottomBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: [
+            // Home
+            SalomonBottomBarItem(
+              icon: Icon(Icons.home),
+              title: Text("Dashboard"),
+              selectedColor: Apptheme.PrimaryColor,
             ),
-            body: _pages[_currentIndex]),
-      ),
+
+            //Report-*+
+            SalomonBottomBarItem(
+                icon: Icon(Icons.notes),
+                title: Text("Reports"),
+                selectedColor: Apptheme.textColo1r),
+            // Profile
+            SalomonBottomBarItem(
+                icon: Icon(Icons.person),
+                title: Text("Profile"),
+                selectedColor: Apptheme.textColor2),
+          ],
+        ),
+        body: IndexedStack(index: _currentIndex, children: [
+          HomePage(),
+          ReportPageMain(),
+          ProfilePage(),
+        ]),
+      )),
     );
   }
 
-  Future screenlock() async {
+  Future screenlock(context) async {
     await screenLock(
         context: context,
         title: Text('Enter the password to Go in'),
@@ -168,9 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(top: 20),
           child: InkWell(
               onTap: () {
-                Fluttertoast.showToast(msg: "Pin is Working");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangePasscode(),
+                    ));
               },
-              child: Text("Reset Pin")),
+              child: Text("Reset Passcode")),
         ));
   }
 }

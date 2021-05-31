@@ -4,6 +4,7 @@ import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Services/serviceslist.dart';
 
+// ignore: must_be_immutable
 class AddUser extends StatefulWidget {
   TabController controller;
   int selectedindex;

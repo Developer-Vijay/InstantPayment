@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
-import 'package:netly/list.dart';
+import 'package:netly/Screen/ReportPage/report_page.dart';
+import 'package:intl/intl.dart';
 
 class Filter extends StatefulWidget {
+  final title;
+  final param;
+
+  const Filter({
+    this.title,
+    this.param,
+  });
   @override
   _FilterState createState() => _FilterState();
 }
 
 class _FilterState extends State<Filter> {
-  
   DateTime selectedDate = DateTime.now();
+
   DateTime toDate = DateTime.now();
   int selectedradiotile;
   void initState() {
     super.initState();
     selectedradiotile = 0;
+    params = widget.param;
   }
 
   setSelectedradioTile(int value) {
@@ -23,6 +32,70 @@ class _FilterState extends State<Filter> {
       selectedradiotile = value;
     });
   }
+
+  var params;
+  // List jsondata = [];
+  // var retrieveLogin;
+  // var logindata;
+
+  // var sessionToken;
+  // var refreshToken;
+  // var loginId;
+  // var datarecieved;
+  // var index1;
+  // bool datachecker = false;
+  // bool checker2 = false;
+  // getReportType(var param) async {
+  //   showDialog(
+  //       barrierDismissible: false,
+  //       context: context,
+  //       builder: (_) => Container(
+  //           color: Colors.white,
+  //           child: Center(
+  //             child: CircularProgressIndicator(),
+  //           )));
+  //   final prefs = await SharedPreferences.getInstance();
+  //   retrieveLogin = prefs.getString('loginInfo');
+  //   logindata = jsonDecode(retrieveLogin);
+  //   sessionToken = logindata['sessionToken'];
+  //   refreshToken = logindata['refreshToken'];
+  //   loginId = logindata['user']['_id'];
+  //   print("?????????");
+  //   print(loginId);
+  //   print("?????????");
+  //   try {
+  //     var response = await http.get(
+  //         Uri.parse(COMMON_API +
+  //             '/getReports' +
+  //             '?filter={"fromDate":"$selectedDate","toDate":"$toDate","subdomain":"instantpay","reportType":"$params"}&limit=20&page=1'),
+  //         headers: {
+  //           "Content-type": "application/json",
+  //           "authorization": sessionToken,
+  //           "refreshToken": refreshToken
+  //         });
+  //     datarecieved = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       // print(datarecieved['reports']['docs'].length);
+  //       setState(() {
+  //         datachecker = true;
+  //         checker2 = false;
+  //       });
+
+  //       print(datarecieved);
+  //       print(response.body);
+
+  //       Navigator.pop(context);
+  //     } else {
+  //       setState(() {
+  //         datachecker = false;
+  //         checker2 = true;
+  //       });
+  //       Navigator.pop(context);
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -33,38 +106,17 @@ class _FilterState extends State<Filter> {
       body: ListView(
         shrinkWrap: true,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                  hintText: "Search",
-                  suffixIcon: Icon(Icons.close),
-                  prefixIcon: Icon(Icons.search)),
-            ),
-          ),
-          GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 0,
-                crossAxisSpacing: 1,
-                childAspectRatio: 3),
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: radio.length,
-            itemBuilder: (context, index) {
-              return 
-              RadioListTile(
-                value: radio[index].value,
-                groupValue: selectedradiotile,
-                onChanged: (value) {
-                  setSelectedradioTile(value);
-                },
-                selected: true,
-                title: Text("${radio[index].head}"),
-              );
-            },
-          ),
-          Divider(),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: TextField(
+          //     decoration: InputDecoration(
+          //         hintText: "Search",
+          //         suffixIcon: Icon(Icons.close),
+          //         prefixIcon: Icon(Icons.search)),
+          //   ),
+          // ),
+
+          // Divider(),
           SizedBox(
             height: 2 * SizeConfig.heightMultiplier,
           ),
@@ -117,7 +169,7 @@ class _FilterState extends State<Filter> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  width: 40 * SizeConfig.widthMultiplier,
+                    width: 40 * SizeConfig.widthMultiplier,
                     height: 5.4 * SizeConfig.heightMultiplier,
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
@@ -156,7 +208,19 @@ class _FilterState extends State<Filter> {
                 child: MaterialButton(
                   color: Apptheme.PrimaryColor,
                   textColor: Apptheme.whitetextcolor,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReportPage(
+                            data: widget.title,
+                            params: params,
+                            fromDate:
+                                DateFormat("yyyy-MM-dd").format(selectedDate),
+                            toDate: DateFormat("yyyy-MM-dd").format(toDate),
+                          ),
+                        ));
+                  },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15)),
                   child: Text("Apply"),
@@ -174,7 +238,7 @@ class _FilterState extends State<Filter> {
         context: context,
         initialDate: selectedDate, // Refer step 1
         firstDate: DateTime(2000),
-        lastDate: DateTime(2030),
+        lastDate: DateTime.now(),
         helpText: "Select  Date",
         confirmText: "Confirm");
     if (picked != null && picked != selectedDate)
@@ -188,7 +252,7 @@ class _FilterState extends State<Filter> {
         context: context,
         initialDate: toDate, // Refer step 1
         firstDate: DateTime(2000),
-        lastDate: DateTime(2030),
+        lastDate: DateTime.now(),
         helpText: "Select  Date",
         confirmText: "Confirm");
     if (picked != null && picked != toDate)

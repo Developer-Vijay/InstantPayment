@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ElectricityPage extends StatefulWidget {
   @override
@@ -67,18 +66,18 @@ class _ElectricityPageState extends State<ElectricityPage> {
                           setState(() {
                             operatorController.text = "Airtel Digital Tv";
                           });
-                        } else if (value == 2) {
-                          setState(() {
-                            operatorController.text = "Dish Tv";
-                          });
-                        } else if (value == 3) {
-                          setState(() {
-                            operatorController.text = "D2H";
-                          });
-                        } else if (value == 4) {
-                          setState(() {
-                            operatorController.text = "Sun Direct";
-                          });
+                        // } else if (value == 2) {
+                        //   setState(() {
+                        //     operatorController.text = "Dish Tv";
+                        //   });
+                        // } else if (value == 3) {
+                        //   setState(() {
+                        //     operatorController.text = "D2H";
+                        //   });
+                        // } else if (value == 4) {
+                        //   setState(() {
+                        //     operatorController.text = "Sun Direct";
+                        //   });
                         }
                       },
                       icon: Icon(Icons.arrow_drop_down),
@@ -91,18 +90,18 @@ class _ElectricityPageState extends State<ElectricityPage> {
                           child: Text("BSES"),
                           value: 1,
                         ),
-                        PopupMenuItem(
-                          child: Text("Dish Tv"),
-                          value: 2,
-                        ),
-                        PopupMenuItem(
-                          child: Text("D2H"),
-                          value: 3,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Sun Direct"),
-                          value: 4,
-                        )
+                        // PopupMenuItem(
+                        //   child: Text("Dish Tv"),
+                        //   value: 2,
+                        // ),
+                        // PopupMenuItem(
+                        //   child: Text("D2H"),
+                        //   value: 3,
+                        // ),
+                        // PopupMenuItem(
+                        //   child: Text("Sun Direct"),
+                        //   value: 4,
+                        // )
                       ],
                     )),
               ),
@@ -287,13 +286,13 @@ class _ElectricityPageState extends State<ElectricityPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 120),
                       child: Image.asset(
                         "assets/images/nplogo.png",
-                        height: 100,
+                        height: 25 * SizeConfig.imageSizeMultiplier,
                       ),
                     ),
                   ],
                 ),
               ));
-      setState(() {
+      setState(() {   
         show = false;
         nameController.text = "Carl";
         amountController.text = "400";

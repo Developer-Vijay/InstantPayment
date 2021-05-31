@@ -1,18 +1,39 @@
+import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
-import 'package:netly/Screen/home_screen.dart';
+import 'package:netly/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../success_page.dart';
 
+// ignore: must_be_immutable
 class TransferMoney extends StatefulWidget {
   var bankname;
   var name;
   var number;
-  TransferMoney({this.bankname, this.name, this.number});
+  var accountNumber;
+  var ifscCode;
+  var beneId;
+  TransferMoney(
+      {this.bankname,
+      this.name,
+      this.number,
+      this.accountNumber,
+      this.ifscCode,
+      this.beneId});
   @override
   _TransferMoneyState createState() => _TransferMoneyState();
 }
 
 class _TransferMoneyState extends State<TransferMoney> {
+  @override
+  void initState() {
+    super.initState();
+    getuserData();
+  }
+
   TextEditingController transferController = TextEditingController();
   TextEditingController amountController = TextEditingController();
 
@@ -22,6 +43,11 @@ class _TransferMoneyState extends State<TransferMoney> {
       fontSize: 2 * SizeConfig.textMultiplier, fontWeight: FontWeight.w600);
   var amountValidate;
   var transferValidate;
+  var retrieveLogin;
+  var logindata;
+  var sessionToken;
+  var refreshToken;
+  var loginId;
   bool isValidate = false;
   @override
   Widget build(BuildContext context) {
@@ -81,22 +107,6 @@ class _TransferMoneyState extends State<TransferMoney> {
                           setState(() {
                             transferController.text = "IMPS";
                           });
-                          // } else if (value == 1) {
-                          //   setState(() {
-                          //     transferController.text = "Airtel Digital Tv";
-                          //   });
-                          // } else if (value == 2) {
-                          //   setState(() {
-                          //     transferController.text = "Dish Tv";
-                          //   });
-                          // } else if (value == 3) {
-                          //   setState(() {
-                          //     transferController.text = "D2H";
-                          //   });
-                          // } else if (value == 4) {
-                          //   setState(() {
-                          //     transferController.text = "Sun Direct";
-                          //   });
                         }
                       },
                       icon: Icon(Icons.arrow_drop_down),
@@ -105,22 +115,6 @@ class _TransferMoneyState extends State<TransferMoney> {
                           child: Text("IMPS"),
                           value: 0,
                         ),
-                        // PopupMenuItem(
-                        //   child: Text("BSES"),
-                        //   value: 1,
-                        // ),
-                        // PopupMenuItem(
-                        //   child: Text("Dish Tv"),
-                        //   value: 2,
-                        // ),
-                        // PopupMenuItem(
-                        //   child: Text("D2H"),
-                        //   value: 3,
-                        // ),
-                        // PopupMenuItem(
-                        //   child: Text("Sun Direct"),
-                        //   value: 4,
-                        // )
                       ],
                     )),
               ),
@@ -151,10 +145,117 @@ class _TransferMoneyState extends State<TransferMoney> {
     );
   }
 
-  Future pay() async {
+  getuserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      retrieveLogin = prefs.getString('loginInfo');
+      logindata = jsonDecode(retrieveLogin);
+      sessionToken = logindata['sessionToken'];
+      refreshToken = logindata['refreshToken'];
+      loginId = logindata['user']['_id'];
+      print("?????????");
+      print(loginId);
+      print("?????????");
+    });
+  }
+
+  transferMoney() async {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => new AlertDialog(
+                content: Row(
+              children: [
+                CircularProgressIndicator(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text("Loading"),
+                ),
+              ],
+            )));
+    Map data = {
+      "mobileNumber": widget.number,
+      "accountNumber": widget.accountNumber,
+      "bankName": widget.bankname,
+      "IFSCCode": widget.ifscCode,
+      "beneficiaryName": widget.name,
+      "beneficiaryId": widget.beneId,
+      "transactionAmount": amountController.text,
+      "transferMode": 2,
+      "performedBy": loginId
+    };
+    var encodedData = jsonEncode(data);
+    print(encodedData);
+    var response = await http.post(SERVICE_API + '/getMoneyTransfer',
+        headers: {
+          "Content-type": "application/json",
+          "authorization": sessionToken,
+          "refreshToken": refreshToken
+        },
+        body: encodedData);
+    var responseData = jsonDecode(response.body);
+    try {
+      if (response.statusCode == 200) {
+        print(responseData);
+        if (responseData['errorExist'] == true) {
+          Fluttertoast.showToast(msg: responseData['message']);
+          Navigator.pop(context);
+        } else {
+          Navigator.push(context,MaterialPageRoute(builder:(context) => SuccessPage(
+             title: "Money Transfer",
+             responseData: responseData
+             )));
+        }
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => HomeScreen(),
+        //     ));
+      } else {
+        print(response.statusCode);
+        Fluttertoast.showToast(msg: responseData['message']);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> pay() async {
+    if (transferController.text.isEmpty) {
+      setState(() {
+        transferValidate = "Please Select the Transfer Type";
+        isValidate = true;
+      });
+    } else {
+      setState(() {
+        transferValidate = null;
+        isValidate = false;
+      });
+    }
     if (amountController.text.isEmpty) {
       setState(() {
         amountValidate = "Please enter the amount";
+        isValidate = true;
+      });
+    } else if (amountController.text == "1") {
+      setState(() {
+        amountValidate = "Minimum Amount Should be 5";
+        isValidate = true;
+      });
+    } else if (amountController.text == "2") {
+      setState(() {
+        amountValidate = "Minimum Amount Should be 5";
+        isValidate = true;
+      });
+    } else if (amountController.text == "3") {
+      setState(() {
+        amountValidate = "Minimum Account Should be 5";
+        isValidate = true;
+      });
+    } else if (amountController.text == "4") {
+      setState(() {
+        amountValidate = "Minimum Amount Should be 5";
         isValidate = true;
       });
     } else {
@@ -164,17 +265,6 @@ class _TransferMoneyState extends State<TransferMoney> {
       });
     }
 
-    if (transferController.text.isEmpty) {
-      setState(() {
-        transferValidate = "Please enter the amount";
-        isValidate = true;
-      });
-    } else {
-      setState(() {
-        transferValidate = null;
-        isValidate = false;
-      });
-    }
     if (isValidate == false) {
       showDialog(
         context: context,
@@ -205,7 +295,7 @@ class _TransferMoneyState extends State<TransferMoney> {
                     children: [
                       Text("Bene Mobile No.", style: textstyle2),
                       Spacer(),
-                      Text("9745612345", style: textstyle1)
+                      Text("${widget.number}", style: textstyle1)
                     ],
                   ),
                   SizedBox(
@@ -215,7 +305,7 @@ class _TransferMoneyState extends State<TransferMoney> {
                     children: [
                       Text("Bene Account No.", style: textstyle2),
                       Spacer(),
-                      Text("${widget.number}", style: textstyle1)
+                      Text("${widget.accountNumber}", style: textstyle1)
                     ],
                   ),
                   SizedBox(
@@ -255,11 +345,7 @@ class _TransferMoneyState extends State<TransferMoney> {
                 textColor: Apptheme.whitetextcolor,
                 child: Text("Proceed"),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(),
-                      ));
+                  transferMoney();
                 },
               ),
             ],
