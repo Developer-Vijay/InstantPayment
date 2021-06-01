@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       name = logindata['user']['userName'];
       email = logindata['user']['email'];
-      photo = logindata['user']['imageInfo'][0]['path'];
+      // photo = logindata['user']['imageInfo'][0]['path'];
     });
   }
 

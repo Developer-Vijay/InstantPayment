@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
+import 'package:netly/rechargesuccesspage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../constants.dart';
 
 class ElectricityPage extends StatefulWidget {
   @override
@@ -12,7 +18,8 @@ class _ElectricityPageState extends State<ElectricityPage> {
   @override
   void initState() {
     super.initState();
-    show = true;
+
+    getOperatorList();
   }
 
   TextEditingController operatorController = TextEditingController();
@@ -30,7 +37,83 @@ class _ElectricityPageState extends State<ElectricityPage> {
 
   String dropdownValue = "Select an Operator";
 
-  bool show = true;
+  bool show = false;
+  String sessionToken;
+  String refreshtoken;
+  var logindata;
+  var retrieveLogin;
+  var responseData;
+  var jsonResponse;
+  int selected;
+  bool checker = false;
+  bool checker2 = false;
+  var responsed;
+  String loginId;
+  var jsonresponse;
+  String operatorId;
+  String operatorName;
+  var amount;
+  var name;
+// getoperatorlist
+
+  getOperatorList() async {
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    refreshtoken = logindata['refreshToken'];
+    loginId = logindata['user']['_id'];
+    try {
+      var response = await http.get(
+          Uri.parse(ADMIN_API +
+              '/getOperatorList' +
+              '?operatorType=Utility&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken
+          });
+      responseData = jsonDecode(response.body);
+      jsonResponse = response.body;
+      if (response.statusCode == 200) {
+        setState(() {
+          checker = true;
+          checker2 = false;
+        });
+        print(responseData);
+      } else {
+        setState(() {
+          checker = true;
+          checker2 = true;
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // operator details
+  getOperatorDetails(var id) async {
+    try {
+      var response = await http.get(
+          Uri.parse(SERVICE_API +
+              '/getApiOperatorCode' +
+              '?apiOperatorCodeId=$id&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken,
+            "refreshToken": refreshtoken
+          });
+      jsonResponse = response.body;
+      responsed = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(responsed);
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,65 +130,39 @@ class _ElectricityPageState extends State<ElectricityPage> {
               height: 5 * SizeConfig.heightMultiplier,
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: operatorController,
-                readOnly: true,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(8),
-                    hintText: dropdownValue,
-                    errorText: numberValidate,
-                    hintStyle: TextStyle(fontWeight: FontWeight.w600),
-                    suffixIcon: PopupMenuButton(
-                      onSelected: (value) {
-                        if (value == 0) {
-                          setState(() {
-                            operatorController.text = "Tata Sky";
-                          });
-                        } else if (value == 1) {
-                          setState(() {
-                            operatorController.text = "Airtel Digital Tv";
-                          });
-                        // } else if (value == 2) {
-                        //   setState(() {
-                        //     operatorController.text = "Dish Tv";
-                        //   });
-                        // } else if (value == 3) {
-                        //   setState(() {
-                        //     operatorController.text = "D2H";
-                        //   });
-                        // } else if (value == 4) {
-                        //   setState(() {
-                        //     operatorController.text = "Sun Direct";
-                        //   });
-                        }
-                      },
-                      icon: Icon(Icons.arrow_drop_down),
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          child: Text("TPDL"),
-                          value: 0,
+                padding: const EdgeInsets.all(8.0),
+                child: responseData == null
+                    ? DropdownButtonFormField(
+                        isDense: false,
+                        isExpanded: true,
+                        hint: Text("Select an Operator"),
+                        items: [],
+                        onChanged: (value) {},
+                      )
+                    : DropdownButtonFormField(
+                        decoration:
+                            InputDecoration(errorText: operatorValidate),
+                        isDense: false,
+                        isExpanded: true,
+                        hint: Text("Select an Operator"),
+                        value: selected,
+                        items: List.generate(
+                          responseData.length,
+                          (index) => DropdownMenuItem(
+                              value: index,
+                              child: Text(responseData[index]['name'])),
                         ),
-                        PopupMenuItem(
-                          child: Text("BSES"),
-                          value: 1,
-                        ),
-                        // PopupMenuItem(
-                        //   child: Text("Dish Tv"),
-                        //   value: 2,
-                        // ),
-                        // PopupMenuItem(
-                        //   child: Text("D2H"),
-                        //   value: 3,
-                        // ),
-                        // PopupMenuItem(
-                        //   child: Text("Sun Direct"),
-                        //   value: 4,
-                        // )
-                      ],
-                    )),
-              ),
-            ),
+                        onChanged: (value) {
+                          int index = value;
+                          setState(() {
+                            selected = index;
+                            operatorId =
+                                responseData[index]['activeAPIOperatorCodeId'];
+                            print(operatorId);
+                            operatorName = responseData[index]['name'];
+                            getOperatorDetails(operatorId);
+                          });
+                        })),
             SizedBox(
               height: 5 * SizeConfig.heightMultiplier,
             ),
@@ -114,7 +171,7 @@ class _ElectricityPageState extends State<ElectricityPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: accountNumberController,
-                  maxLength: 10,
+                  maxLength: 12,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       errorText: accountValidate,
@@ -178,7 +235,7 @@ class _ElectricityPageState extends State<ElectricityPage> {
             Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                    child: show == true
+                    child: show == false
                         ? MaterialButton(
                             height: 7 * SizeConfig.heightMultiplier,
                             textColor: Apptheme.whitetextcolor,
@@ -186,7 +243,7 @@ class _ElectricityPageState extends State<ElectricityPage> {
                                 borderRadius: BorderRadius.circular(10)),
                             color: Apptheme.PrimaryColor,
                             onPressed: () {
-                              fetchbill();
+                              fetchbillAndPayBill();
                             },
                             child: Text(
                               "fetch bill",
@@ -200,7 +257,14 @@ class _ElectricityPageState extends State<ElectricityPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             color: Apptheme.PrimaryColor,
-                            onPressed: () {},
+                            onPressed: () {
+                              fetchbillAndPayBill();
+
+                              amountController.clear();
+                              mobileNumberController.clear();
+                              nameController.clear();
+                              accountNumberController.clear();
+                            },
                             child: Text(
                               "Pay bill",
                               style: TextStyle(
@@ -213,8 +277,8 @@ class _ElectricityPageState extends State<ElectricityPage> {
     );
   }
 
-  Future fetchbill() async {
-    if (operatorController.text.isEmpty) {
+  Future fetchbillAndPayBill() async {
+    if (selected == null) {
       setState(() {
         operatorValidate = "please select an operator";
         isValidate = true;
@@ -226,9 +290,14 @@ class _ElectricityPageState extends State<ElectricityPage> {
       });
     }
 // Account Number
-    if (accountNumberController.text.isEmpty) {
+    if (accountNumberController.text.length < 10) {
       setState(() {
-        accountValidate = "please select an operator";
+        accountValidate = "account Number must be of 10 digit or 12 ";
+        isValidate = true;
+      });
+    } else if (accountNumberController.text.isEmpty) {
+      setState(() {
+        accountValidate = "please enter the account Number";
         isValidate = true;
       });
     } else {
@@ -238,9 +307,14 @@ class _ElectricityPageState extends State<ElectricityPage> {
       });
     }
 
-    if (mobileNumberController.text.isEmpty) {
+    if (mobileNumberController.text.length < 10) {
       setState(() {
-        numberValidate = "please select an operator";
+        numberValidate = "mobile number should be of 10 digits";
+        isValidate = true;
+      });
+    } else if (mobileNumberController.text.isEmpty) {
+      setState(() {
+        numberValidate = "please  enter the mobile number";
         isValidate = true;
       });
     } else {
@@ -249,59 +323,97 @@ class _ElectricityPageState extends State<ElectricityPage> {
         isValidate = false;
       });
     }
-    // Name Validate
-    // if (nameController.text.isEmpty) {
-    //   setState(() {
-    //     nameValidate = "please select an operator";
-    //     isValidate = true;
-    //   });
-    // } else {
-    //   setState(() {
-    //     nameValidate = null;
-    //     isValidate = false;
-    //   });
-    // }
-    // amount
-    // if (amountController.text.isEmpty) {
-    //   setState(() {
-    //     amountValidate = "please select an operator";
-    //     isValidate = true;
-    //   });
-    // } else {
-    //   setState(() {
-    //     amountValidate = null;
-    //     isValidate = false;
-    //   });
-    // }
 
     if (isValidate == false) {
       showDialog(
-          barrierDismissible: true,
+          barrierDismissible: false,
           context: context,
-          builder: (_) => Container(
-                // height: 40,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 120),
-                      child: Image.asset(
-                        "assets/images/nplogo.png",
-                        height: 25 * SizeConfig.imageSizeMultiplier,
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-      setState(() {   
-        show = false;
-        nameController.text = "Carl";
-        amountController.text = "400";
-        // Navigator.pop(context);
-      });
+          builder: (_) => new AlertDialog(
+                  content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text("Loading"),
+                  ),
+                ],
+              )));
 
-      Fluttertoast.showToast(msg: "fetching");
-    } else {
-      Fluttertoast.showToast(msg: "error");
+      Map data = {
+        "performedBy": loginId,
+        "operatorName": operatorName,
+        "serviceName": "Recharge",
+        "billPay": show
+      };
+
+      var firstJson = responsed;
+      var secondJson = data;
+      int money = 0;
+      var dataCardJson = {...firstJson, ...secondJson};
+      // (dataCardJson['requiredParams'] as List<dynamic>).forEach((item) {
+      dataCardJson['requiredParams'][0]['value'] = accountNumberController.text;
+      dataCardJson['requiredParams'][1]['value'] = mobileNumberController.text;
+      // });
+      show == true
+          ? dataCardJson['transactionAmount'] = int.parse(amountController.text)
+          : money = 0;
+      var dataCardJsonBody = jsonEncode(dataCardJson);
+      print(dataCardJsonBody);
+
+      try {
+        var response = await http.post(Uri.parse(SERVICE_API + '/getRecharge'),
+            body: dataCardJsonBody,
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken,
+              "refreshToken": refreshtoken
+            });
+
+        var responsedData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          setState(() {
+            show = !show;
+            amount = responsedData['dueAmount'];
+            name = responsedData['customerName'];
+
+            if (show == true) {
+              amountController.text = amount.toString();
+              nameController.text = name;
+            } else {
+              print(name);
+              print(amount);
+            }
+
+            print(name);
+            print(amount);
+          });
+
+          print(response.body);
+          print(responsedData);
+          if (show == true ) {
+            Fluttertoast.showToast(msg: "Fetched Successfully");
+            Navigator.pop(context);
+          } 
+          else if(responsedData['errorExist']==true)
+          {
+             Fluttertoast.showToast(msg: responsedData['message']);
+             Navigator.pop(context);
+          }
+          else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RechargeSuccessPage(
+                        amount: amountController.text,
+                        date: DateTime.now(),
+                        number: mobileNumberController.text,
+                        orderId: accountNumberController.text,
+                        responseData: responsedData)));
+          }
+        }
+      } catch (e) {
+        print(e);
+      }
     }
   }
 }
