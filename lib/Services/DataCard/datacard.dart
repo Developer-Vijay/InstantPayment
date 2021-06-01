@@ -80,11 +80,7 @@ class _DataCardPageState extends State<DataCardPage> {
           checker = true;
           checker2 = true;
         });
-        // Fluttertoast.showToast(
-        //     msg: "Unable to get Details",
-        //     textColor: Apptheme.whitetextcolor,
-        //     backgroundColor: Apptheme.textColo1r);
-        // Navigator.pop(context);
+        
       }
     } catch (e) {
       print(e);
@@ -93,19 +89,6 @@ class _DataCardPageState extends State<DataCardPage> {
 
 // operator details
   getOperatorDetails(var id) async {
-    //  showDialog(
-    //         barrierDismissible: false,
-    //         context: context,
-    //         builder: (_) => new AlertDialog(
-    //                 content: Row(
-    //               children: [
-    //                 CircularProgressIndicator(),
-    //                 Padding(
-    //                   padding: const EdgeInsets.symmetric(horizontal: 12),
-    //                   child: Text("Loading"),
-    //                 ),
-    //               ],
-    //             )));
     try {
       var response = await http.get(
           Uri.parse(SERVICE_API +
@@ -119,17 +102,9 @@ class _DataCardPageState extends State<DataCardPage> {
       jsonResponse = response.body;
       responsed = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        // Fluttertoast.showToast(
-        //     msg: "Operator Details Fetched Successfuly",
-        //     backgroundColor: Colors.green,
-        //     textColor: Colors.white);
-        // Navigator.pop(context);
+       
       } else {
-        // Navigator.pop(context);
-        // Fluttertoast.showToast(
-        //     msg: "Error in fetching Operator Details",
-        //     backgroundColor: Colors.red,
-        //     textColor: Colors.white);
+       
       }
     } catch (e) {
       print(e);

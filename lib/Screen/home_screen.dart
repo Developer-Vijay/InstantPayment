@@ -30,11 +30,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    checkDateAndTime();
-    data = widget.walletAmount;
-    Future.delayed(Duration.zero, () {
+     Future.delayed(Duration.zero, () {
       this.screenlock(context);
     });
+    checkDateAndTime();
+    data = widget.walletAmount;
+   
   }
 
   var getDate = DateTime.now();
@@ -45,12 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
     passcode = prefs.getString('passcode');
     loginDate = prefs.getString("LoginDate");
     currentDate = DateFormat("dd/MM/yyyy").format(getDate);
-
     if (currentDate == loginDate) {
       print("The Current Date is  $currentDate");
       print("The Login Date is $loginDate");
       print("Login");
-    } else {
+    } 
+    else {
       print("The Current Date is  $currentDate");
       print("The Login Date is $loginDate");
       setState(() {

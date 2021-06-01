@@ -70,7 +70,6 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
           Uri.parse(PORTAL_API +
               '/getPaymentRequestList' +
               '?filter={"fromDate":"$fromDate","toDate":"$toDate"}&limit=10&page=1&userId=$loginId'),
-         
           headers: {
             "Content-type": "application/json",
             "authorization": sessionToken,
@@ -100,59 +99,38 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
       print(e);
     }
   }
-  // Future _onbackPressed() async {
 
-  //   Navigator.pop(context);
-  //   // Navigator.pop(context);
-  
-  //   // return showDialog(
-  //   //     context: context,
-  //   //     builder: (contex) => AlertDialog(
-  //   //           title: Text("Do you Really want to exit"),
-  //   //           actions: [
-  //   //             TextButton(
-  //   //               child: Text("Yes"),
-  //   //               onPressed: () {
-  //   //                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-  //   //               },
-  //   //             ),
-  //   //             TextButton(
-  //   //               child: Text("No"),
-  //   //               onPressed: () {
-  //   //                 Navigator.pop(context, false);
-  //   //               },
-  //   //             ),
-  //   //           ],
-  //   //         ));
-  // }
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
-        return  Navigator.push(context,MaterialPageRoute(builder: (context) => HomeScreen(),));
+      onWillPop: () {
+        return Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ));
       },
       // onWillPop: _onbackPressed,
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(onPressed: (){
-             showModalBottomSheet(
-                    elevation: 4.0,
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    context: context,
-                    builder: (context) => Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(10.0),
-                                topRight: const Radius.circular(10.0))),
-                        height: 40 * SizeConfig.heightMultiplier,
-                        child: RequestFilterPage()
-                        )
-                        );
-        },
-        child: Icon(Icons.filter_alt_sharp),
-        ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showModalBottomSheet(
+                  elevation: 4.0,
+                  isScrollControlled: true,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  context: context,
+                  builder: (context) => Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(10.0),
+                              topRight: const Radius.circular(10.0))),
+                      height: 40 * SizeConfig.heightMultiplier,
+                      child: RequestFilterPage()));
+            },
+            child: Icon(Icons.filter_alt_sharp),
+          ),
           appBar: AppBar(
             actions: [
               MaterialButton(
@@ -163,8 +141,10 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
                 textColor: Apptheme.whitetextcolor,
                 // color: Apptheme.PrimaryColor,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AddBalancePage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AddBalancePage()));
                 },
               )
             ],

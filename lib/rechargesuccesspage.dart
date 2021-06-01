@@ -21,7 +21,7 @@ class _RechargeSuccessPageState extends State<RechargeSuccessPage> {
   var responseData;
   var amount;
   var number;
-  var date;
+  DateTime date;
   var orderId;
   @override
   void initState() {
@@ -36,15 +36,15 @@ class _RechargeSuccessPageState extends State<RechargeSuccessPage> {
   @override
   Widget build(BuildContext context) {
     // ignore: unnecessary_statements
-    var time = date;
+    // var time = date;
     // var format=DateFormat("").format(time);
-    DateTime dateTime = DateTime.parse(time);
-    dateTime.toLocal();
-    var timedis =
-        "${dateTime.day}/${dateTime.month}/${dateTime.year},${dateTime.hour}:${dateTime.minute}";
-    print(
-        "${dateTime.day}/${dateTime.month}/${dateTime.year},${dateTime.hour}:${dateTime.minute}");
-    print("${dateTime.hour}:${dateTime.minute}");
+    // DateTime dateTime = DateTime.parse(time);
+    // dateTime.toLocal();
+    // var timedis =
+        // "${dateTime.day}/${dateTime.month}/${dateTime.year},${dateTime.hour}:${dateTime.minute}";
+    // print(
+        // "${dateTime.day}/${dateTime.month}/${dateTime.year},${dateTime.hour}:${dateTime.minute}");
+    // print("${dateTime.hour}:${dateTime.minute}");
     return WillPopScope(
       onWillPop: () {
         return Navigator.push(
@@ -219,7 +219,7 @@ class _RechargeSuccessPageState extends State<RechargeSuccessPage> {
                                   Spacer(),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text("$timedis"),
+                                    child: Text("${widget.date}"),
                                   )
                                 ],
                               ),
