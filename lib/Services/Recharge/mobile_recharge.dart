@@ -29,9 +29,7 @@ class _MobileRechargeState extends State<MobileRecharge> {
   void initState() {
     super.initState();
     selectedradiotile = 0;
-    Future.delayed(Duration.zero, () {
-      getPrepaidList();
-    });
+   
   }
 
   int selected;
@@ -59,76 +57,68 @@ class _MobileRechargeState extends State<MobileRecharge> {
 
 // postpaid
   getPostpaidList() async {
-    final prefs = await SharedPreferences.getInstance();
-    var retrieveLogin = prefs.getString('loginInfo');
-    var loginData = jsonDecode(retrieveLogin);
-    String session = loginData['sessionToken'];
-    try {
-      var response = await http.get(
-          Uri.parse(ADMIN_API +
-              '/getOperatorList' +
-              '?operatorType=Postpaid&subdomain=instantpay'),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": session
+    return postpaidMemorizer.runOnce(() async {
+      final prefs = await SharedPreferences.getInstance();
+      var retrieveLogin = prefs.getString('loginInfo');
+      var loginData = jsonDecode(retrieveLogin);
+      String session = loginData['sessionToken'];
+      try {
+        var response = await http.get(
+            Uri.parse(ADMIN_API +
+                '/getOperatorList' +
+                '?operatorType=Postpaid&subdomain=instantpay'),
+            headers: {
+              "Content-type": "application/json",
+              "authorization": session
+            });
+        postPaidResponseData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          print(postPaidResponseData);
+          setState(() {
+            showPostpaid = true;
           });
-      postPaidResponseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print(postPaidResponseData);
-        setState(() {
-          showPostpaid = true;
-        });
-      } else {
-        Fluttertoast.showToast(msg: "Erroer");
+          return postPaidResponseData;
+        } else {
+          Fluttertoast.showToast(msg: "Erroer");
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
 // prepaid
   getPrepaidList() async {
-    final prefs = await SharedPreferences.getInstance();
+    return prepaidMemorizer.runOnce(() async {
+      final prefs = await SharedPreferences.getInstance();
 
-    retrieveLogin = prefs.getString('loginInfo');
+      retrieveLogin = prefs.getString('loginInfo');
 
-    logindata = jsonDecode(retrieveLogin);
+      logindata = jsonDecode(retrieveLogin);
 
-    sessionToken = logindata['sessionToken'];
-    try {
-      var response = await http.get(
-          Uri.parse(ADMIN_API +
-              '/getOperatorList' +
-              '?operatorType=Prepaid&subdomain=instantpay'),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": sessionToken
-          });
-      responseData = jsonDecode(response.body);
-      print("loading...");
-      if (response.statusCode == 200) {
-        setState(() {
-          checker = true;
-          checker2 = false;
-        });
-        // Fluttertoast.showToast(msg: "data fetched Successfully");
-        print(responseData);
-        k = responseData.length;
-        print('//////');
-        print(k);
-
-        print("/////");
-      } else {
-        setState(() {
-          checker = true;
-          checker2 = true;
-        });
-        print(response.statusCode);
-        print("not fetched");
+      sessionToken = logindata['sessionToken'];
+      try {
+        var response = await http.get(
+            Uri.parse(ADMIN_API +
+                '/getOperatorList' +
+                '?operatorType=Prepaid&subdomain=instantpay'),
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken
+            });
+        responseData = jsonDecode(response.body);
+        print("loading...");
+        if (response.statusCode == 200) {
+          print(responseData);
+          return responseData;
+        } else {
+          print(response.statusCode);
+          print("not fetched");
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
   var operatorsId;
@@ -153,12 +143,10 @@ class _MobileRechargeState extends State<MobileRecharge> {
         setState(() {
           operatorsId = responsed['_id'];
         });
-        // Fluttertoast.showToast(msg: "operator details Fetched Successfully");
-        // Navigator.pop(context);
+
         print(jsonresponse);
       } else {
         Navigator.pop(context);
-        // Fluttertoast.showToast(msg: "error in fetching");
       }
     } catch (e) {
       print(e);
@@ -219,74 +207,101 @@ class _MobileRechargeState extends State<MobileRecharge> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: responseData == null
-                    ? Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(8)),
-                        child: DropdownButtonFormField(
-                          hint: Text("Select an Operator"),
-                          items: [],
-                          isDense: false,
-                          isExpanded: true,
-                          onChanged: (value) {},
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(8)),
-                        child: showPostpaid == false
-                            ? DropdownButtonFormField(
-                                decoration: InputDecoration(
-                                    errorText: operatorValidate),
-                                isDense: false,
-                                isExpanded: true,
-                                hint: Text("Select an Operator"),
-                                value: selected,
-                                items: List.generate(
-                                  k,
-                                  (index) => DropdownMenuItem(
-                                      value: index,
-                                      child: Text(responseData[index]['name'])),
-                                ),
-                                onChanged: (value) {
-                                  int index = value;
-                                  setState(() {
-                                    selected = index;
-                                    operatorId = responseData[index]
-                                        ['activeAPIOperatorCodeId'];
-                                    print(operatorId);
-                                    operatorName = responseData[index]['name'];
-                                    getOperartordetails(operatorId);
-                                  });
-                                })
-                            : DropdownButtonFormField(
-                                decoration: InputDecoration(
-                                    errorText: operatorValidate),
-                                isDense: false,
-                                isExpanded: true,
-                                hint: Text("Select an Operator"),
-                                value: selected,
-                                items: List.generate(
-                                  postPaidResponseData.length,
-                                  (index) => DropdownMenuItem(
-                                      value: index,
-                                      child: Text(
-                                          postPaidResponseData[index]['name'])),
-                                ),
-                                onChanged: (value) {
-                                  int index = value;
-                                  setState(() {
-                                    selected = index;
-                                    operatorId = postPaidResponseData[index]
-                                        ['activeAPIOperatorCodeId'];
-                                    print(operatorId);
-                                    operatorName =
-                                        postPaidResponseData[index]['name'];
-                                    getOperartordetails(operatorId);
-                                  });
-                                })),
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8)),
+                    child: showPostpaid == false
+                        ? FutureBuilder(
+                            future: this.getPrepaidList(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return DropdownButtonFormField(
+                                    decoration: InputDecoration(
+                                        errorText: operatorValidate),
+                                    isDense: false,
+                                    isExpanded: true,
+                                    hint: Text("Select an Operator"),
+                                    value: selected,
+                                    items: List.generate(
+                                      snapshot.data.length,
+                                      (index) => DropdownMenuItem(
+                                          value: index,
+                                          child: Text(
+                                              snapshot.data[index]['name'])),
+                                    ),
+                                    onChanged: (value) {
+                                      int index = value;
+                                      setState(() {
+                                        selected = index;
+                                        operatorId = snapshot.data[index]
+                                            ['activeAPIOperatorCodeId'];
+                                        print(operatorId);
+                                        operatorName =
+                                            snapshot.data[index]['name'];
+                                        getOperartordetails(operatorId);
+                                      });
+                                    });
+                              } else {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[50],
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: DropdownButtonFormField(
+                                    hint: Text("Select an Operator"),
+                                    items: [],
+                                    isDense: false,
+                                    isExpanded: true,
+                                    onChanged: (value) {},
+                                  ),
+                                );
+                              }
+                            })
+                        : FutureBuilder(
+                            future: this.getPostpaidList(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return DropdownButtonFormField(
+                                    decoration: InputDecoration(
+                                        errorText: operatorValidate),
+                                    isDense: false,
+                                    isExpanded: true,
+                                    hint: Text("Select an Operator"),
+                                    value: selected,
+                                    items: List.generate(
+                                      snapshot.data.length,
+                                      (index) => DropdownMenuItem(
+                                          value: index,
+                                          child: Text(
+                                              snapshot.data[index]['name'])),
+                                    ),
+                                    onChanged: (value) {
+                                      int index = value;
+                                      setState(() {
+                                        selected = index;
+                                        operatorId = snapshot.data[index]
+                                            ['activeAPIOperatorCodeId'];
+                                        print(operatorId);
+                                        operatorName =
+                                            snapshot.data[index]['name'];
+                                        getOperartordetails(operatorId);
+                                      });
+                                    });
+                              } else {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[50],
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: DropdownButtonFormField(
+                                    hint: Text("Select an Operator"),
+                                    items: [],
+                                    isDense: false,
+                                    isExpanded: true,
+                                    onChanged: (value) {},
+                                  ),
+                                );
+                              }
+                            })),
               ),
               SizedBox(
                 height: 5 * SizeConfig.heightMultiplier,

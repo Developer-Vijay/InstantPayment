@@ -33,7 +33,8 @@ class _TransferMoneyState extends State<TransferMoney> {
     super.initState();
     getuserData();
   }
-
+int selected1;
+List transfer=["IMPS"];
   TextEditingController transferController = TextEditingController();
   TextEditingController amountController = TextEditingController();
 
@@ -89,38 +90,31 @@ class _TransferMoneyState extends State<TransferMoney> {
               ),
             ),
             SizedBox(
-              height: 7 * SizeConfig.heightMultiplier,
+              height: 5 * SizeConfig.heightMultiplier,
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: transferController,
-                readOnly: true,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(8),
-                    hintText: dropdownValue,
-                    errorText: transferValidate,
-                    hintStyle: TextStyle(fontWeight: FontWeight.w600),
-                    suffixIcon: PopupMenuButton(
-                      onSelected: (value) {
-                        if (value == 0) {
-                          setState(() {
-                            transferController.text = "IMPS";
-                          });
-                        }
-                      },
-                      icon: Icon(Icons.arrow_drop_down),
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          child: Text("IMPS"),
-                          value: 0,
-                        ),
-                      ],
-                    )),
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: DropdownButtonFormField(
+                  decoration: InputDecoration(errorText: transferValidate),
+                  isDense: false,
+                  isExpanded: true,
+                  hint: Text("Mode Transfer Type"),
+                  value: selected1,
+                  items: List.generate(
+                    transfer.length,
+                    (index) => DropdownMenuItem(
+                        value: index, child: Text(transfer[index])),
+                  ),
+                  onChanged: (value) {
+                    int index = value;
+                    setState(() {
+                      selected1 = index;
+                    });
+                  }),
+           
             ),
             SizedBox(
-              height: 4.2 * SizeConfig.heightMultiplier,
+              height: 3 * SizeConfig.heightMultiplier,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -186,7 +180,9 @@ class _TransferMoneyState extends State<TransferMoney> {
     };
     var encodedData = jsonEncode(data);
     print(encodedData);
-    var response = await http.post(SERVICE_API + '/getMoneyTransfer',
+    var response = await http.post(
+      Uri.parse(SERVICE_API + '/getMoneyTransfer')
+      ,
         headers: {
           "Content-type": "application/json",
           "authorization": sessionToken,
@@ -222,7 +218,7 @@ class _TransferMoneyState extends State<TransferMoney> {
   }
 
   Future<void> pay() async {
-    if (transferController.text.isEmpty) {
+    if (selected1==null) {
       setState(() {
         transferValidate = "Please Select the Transfer Type";
         isValidate = true;
@@ -265,7 +261,7 @@ class _TransferMoneyState extends State<TransferMoney> {
       });
     }
 
-    if (isValidate == false) {
+    if (isValidate == false && selected1!=null) {
       showDialog(
         context: context,
         builder: (context) {

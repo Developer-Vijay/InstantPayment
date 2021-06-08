@@ -62,10 +62,7 @@ class _ServicesState extends State<Services> {
                           MaterialPageRoute(
                               builder: (context) => DataCardPage()));
                     } else if (data[index].index == 4) {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => DataCardPage()));
+                     
                     } else if (data[index].index == 5) {
                       Navigator.push(
                           context,

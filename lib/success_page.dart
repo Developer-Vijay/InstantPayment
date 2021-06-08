@@ -30,7 +30,6 @@ class _SuccessPageState extends State<SuccessPage> {
   @override
   Widget build(BuildContext context) {
     var time = responseData['transactionData']['transactionDate'];
-    // var format=DateFormat("").format(time);
     DateTime dateTime = DateTime.parse(time);
     dateTime.toLocal();
     var timedis =
@@ -48,7 +47,6 @@ class _SuccessPageState extends State<SuccessPage> {
       },
       child: SafeArea(
         child: Scaffold(
-          // appBar: AppBar(),
           body: ListView(
             children: [
               Center(
@@ -256,148 +254,7 @@ class _SuccessPageState extends State<SuccessPage> {
                   maxLines: 3,
                 ),
               ),
-              // Row(
-              //   children: [
-              //     Padding(
-              //       padding: const EdgeInsets.only(left: 20.0),
-              //       child: Text(
-              //         "Shop Name :",
-              //         style: TextStyle(
-              //             fontSize: SizeConfig.textMultiplier * 2.3,
-              //             fontWeight: FontWeight.w600),
-              //       ),
-              //     ),
-              //     Spacer(),
-              //     Padding(
-              //       padding: const EdgeInsets.only(right: 20.0),
-              //       child: Text(
-              //         "OM COMM",
-              //         style: TextStyle(fontSize: SizeConfig.textMultiplier * 2.2),
-              //       ),
-              //     ),
-              //     // Spacer()
-              //   ],
-              // ),
-              // SizedBox(
-              //   height: SizeConfig.heightMultiplier * 2,
-              // ),
-              // Row(
-              //   children: [
-              //     Padding(
-              //       padding: const EdgeInsets.only(left: 20.0),
-              //       child: Text(
-              //         "Contact Number :",
-              //         style: TextStyle(
-              //             fontSize: SizeConfig.textMultiplier * 2.3,
-              //             fontWeight: FontWeight.w600),
-              //       ),
-              //     ),
-              //     Spacer(),
-              //     Padding(
-              //       padding: const EdgeInsets.only(right: 20.0),
-              //       child: Text(
-              //         "224412124",
-              //         style: TextStyle(fontSize: SizeConfig.textMultiplier * 2.2),
-              //       ),
-              //     ),
-              //     // Spacer()
-              //   ],
-              // ),
-              // SizedBox(
-              //   height: SizeConfig.heightMultiplier * 2,
-              // ),
-              // Row(
-              //   children: [
-              //     Padding(
-              //       padding: const EdgeInsets.only(left: 20.0),
-              //       child: Text(
-              //         "Date and Time :",
-              //         style: TextStyle(
-              //             fontSize: SizeConfig.textMultiplier * 2.3,
-              //             fontWeight: FontWeight.w600),
-              //       ),
-              //     ),
-              //     Spacer(),
-              //     Padding(
-              //       padding: const EdgeInsets.only(right: 20.0),
-              //       child: Text(
-              //         "5/21/2021",
-              //         style: TextStyle(fontSize: SizeConfig.textMultiplier * 2.2),
-              //       ),
-              //     ),
-              //     // Spacer()
-              //   ],
-              // ),
-              // Divider(
-              //   color: Colors.black,
-              //   thickness: 1,
-              // ),
-              //  SizedBox(
-              //   height: SizeConfig.heightMultiplier * 2,
-              // ),
-              // Row(
-              //   children: [
-              //     Padding(
-              //       padding: const EdgeInsets.only(left: 5.0),
-              //       child: Text(
-              //         "Transaction Details :",
-              //         style: TextStyle(
-              //             fontSize: SizeConfig.textMultiplier * 2,
-              //             fontWeight: FontWeight.w600),
-              //       ),
-              //     ),
-              //     Spacer(),
-              //     Padding(
-              //       padding: const EdgeInsets.only(right: 5.0),
-              //       child: Text(
-              //         "Beneficiary Details",
-              //         style: TextStyle(
-              //             fontSize: SizeConfig.textMultiplier * 2,
-              //             fontWeight: FontWeight.w600),
-              //       ),
-              //     ),
-              //     // Spacer()
-              //   ],
-              // ),
-              //  SizedBox(
-              //   height: SizeConfig.heightMultiplier * 2,
-              // ),
-              // Row(
-              //   children: [
-              //     Padding(
-              //       padding: const EdgeInsets.only(left: 5.0),
-              //       child: Column(
-              //         children: [
-              //           Text(
-              //             "Transaction",
-              //             style: TextStyle(
-              //                 fontSize: SizeConfig.textMultiplier * 1.5,
-              //                 fontWeight: FontWeight.w600),
-              //           ),
-              //           Text("Amount :", style: TextStyle(
-              //                 fontSize: SizeConfig.textMultiplier * 1.5,
-              //                 fontWeight: FontWeight.w600))
-              //         ],
-              //       ),
-              //     ),
-              //     SizedBox(width: SizeConfig.widthMultiplier * 8,),
-              //     Text("5"),
-              //     Spacer(),
-
-              //     Text("Account No.",style: TextStyle(
-              //                 fontSize: SizeConfig.textMultiplier * 1.5,
-              //                 fontWeight: FontWeight.w600)),
-              //   SizedBox(width: SizeConfig.widthMultiplier * 2,),
-              //     Padding(
-              //       padding: const EdgeInsets.only(right: 5.0),
-              //       child: Text(
-              //         "1444455444",
-              //         style: TextStyle(fontSize: SizeConfig.textMultiplier * 1.5),
-              //       ),
-              //     ),
-              //     // Spacer()
-              //   ],
-              // ),
+              
             ],
           ),
         ),

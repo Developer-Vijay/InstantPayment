@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:http/http.dart' as http;
-import 'package:netly/rechargesuccesspage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 
@@ -25,14 +24,6 @@ class _DataCardPageState extends State<DataCardPage> {
   String accountNumberValidate;
   String payValidate;
 
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      getOperatorList();
-    });
-  }
-
   // variables decelartion
   String sessionToken;
   String refreshtoken;
@@ -52,39 +43,40 @@ class _DataCardPageState extends State<DataCardPage> {
 // getoperatorlist
 
   getOperatorList() async {
-    final prefs = await SharedPreferences.getInstance();
-    retrieveLogin = prefs.getString('loginInfo');
-    logindata = jsonDecode(retrieveLogin);
-    sessionToken = logindata['sessionToken'];
-    refreshtoken = logindata['refreshToken'];
-    loginId = logindata['user']['_id'];
-    try {
-      var response = await http.get(
-          Uri.parse(ADMIN_API +
-              '/getOperatorList' +
-              '?operatorType=Broadband&subdomain=instantpay'),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": sessionToken
+    return dataMemorizer.runOnce(() async {
+      final prefs = await SharedPreferences.getInstance();
+      retrieveLogin = prefs.getString('loginInfo');
+      logindata = jsonDecode(retrieveLogin);
+      sessionToken = logindata['sessionToken'];
+      refreshtoken = logindata['refreshToken'];
+      loginId = logindata['user']['_id'];
+      try {
+        var response = await http.get(
+            Uri.parse(ADMIN_API +
+                '/getOperatorList' +
+                '?operatorType=Broadband&subdomain=instantpay'),
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken
+            });
+        responseData = jsonDecode(response.body);
+        jsonResponse = response.body;
+        if (response.statusCode == 200) {
+          setState(() {
+            checker = true;
+            checker2 = false;
           });
-      responseData = jsonDecode(response.body);
-      jsonResponse = response.body;
-      if (response.statusCode == 200) {
-        setState(() {
-          checker = true;
-          checker2 = false;
-        });
-        print(responseData);
-      } else {
-        setState(() {
-          checker = true;
-          checker2 = true;
-        });
-        
+          return responseData;
+        } else {
+          setState(() {
+            checker = true;
+            checker2 = true;
+          });
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
 // operator details
@@ -102,10 +94,7 @@ class _DataCardPageState extends State<DataCardPage> {
       jsonResponse = response.body;
       responsed = jsonDecode(response.body);
       if (response.statusCode == 200) {
-       
-      } else {
-       
-      }
+      } else {}
     } catch (e) {
       print(e);
     }
@@ -137,38 +126,44 @@ class _DataCardPageState extends State<DataCardPage> {
               ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: responseData == null
-                      ? DropdownButtonFormField(
-                          isDense: false,
-                          isExpanded: true,
-                          hint: Text("Select an Operator"),
-                          items: [],
-                          onChanged: (value) {},
-                        )
-                      : DropdownButtonFormField(
-                          decoration:
-                              InputDecoration(errorText: operatorValidate),
-                          isDense: false,
-                          isExpanded: true,
-                          hint: Text("Select an Operator"),
-                          value: selected,
-                          items: List.generate(
-                            responseData.length,
-                            (index) => DropdownMenuItem(
-                                value: index,
-                                child: Text(responseData[index]['name'])),
-                          ),
-                          onChanged: (value) {
-                            int index = value;
-                            setState(() {
-                              selected = index;
-                              operatorId = responseData[index]
-                                  ['activeAPIOperatorCodeId'];
-                              print(operatorId);
-                              operatorName = responseData[index]['name'];
-                              getOperatorDetails(operatorId);
-                            });
-                          })),
+                  child: FutureBuilder(
+                      future: this.getOperatorList(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return DropdownButtonFormField(
+                              decoration:
+                                  InputDecoration(errorText: operatorValidate),
+                              isDense: false,
+                              isExpanded: true,
+                              hint: Text("Select an Operator"),
+                              value: selected,
+                              items: List.generate(
+                                snapshot.data.length,
+                                (index) => DropdownMenuItem(
+                                    value: index,
+                                    child: Text(snapshot.data[index]['name'])),
+                              ),
+                              onChanged: (value) {
+                                int index = value;
+                                setState(() {
+                                  selected = index;
+                                  operatorId = snapshot.data[index]
+                                      ['activeAPIOperatorCodeId'];
+                                  print(operatorId);
+                                  operatorName = snapshot.data[index]['name'];
+                                  getOperatorDetails(operatorId);
+                                });
+                              });
+                        } else {
+                          return DropdownButtonFormField(
+                            isDense: false,
+                            isExpanded: true,
+                            hint: Text("Select an Operator"),
+                            items: [],
+                            onChanged: (value) {},
+                          );
+                        }
+                      })),
               SizedBox(
                 height: 5 * SizeConfig.heightMultiplier,
               ),
@@ -212,7 +207,6 @@ class _DataCardPageState extends State<DataCardPage> {
                       borderRadius: BorderRadius.circular(10)),
                   color: Apptheme.PrimaryColor,
                   onPressed: () {
-                  //  Navigator.push(context,MaterialPageRoute(builder: (context) => RechargeSuccessPage()));
                     dataCardRecharge();
                   },
                   child: Text(
@@ -294,10 +288,8 @@ class _DataCardPageState extends State<DataCardPage> {
         item['value'] = accountNumberController.text;
       });
       dataCardJson['transactionAmount'] = int.parse(payController.text);
-      print(dataCardJson);
 
       var dataCardJsonBody = jsonEncode(dataCardJson);
-      print(dataCardJsonBody);
 
       try {
         var response = await http.post(Uri.parse(SERVICE_API + '/getRecharge'),
@@ -310,18 +302,12 @@ class _DataCardPageState extends State<DataCardPage> {
 
         var responsedData = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          // if (responseData['errorExist'] == false) {
-
-          // }
-          // else {
           Fluttertoast.showToast(
               msg: "${responsedData['message']}",
               textColor: Apptheme.whitetextcolor,
               backgroundColor: Colors.green);
           print(responsedData);
           Navigator.pop(context);
-
-          // }
         } else {
           print(response.statusCode);
           Navigator.pop(context);

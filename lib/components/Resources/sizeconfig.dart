@@ -30,13 +30,13 @@ class SizeConfig {
     }
 // horizontal
     _blockWidth = _screenWidth / 100;
-    // vertical 
+    // vertical
     _blockHeight = _screenHeight / 100;
 
     textMultiplier = _blockHeight;
     imageSizeMultiplier = _blockWidth;
     heightMultiplier = _blockHeight;
-    widthMultiplier = _blockWidth;  
+    widthMultiplier = _blockWidth;
 
     print(" width and horizontal is $_blockWidth");
     print(" height and vertical is$_blockHeight");

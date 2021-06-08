@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter_screen_lock/configurations/input_button_config.dart';
 import 'package:flutter_screen_lock/configurations/screen_lock_config.dart';
 import 'package:flutter_screen_lock/configurations/secret_config.dart';
@@ -13,9 +12,7 @@ import 'package:netly/Screen/HomePage/menu.dart';
 import 'package:netly/Screen/HomePage/services.dart';
 import 'package:netly/SetPassword/change_password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
-import '../../constants.dart';
 
 // ignore: must_be_immutable
 class HomePage extends StatefulWidget {
@@ -43,63 +40,7 @@ class _HomePageState extends State<HomePage> {
   var amount;
   bool status = false;
 
-  Future getWalletDetails() async {
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) => Container(
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 120),
-                    child: Image.asset(
-                      "assets/images/nplogo.png",
-                      height: 25 * SizeConfig.imageSizeMultiplier,
-                    ),
-                  ),
-                ],
-              ),
-            ));
-    final prefs = await SharedPreferences.getInstance();
-    retrieveLogin = prefs.getString('loginInfo');
-    logindata = jsonDecode(retrieveLogin);
-    sessionToken = logindata['sessionToken'];
-    refreshToken = logindata['refreshToken'];
-    loginId = logindata['user']['_id'];
-    print("?????????");
-    print(loginId);
-    print("?????????");
-
-    try {
-      var response = await http.get(
-          Uri.parse(
-            COMMON_API +
-                '/getWalletAmount' +
-                '?userId=$loginId&subdomain=instantpay',
-          ),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": sessionToken,
-            "refreshToken": refreshToken
-          });
-      responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        setState(() {
-          walletAmount = responseData['walletAmount'];
-          prefs.setInt("amount", walletAmount);
-          status = true;
-        });
-        print(responseData['walletAmount']);
-        Navigator.pop(context);
-      } else {
-        print("error");
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
+  
   ScrollController scrollController = ScrollController();
 
   bool isAuthenticated = false;
@@ -165,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.black.withOpacity(0.1),
         ),
         secretsConfig: SecretsConfig(
-          spacing: 15, // or spacingRatio
+          spacing: 15, 
           padding: const EdgeInsets.all(40),
           secretConfig: SecretConfig(
             borderColor: Colors.white,

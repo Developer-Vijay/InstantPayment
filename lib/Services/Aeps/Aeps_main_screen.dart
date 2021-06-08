@@ -62,7 +62,6 @@ class _AepsMainPageState extends State<AepsMainPage>
             controller: controller,
             children: [
               CashWithDrawPage(), 
-            // FingerPrintPage(),
             BalanceEnquiry()],
           ),
         ),

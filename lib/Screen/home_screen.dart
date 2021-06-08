@@ -30,12 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-     Future.delayed(Duration.zero, () {
+    Future.delayed(Duration.zero, () {
       this.screenlock(context);
     });
     checkDateAndTime();
     data = widget.walletAmount;
-   
   }
 
   var getDate = DateTime.now();
@@ -50,8 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print("The Current Date is  $currentDate");
       print("The Login Date is $loginDate");
       print("Login");
-    } 
-    else {
+    } else {
       print("The Current Date is  $currentDate");
       print("The Login Date is $loginDate");
       setState(() {
@@ -85,45 +83,45 @@ class _HomeScreenState extends State<HomeScreen> {
             ));
   }
 
+  List<Widget> _pages = [
+    HomePage(),
+    ReportPageMain(),
+    ProfilePage(),
+  ];
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onbackPressed,
       child: SafeArea(
           child: Scaffold(
-        bottomNavigationBar: SalomonBottomBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          items: [
-            // Home
-            SalomonBottomBarItem(
-              icon: Icon(Icons.home),
-              title: Text("Dashboard"),
-              selectedColor: Apptheme.PrimaryColor,
-            ),
+              bottomNavigationBar: SalomonBottomBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                items: [
+                  // Home
+                  SalomonBottomBarItem(
+                    icon: Icon(Icons.home),
+                    title: Text("Dashboard"),
+                    selectedColor: Apptheme.PrimaryColor,
+                  ),
 
-            //Report-*+
-            SalomonBottomBarItem(
-                icon: Icon(Icons.notes),
-                title: Text("Reports"),
-                selectedColor: Apptheme.textColo1r),
-            // Profile
-            SalomonBottomBarItem(
-                icon: Icon(Icons.person),
-                title: Text("Profile"),
-                selectedColor: Apptheme.textColor2),
-          ],
-        ),
-        body: IndexedStack(index: _currentIndex, children: [
-          HomePage(),
-          ReportPageMain(),
-          ProfilePage(),
-        ]),
-      )),
+                  //Report-*+
+                  SalomonBottomBarItem(
+                      icon: Icon(Icons.notes),
+                      title: Text("Reports"),
+                      selectedColor: Apptheme.textColo1r),
+                  // Profile
+                  SalomonBottomBarItem(
+                      icon: Icon(Icons.person),
+                      title: Text("Profile"),
+                      selectedColor: Apptheme.textColor2),
+                ],
+              ),
+              body: _pages[_currentIndex])),
     );
   }
 

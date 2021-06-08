@@ -23,7 +23,6 @@ class _MenuState extends State<Menu> {
     super.initState();
 
     getdata();
-    // screenlock();
   }
 
   var passcode;
@@ -31,6 +30,7 @@ class _MenuState extends State<Menu> {
     final prefs = await SharedPreferences.getInstance();
     passcode = prefs.getString('passcode');
   }
+
   Future<bool> _onbackPressed() async {
     return showDialog(
         context: context,
@@ -52,6 +52,7 @@ class _MenuState extends State<Menu> {
               ],
             ));
   }
+
   int retries = 3;
   @override
   Widget build(BuildContext context) {
@@ -221,7 +222,8 @@ class _MenuState extends State<Menu> {
                             offset: Offset(0, 0))
                       ],
                       borderRadius: BorderRadius.circular(20),
-                      color: enabled ? config.enabledColor : config.disabledColor,
+                      color:
+                          enabled ? config.enabledColor : config.disabledColor,
                       border: Border.all(
                         width: config.borderSize,
                         color: config.borderColor,

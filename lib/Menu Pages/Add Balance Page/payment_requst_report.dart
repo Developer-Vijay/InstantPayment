@@ -28,7 +28,6 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
       fromDate = widget.fromDate;
       toDate = widget.toDate;
     });
-    print("from date is  $fromDate");
     print(toDate);
     Future.delayed(Duration.zero, () {
       getReportType();
@@ -62,9 +61,6 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
     sessionToken = logindata['sessionToken'];
     refreshToken = logindata['refreshToken'];
     loginId = logindata['user']['_id'];
-    print("?????????");
-    print(loginId);
-    print("?????????");
     try {
       var response = await http.get(
           Uri.parse(PORTAL_API +
@@ -81,11 +77,7 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
         setState(() {
           datachecker = true;
           checker2 = false;
-          print(loginId);
         });
-
-        print(datarecieved);
-        print(response.body);
 
         Navigator.pop(context);
       } else {
@@ -223,41 +215,11 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
                                     "${datarecieved['paymentRequests']['docs'][index]['bankReferenceId']}")),
                                 DataCell(Text(
                                     "${datarecieved['paymentRequests']['docs'][index]['creationDate']}")),
-                                // DataCell(Text(
-                                //     "${datarecieved['paymentRequests']['docs'][index]['']}")
-                                //     ),
                               ]);
                             }))),
             SizedBox(
               height: 0 * SizeConfig.heightMultiplier,
             ),
-            // Center(
-            //     child: MaterialButton(
-            //   child: Text("Filter"),
-            //   color: Colors.blue,
-            //   textColor: Colors.white,
-            //   minWidth: 60 * SizeConfig.widthMultiplier,
-            //   shape:
-            //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            //   onPressed: () {
-            //     showModalBottomSheet(
-            //         elevation: 4.0,
-            //         isScrollControlled: true,
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(20),
-            //         ),
-            //         context: context,
-            //         builder: (context) => Container(
-            //             decoration: BoxDecoration(
-            //                 borderRadius: BorderRadius.only(
-            //                     topLeft: const Radius.circular(10.0),
-            //                     topRight: const Radius.circular(10.0))),
-            //             height: 40 * SizeConfig.heightMultiplier,
-            //             child: RequestFilterPage()
-            //             )
-            //             );
-            //   },
-            // )),
           ])),
     );
   }

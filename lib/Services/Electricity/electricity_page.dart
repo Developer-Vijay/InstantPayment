@@ -18,8 +18,6 @@ class _ElectricityPageState extends State<ElectricityPage> {
   @override
   void initState() {
     super.initState();
-
-    getOperatorList();
   }
 
   TextEditingController operatorController = TextEditingController();
@@ -57,38 +55,33 @@ class _ElectricityPageState extends State<ElectricityPage> {
 // getoperatorlist
 
   getOperatorList() async {
-    final prefs = await SharedPreferences.getInstance();
-    retrieveLogin = prefs.getString('loginInfo');
-    logindata = jsonDecode(retrieveLogin);
-    sessionToken = logindata['sessionToken'];
-    refreshtoken = logindata['refreshToken'];
-    loginId = logindata['user']['_id'];
-    try {
-      var response = await http.get(
-          Uri.parse(ADMIN_API +
-              '/getOperatorList' +
-              '?operatorType=Utility&subdomain=instantpay'),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": sessionToken
-          });
-      responseData = jsonDecode(response.body);
-      jsonResponse = response.body;
-      if (response.statusCode == 200) {
-        setState(() {
-          checker = true;
-          checker2 = false;
-        });
-        print(responseData);
-      } else {
-        setState(() {
-          checker = true;
-          checker2 = true;
-        });
+    return electricityMemorizer.runOnce(() async {
+      final prefs = await SharedPreferences.getInstance();
+      retrieveLogin = prefs.getString('loginInfo');
+      logindata = jsonDecode(retrieveLogin);
+      sessionToken = logindata['sessionToken'];
+      refreshtoken = logindata['refreshToken'];
+      loginId = logindata['user']['_id'];
+      try {
+        var response = await http.get(
+            Uri.parse(ADMIN_API +
+                '/getOperatorList' +
+                '?operatorType=Utility&subdomain=instantpay'),
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken
+            });
+        responseData = jsonDecode(response.body);
+        jsonResponse = response.body;
+        if (response.statusCode == 200) {
+          return responseData;
+        } else {
+          return response.statusCode;
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
   // operator details
@@ -106,7 +99,7 @@ class _ElectricityPageState extends State<ElectricityPage> {
       jsonResponse = response.body;
       responsed = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        print(responsed);
+        // print(responsed);
       } else {
         print(response.statusCode);
       }
@@ -131,38 +124,44 @@ class _ElectricityPageState extends State<ElectricityPage> {
             ),
             Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: responseData == null
-                    ? DropdownButtonFormField(
-                        isDense: false,
-                        isExpanded: true,
-                        hint: Text("Select an Operator"),
-                        items: [],
-                        onChanged: (value) {},
-                      )
-                    : DropdownButtonFormField(
-                        decoration:
-                            InputDecoration(errorText: operatorValidate),
-                        isDense: false,
-                        isExpanded: true,
-                        hint: Text("Select an Operator"),
-                        value: selected,
-                        items: List.generate(
-                          responseData.length,
-                          (index) => DropdownMenuItem(
-                              value: index,
-                              child: Text(responseData[index]['name'])),
-                        ),
-                        onChanged: (value) {
-                          int index = value;
-                          setState(() {
-                            selected = index;
-                            operatorId =
-                                responseData[index]['activeAPIOperatorCodeId'];
-                            print(operatorId);
-                            operatorName = responseData[index]['name'];
-                            getOperatorDetails(operatorId);
-                          });
-                        })),
+                child: FutureBuilder(
+                    future: getOperatorList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return DropdownButtonFormField(
+                            decoration:
+                                InputDecoration(errorText: operatorValidate),
+                            isDense: false,
+                            isExpanded: true,
+                            hint: Text("Select an Operator"),
+                            value: selected,
+                            items: List.generate(
+                              snapshot.data.length,
+                              (index) => DropdownMenuItem(
+                                  value: index,
+                                  child: Text(snapshot.data[index]['name'])),
+                            ),
+                            onChanged: (value) {
+                              int index = value;
+                              setState(() {
+                                selected = index;
+                                operatorId = snapshot.data[index]
+                                    ['activeAPIOperatorCodeId'];
+                                print(operatorId);
+                                operatorName = snapshot.data[index]['name'];
+                                getOperatorDetails(operatorId);
+                              });
+                            });
+                      } else {
+                        return DropdownButtonFormField(
+                          isDense: false,
+                          isExpanded: true,
+                          hint: Text("Select an Operator"),
+                          items: [],
+                          onChanged: (value) {},
+                        );
+                      }
+                    })),
             SizedBox(
               height: 5 * SizeConfig.heightMultiplier,
             ),
@@ -348,15 +347,10 @@ class _ElectricityPageState extends State<ElectricityPage> {
 
       var firstJson = responsed;
       var secondJson = data;
-      int money = 0;
       var dataCardJson = {...firstJson, ...secondJson};
-      // (dataCardJson['requiredParams'] as List<dynamic>).forEach((item) {
       dataCardJson['requiredParams'][0]['value'] = accountNumberController.text;
       dataCardJson['requiredParams'][1]['value'] = mobileNumberController.text;
-      // });
-      show == true
-          ? dataCardJson['transactionAmount'] = int.parse(amountController.text)
-          : money = 0;
+
       var dataCardJsonBody = jsonEncode(dataCardJson);
       print(dataCardJsonBody);
 
@@ -381,25 +375,16 @@ class _ElectricityPageState extends State<ElectricityPage> {
               nameController.text = name;
             } else {
               print(name);
-              print(amount);
             }
-
-            print(name);
-            print(amount);
           });
 
-          print(response.body);
-          print(responsedData);
-          if (show == true ) {
+          if (show == true) {
             Fluttertoast.showToast(msg: "Fetched Successfully");
             Navigator.pop(context);
-          } 
-          else if(responsedData['errorExist']==true)
-          {
-             Fluttertoast.showToast(msg: responsedData['message']);
-             Navigator.pop(context);
-          }
-          else {
+          } else if (responsedData['errorExist'] == true) {
+            Fluttertoast.showToast(msg: responsedData['message']);
+            Navigator.pop(context);
+          } else {
             Navigator.push(
                 context,
                 MaterialPageRoute(

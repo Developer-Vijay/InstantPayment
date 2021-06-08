@@ -70,38 +70,42 @@ class _ReportPageState extends State<ReportPage> {
     print("?????????");
     print(loginId);
     print("?????????");
-    try {
-      var response = await http.get(
-          Uri.parse(COMMON_API +
-              '/getReports' +
-              '?filter={"fromDate":"$fromDate","toDate":"$toDate","userId":"$loginId","subdomain":"instantpay","reportType":"$param"}&limit=20&page=1'),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": sessionToken,
-            "refreshToken": refreshToken
-          });
-      datarecieved = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print(datarecieved['reports']['docs'].length);
-        setState(() {
-          datachecker = true;
-          checker2 = false;
+    // try {
+    var response = await http.get(
+        Uri.parse(COMMON_API +
+            '/getReports' +
+            '?filter={"fromDate":"$fromDate","toDate":"$toDate","userId":"$loginId","subdomain":"instantpay","reportType":"$param"}&limit=20&page=1'),
+        headers: {
+          "Content-type": "application/json",
+          "authorization": sessionToken,
+          "refreshToken": refreshToken
         });
-
-        print(datarecieved);
-        print(response.body);
-
-        Navigator.pop(context);
+    datarecieved = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      if (datarecieved['reports'] == null) {
+        print("No Data");
       } else {
-        setState(() {
-          datachecker = false;
-          checker2 = true;
-        });
-        Navigator.pop(context);
+        print(datarecieved['reports']['docs'].length);
       }
-    } catch (e) {
-      print(e);
+      setState(() {
+        datachecker = true;
+        checker2 = false;
+      });
+
+      print(datarecieved);
+      print(response.body);
+
+      Navigator.pop(context);
+    } else {
+      setState(() {
+        datachecker = false;
+        checker2 = true;
+      });
+      Navigator.pop(context);
     }
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 
   searchReportType(var param, var string) async {
@@ -119,9 +123,6 @@ class _ReportPageState extends State<ReportPage> {
     sessionToken = logindata['sessionToken'];
     refreshToken = logindata['refreshToken'];
     loginId = logindata['user']['_id'];
-    print("?????????");
-    print(loginId);
-    print("?????????");
     try {
       var response = await http.get(
           Uri.parse(COMMON_API +
@@ -139,9 +140,6 @@ class _ReportPageState extends State<ReportPage> {
           datachecker = true;
           checker2 = false;
         });
-
-        print(datarecieved);
-        print(response.body);
 
         Navigator.pop(context);
       } else {
@@ -223,7 +221,7 @@ class _ReportPageState extends State<ReportPage> {
                                   "${datarecieved['reports']['docs'][index]['updatedDate']}")),
                             ]))),
       );
-    } else if (data == "Electricity bill") {
+    } else if (data == "bill Payment") {
       return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: datarecieved['reports'] == null
@@ -335,7 +333,7 @@ class _ReportPageState extends State<ReportPage> {
                           DataCell(Text(
                               "${datarecieved['reports']['docs'][index]['transactionId']}")),
                           DataCell(Text(
-                              "{datarecieved['reports']['docs'][index]['_id']}")),
+                              "${datarecieved['reports']['docs'][index]['accountNumber']}")),
                           DataCell(Text(
                               "${datarecieved['reports']['docs'][index]['previousAmount']}")),
                           DataCell(Text(
@@ -691,9 +689,6 @@ class _ReportPageState extends State<ReportPage> {
     }
   }
 
-  // DateTime selectedDate = DateTime.now();
-  // DateTime toDate = DateTime.now();
-
   DateTime date;
   var date1;
   String dropdownValue = 'Recharge';
@@ -707,253 +702,224 @@ class _ReportPageState extends State<ReportPage> {
               child: CircularProgressIndicator(),
             ))
           : Scaffold(
+              floatingActionButton: FloatingActionButton(
+                child: Icon(
+                  Icons.filter_alt_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                      elevation: 4.0,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      context: context,
+                      builder: (context) => Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: const Radius.circular(10.0),
+                                  topRight: const Radius.circular(10.0))),
+                          height: 40 * SizeConfig.heightMultiplier,
+                          child: Filter(
+                            param: widget.params,
+                            title: widget.data,
+                          )));
+                },
+              ),
               body: Container(
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 0,
-                    child: Container(
-                        width: 133 * SizeConfig.widthMultiplier,
-                        color: Apptheme.PrimaryColor,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "Total Result Found from",
-                                    style: TextStyle(
-                                        fontSize:
-                                            2.2 * SizeConfig.textMultiplier,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 0,
+                      child: Container(
+                          width: 133 * SizeConfig.widthMultiplier,
+                          color: Apptheme.PrimaryColor,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "Total Result Found from",
+                                      style: TextStyle(
+                                          fontSize:
+                                              2.2 * SizeConfig.textMultiplier,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
-                                ),
-                                Spacer(),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 4, right: 4),
-                                  child: InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                          elevation: 4.0,
-                                          isScrollControlled: true,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          context: context,
-                                          builder: (context) => Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                          topLeft: const Radius
-                                                              .circular(10.0),
-                                                          topRight: const Radius
-                                                              .circular(10.0))),
-                                              height: 40 *
-                                                  SizeConfig.heightMultiplier,
-                                              child: Filter(
-                                                param: widget.params,
-                                                title: widget.data,
-                                              )));
-                                    },
+                                  // Spacer(),
+                                  // Padding(
+                                  //   padding:
+                                  //       const EdgeInsets.only(top: 4, right: 4),
+                                  //   child: InkWell(
+                                  //     onTap: () {
+                                  //       showModalBottomSheet(
+                                  //           elevation: 4.0,
+                                  //           isScrollControlled: true,
+                                  //           shape: RoundedRectangleBorder(
+                                  //             borderRadius:
+                                  //                 BorderRadius.circular(20),
+                                  //           ),
+                                  //           context: context,
+                                  //           builder: (context) => Container(
+                                  //               decoration: BoxDecoration(
+                                  //                   borderRadius:
+                                  //                       BorderRadius.only(
+                                  //                           topLeft: const Radius
+                                  //                               .circular(10.0),
+                                  //                           topRight: const Radius
+                                  //                               .circular(10.0))),
+                                  //               height: 40 *
+                                  //                   SizeConfig.heightMultiplier,
+                                  //               child: Filter(
+                                  //                 param: widget.params,
+                                  //                 title: widget.data,
+                                  //               )));
+                                  //     },
+                                  //     child: Container(
+                                  //       width: 24 * SizeConfig.widthMultiplier,
+                                  //       decoration: BoxDecoration(
+                                  //           color: Colors.white,
+                                  //           borderRadius:
+                                  //               BorderRadius.circular(20)),
+                                  //       child: Center(child: Text("Filter")),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "$fromDate",
+                                          style: textstyle,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 40),
+                                        child: Text(
+                                          "to",
+                                          style: textstyle,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "$toDate",
+                                          style: textstyle,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                      width: 24 * SizeConfig.widthMultiplier,
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                              BorderRadius.circular(20)),
-                                      child:Center(child: Text("Filter")),
+                                              BorderRadius.circular(10)),
+                                      height: 5 * SizeConfig.heightMultiplier,
+                                      width: 60 * SizeConfig.widthMultiplier,
+                                      child: TextField(
+                                        controller: seaarchController,
+                                        decoration: InputDecoration(
+                                            hintText: "Search",
+                                            hintStyle: TextStyle(
+                                                fontSize: 2 *
+                                                    SizeConfig.textMultiplier),
+                                            border: InputBorder.none,
+                                            suffixIcon: InkWell(
+                                              onTap: () {
+                                                seaarchController.clear();
+                                              },
+                                              child: Icon(
+                                                Icons.close,
+                                                size: 2.5 *
+                                                    SizeConfig.textMultiplier,
+                                              ),
+                                            ),
+                                            prefixIcon: InkWell(
+                                              onTap: () {
+                                                searchReportType(widget.params,
+                                                    seaarchController.text);
+                                              },
+                                              child: Icon(
+                                                Icons.search,
+                                                size: 2.5 *
+                                                    SizeConfig.textMultiplier,
+                                              ),
+                                            )),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "$fromDate",
-                                        style: textstyle,
-                                      ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "Total Transactions :",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize:
+                                              2.2 * SizeConfig.textMultiplier,
+                                          fontWeight: FontWeight.w600),
                                     ),
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 40),
-                                      child: Text(
-                                        "to",
-                                        style: textstyle,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "$toDate",
-                                        style: textstyle,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    height: 5 * SizeConfig.heightMultiplier,
-                                    width: 60 * SizeConfig.widthMultiplier,
-                                    child: TextField(
-                                      controller: seaarchController,
-                                      decoration: InputDecoration(
-                                          hintText: "Search",
-                                          hintStyle: TextStyle(
-                                              fontSize: 2 *
-                                                  SizeConfig.textMultiplier),
-                                          border: InputBorder.none,
-                                          suffixIcon: InkWell(
-                                            onTap: () {
-                                              seaarchController.clear();
-                                            },
-                                            child: Icon(
-                                              Icons.close,
-                                              size: 2.5 *
-                                                  SizeConfig.textMultiplier,
-                                            ),
+                                  ),
+                                  Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: datarecieved == null
+                                        ? Text("₹ 0",
+                                            style: TextStyle(
+                                                fontFamily: 'arvo',
+                                                color: Colors.white,
+                                                fontSize: 2.2 *
+                                                    SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w600))
+                                        : Text(
+                                            "₹ ${datarecieved['totalTransactionAmount']}",
+                                            style: TextStyle(
+                                                fontFamily: 'arvo',
+                                                color: Colors.white,
+                                                fontSize: 2.2 *
+                                                    SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w600),
                                           ),
-                                          prefixIcon: InkWell(
-                                            onTap: () {
-                                              searchReportType(widget.params,
-                                                  seaarchController.text);
-                                            },
-                                            child: Icon(
-                                              Icons.search,
-                                              size: 2.5 *
-                                                  SizeConfig.textMultiplier,
-                                            ),
-                                          )),
-                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            // Row(
-                            //   children: [
-                            //     Padding(
-                            //       padding: const EdgeInsets.all(8.0),
-                            //       child: Text(
-                            //         "Operations :",
-                            //         style: TextStyle(
-                            //             color: Colors.white,
-                            //             fontSize:
-                            //                 2.2 * SizeConfig.textMultiplier,
-                            //             fontWeight: FontWeight.w600),
-                            //       ),
-                            //     ),
-                            //     Spacer(),
-                            //     Padding(
-                            //       padding: const EdgeInsets.all(8.0),
-                            //       child: Text(
-                            //         "2",
-                            //         style: TextStyle(
-                            //             color: Colors.white,
-                            //             fontSize:
-                            //                 2.2 * SizeConfig.textMultiplier,
-                            //             fontWeight: FontWeight.w600),
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "Total Transactions :",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize:
-                                            2.2 * SizeConfig.textMultiplier,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                                Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: datarecieved == null
-                                      ? Text("₹ 0",
-                                          style: TextStyle(
-                                              fontFamily: 'arvo',
-                                              color: Colors.white,
-                                              fontSize: 2.2 *
-                                                  SizeConfig.textMultiplier,
-                                              fontWeight: FontWeight.w600))
-                                      : Text(
-                                          "₹ ${datarecieved['totalTransactionAmount']}",
-                                          style: TextStyle(
-                                              fontFamily: 'arvo',
-                                              color: Colors.white,
-                                              fontSize: 2.2 *
-                                                  SizeConfig.textMultiplier,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                ),
-                              ],
-                            ),
-                            // Row(
-                            //   children: [
-                            //     Padding(
-                            //       padding: const EdgeInsets.all(8.0),
-                            //       child: Text(
-                            //         "Status :",
-                            //         style: TextStyle(
-                            //             color: Colors.white,
-                            //             fontSize:
-                            //                 2.2 * SizeConfig.textMultiplier,
-                            //             fontWeight: FontWeight.w600),
-                            //       ),
-                            //     ),
-                            //     Spacer(),
-                            //     Padding(
-                            //       padding: const EdgeInsets.all(8.0),
-                            //       child: Text(
-                            //         "True",
-                            //         style: TextStyle(
-                            //             color: Colors.white,
-                            //             fontSize:
-                            //                 2.2 * SizeConfig.textMultiplier,
-                            //             fontWeight: FontWeight.w600),
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
+                                ],
+                              ),
+                            ],
+                          )),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        width: 133 * SizeConfig.widthMultiplier,
+                        child: ListView(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          children: [
+                            rechargeAndBillpayments(),
                           ],
-                        )),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      width: 133 * SizeConfig.widthMultiplier,
-                      child: ListView(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        children: [
-                          rechargeAndBillpayments(),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )),
+                  ],
+                ),
+              )),
     );
   }
 }
