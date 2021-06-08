@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:netly/Services/Money%20Transfer/add_benficiary_page.dart';
 import 'package:netly/Services/Money%20Transfer/recipientpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../constants.dart';
 
 // ignore: must_be_immutable
 class AddBeneficiary extends StatefulWidget {
@@ -12,7 +10,7 @@ class AddBeneficiary extends StatefulWidget {
   var responseData;
   var limit;
   var spent;
-  AddBeneficiary({this.data, this.limit, this.spent,this.responseData});
+  AddBeneficiary({this.data, this.limit, this.spent, this.responseData});
   @override
   _AddBeneficiaryState createState() => _AddBeneficiaryState();
 }
@@ -44,7 +42,6 @@ class _AddBeneficiaryState extends State<AddBeneficiary>
 
       print("Selected Index: " + controller.index.toString());
     });
-    // WidgetsBinding.instance.addPostFrameCallback((_) => getBeneList(context));
   }
 
   var retrieveLogin;
@@ -61,46 +58,7 @@ class _AddBeneficiaryState extends State<AddBeneficiary>
       sessionToken = logindata['sessionToken'];
       refreshToken = logindata['refreshToken'];
       loginId = logindata['user']['_id'];
-      print("?????????");
-      print(loginId);
-      print("?????????");
     });
-  }
-
-  getBeneList(context) async {
-    final prefs = await SharedPreferences.getInstance();
-    retrieveLogin = prefs.getString('loginInfo');
-    logindata = jsonDecode(retrieveLogin);
-    sessionToken = logindata['sessionToken'];
-    refreshToken = logindata['refreshToken'];
-    loginId = logindata['user']['_id'];
-    print("?????????");
-    print(loginId);
-    print("?????????");
-    var response = await http.get(
-        SERVICE_API + '/getBeneficiary' + '?mobileNumber=$number',
-        headers: {
-          "Content-type": "application/json",
-          "authorization": sessionToken,
-          "refreshToken": refreshToken
-        });
-    responseData = jsonDecode(response.body);
-    // final List data = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      print("/////");
-      print(responseData);
-      int k = responseData['beneficiaryList'].length;
-
-      setState(() {
-       
-        
-      });
-    } else {
-      setState(() {
-        allowNavigation = false;
-      });
-      print(response.statusCode);
-    }
   }
 
   List<Widget> list = [
@@ -111,7 +69,6 @@ class _AddBeneficiaryState extends State<AddBeneficiary>
       child: Text("Add Benificiary"),
     ),
   ];
-  
 
   TabController controller;
   int selectedIndex = 0;

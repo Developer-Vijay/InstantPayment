@@ -34,7 +34,6 @@ dependencies:
   
   
   introduction_screen:
-  google_fonts:
   salomon_bottom_bar:
   flutter_swiper:
   cached_network_image:
@@ -47,10 +46,10 @@ dependencies:
   percent_indicator:
   http: 
   pin_code_fields:
-  menu_button:
   image_picker:
   socket_io_client:
-  flutter_spinkit:
+  google_fonts:   
+  
          
          
          
@@ -95,17 +94,11 @@ flutter:
         - asset: assets/font/arvo.regular.ttf
         # - assets: font/Schyler-Italic.ttf
           # style: italic
-    - family: Orelega One
-      fonts:
-        - asset: assets/font/OrelegaOne-Regular.ttf
-
-    - family: Playfair Display
-      fonts:
-        - asset: assets/font/PlayfairDisplay-VariableFont_wght.ttf
-
     - family: PT Serif
       fonts:
-        - asset: assets/font/PTSerif-Regular.ttf    
+        - asset: assets/font/PTSerif-Regular.ttf
+
+     
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #

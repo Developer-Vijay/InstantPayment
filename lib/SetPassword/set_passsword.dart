@@ -125,13 +125,11 @@ class _SetPasscodeState extends State<SetPasscode> {
     if (controller.text.isEmpty) {
       setState(() {
         Fluttertoast.showToast(msg: "Please Enter the Passcode");
-        // pinValidate = "Please Enter The Pin";
         isValidate = true;
       });
     } else if (controller.text.length < 4) {
       setState(() {
         Fluttertoast.showToast(msg: "Passcode must be of 4 digits ");
-        // pinValidate = "Pin should be of 4 Characters";
         isValidate = true;
       });
     } else {
@@ -141,23 +139,7 @@ class _SetPasscodeState extends State<SetPasscode> {
       });
     }
     if (isValidate == false) {
-      showDialog(
-          barrierDismissible: true,
-          context: context,
-          builder: (_) => Container(
-                // height: 40,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 120),
-                      child: Image.asset(
-                        "assets/images/nplogo.png",
-                        height: 25 * SizeConfig.imageSizeMultiplier,
-                      ),
-                    ),
-                  ],
-                ),
-              ));
+ 
       prefs.setString('passcode', controller.text.toString());
 
       Navigator.push(

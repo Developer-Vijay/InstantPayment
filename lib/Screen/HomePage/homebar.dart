@@ -8,7 +8,6 @@ import 'package:netly/Screen/HomePage/banners.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Homebar extends StatefulWidget {
   final walletAmount;
@@ -21,10 +20,6 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration.zero, () {
-      getWalletDetails();
-    });
   }
 
   var retrieveLogin;
@@ -37,64 +32,45 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
   var amount;
   var status;
 
-  Future getWalletDetails() async {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (_) => Container(
-          color: Apptheme.PrimaryColor,
-          child: Center(
-            child: SpinKitRotatingCircle(
-                color: Colors.white,
-                size: 50.0,
-                controller: AnimationController(
-                    vsync: this, duration: const Duration(milliseconds: 1200))),
-          )),
-    );
+  getWalletDetails() async {
+    return walletMemorizer.runOnce(() async {
+      final prefs = await SharedPreferences.getInstance();
+      retrieveLogin = prefs.getString('loginInfo');
+      logindata = jsonDecode(retrieveLogin);
+      sessionToken = logindata['sessionToken'];
+      refreshToken = logindata['refreshToken'];
+      print(refreshToken);
+      print(sessionToken);
+      loginId = logindata['user']['_id'];
+      status = prefs.getBool('walletStatus');
+      print("?????????");
+      print(loginId);
+      print("?????????");
 
-    final prefs = await SharedPreferences.getInstance();
-    retrieveLogin = prefs.getString('loginInfo');
-    logindata = jsonDecode(retrieveLogin);
-    sessionToken = logindata['sessionToken'];
-    refreshToken = logindata['refreshToken'];
-    print(refreshToken);
-    print(sessionToken);
-    loginId = logindata['user']['_id'];
-    status = prefs.getBool('walletStatus');
-    print("?????????");
-    print(loginId);
-    print("?????????");
+      try {
+        var response = await http.get(
+            Uri.parse(COMMON_API +
+                '/getWalletAmount' +
+                '?userId=$loginId&subdomain=instantpay'),
+            headers: {
+              "Content-type": "application/json",
+              "authorization": sessionToken,
+              "refreshToken": refreshToken
+            });
+        responseData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          print(responseData['walletAmount']);
 
-    try {
-      var response = await http.get(
-          Uri.parse(COMMON_API +
-              '/getWalletAmount' +
-              '?userId=$loginId&subdomain=instantpay'),
-          headers: {
-            "Content-type": "application/json",
-            "authorization": sessionToken,
-            "refreshToken": refreshToken
-          });
-      responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        setState(() {
-          walletAmount = responseData['walletAmount'];
-          prefs.setInt("amount", walletAmount);
-          status = true;
-        });
-        print(responseData['walletAmount']);
-        print("??????");
-        print("2222");
-        Navigator.pop(context);
-      } else {
-        print("error");
-        Navigator.pop(context);
+          return responseData;
+        } else {
+          print("wallet error ${response.statusCode}");
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
-    setState(() {
-      prefs.setBool("walletStatus", false);
+      setState(() {
+        prefs.setBool("walletStatus", false);
+      });
     });
   }
 
@@ -169,43 +145,45 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Column(
                           children: [
-                            // Container(
-                            //     margin: EdgeInsets.only(
-                            //       left: 2.4 * SizeConfig.widthMultiplier,
-                            //     ),
-                            //     child: Text("Total Balance",
-                            //         style: TextStyle(
-                            //             fontSize: 3 * SizeConfig.textMultiplier,
-                            //             fontWeight: FontWeight.w800,
-                            //             color: Apptheme.whitetextcolor))),
                             SizedBox(
                               height: 2.1 * SizeConfig.heightMultiplier,
                             ),
                             Container(
                                 margin: EdgeInsets.only(left: 10),
-                                child: walletAmount != null
-                                    ? RichText(
-                                        text: TextSpan(
-                                        style: TextStyle(
-                                            color: Apptheme.PrimaryColor,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize:
-                                                5 * SizeConfig.textMultiplier),
-                                        children: [
-                                          TextSpan(
-                                            style: TextStyle(
-                                                fontFamily: 'arvo',
-                                                color: Apptheme.whitetextcolor),
-                                            text: "₹",
-                                          ),
-                                          TextSpan(
+                                child: walletAmount == null
+                                    ? FutureBuilder(
+                                        future: this.getWalletDetails(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return RichText(
+                                                text: TextSpan(
                                               style: TextStyle(
-                                                  fontFamily: 'arvo',
-                                                  color:
-                                                      Apptheme.whitetextcolor),
-                                              text: " $walletAmount.00"),
-                                        ],
-                                      ))
+                                                  color: Apptheme.PrimaryColor,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 5 *
+                                                      SizeConfig
+                                                          .textMultiplier),
+                                              children: [
+                                                TextSpan(
+                                                  style: TextStyle(
+                                                      fontFamily: 'arvo',
+                                                      color: Apptheme
+                                                          .whitetextcolor),
+                                                  text: "₹",
+                                                ),
+                                                TextSpan(
+                                                    style: TextStyle(
+                                                        fontFamily: 'arvo',
+                                                        color: Apptheme
+                                                            .whitetextcolor),
+                                                    text:
+                                                        "${snapshot.data['walletAmount']}.00")
+                                              ],
+                                            ));
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                        })
                                     : Text(
                                         "₹ 0",
                                         style: TextStyle(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:netly/Components/Auth/login.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/SplashScreen/splashScreen.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -18,7 +17,6 @@ class _NetlyState extends State<Netly> {
   @override
   void initState() {
     super.initState();
-    // connect();
   }
   void connect() {
     socket = IO.io("https://intense-lowlands-63563.herokuapp.com", <String, dynamic>{
@@ -48,7 +46,6 @@ class _NetlyState extends State<Netly> {
       print("///////");
     });
     print(socket.connected);
-    // print(socket.id);
     socket.emit("/test", "Hello World");
   }
 

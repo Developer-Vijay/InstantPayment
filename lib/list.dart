@@ -194,18 +194,12 @@ class DessertDataSource extends DataTableSource {
   }
 
   @override
-  // ignore: todo
-  // TODO: implement isRowCountApproximate
   bool get isRowCountApproximate => false;
 
   @override
-  // ignore: todo
-  // TODO: implement rowCount
   int get rowCount => table.length;
 
   @override
-  // ignore: todo
-  // TODO: implement selectedRowCount
   int get selectedRowCount => _selecte4dRowcount;
 }
 

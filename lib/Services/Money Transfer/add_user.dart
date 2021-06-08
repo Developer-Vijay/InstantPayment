@@ -150,46 +150,7 @@ class _AddUserState extends State<AddUser> {
         verification: true,
         number: numberController.text,
       ));
-      // showDialog(
-      //   context: context,
-      //   builder: (_) => AlertDialog(
-      //     content: Container(
-      //       height: 25 * SizeConfig.heightMultiplier,
-      //       child: Column(
-      //         children: [
-      //           InkWell(
-      //             onTap: () {
-      //               Navigator.pop(context);
-      //             },
-      //             child: Container(
-      //               alignment: Alignment.topRight,
-      //               child: Icon(Icons.clear),
-      //             ),
-      //           ),
-      //           SizedBox(
-      //             height: 2.4 * SizeConfig.heightMultiplier,
-      //           ),
-      //           Text("Please Enter The Otp"),
-      //           SizedBox(
-      //             height: 2.4 * SizeConfig.heightMultiplier,
-      //           ),
-      //           Padding(
-      //             padding: const EdgeInsets.only(left: 12, right: 12),
-      //             child: TextField(
-      //               controller: numberController,
-      //               maxLength: 6,
-      //               keyboardType: TextInputType.phone,
-      //               decoration: InputDecoration(
-      //                   errorText: numberValidate,
-      //                   counterText: "",
-      //                   labelText: "OTP"),
-      //             ),
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // );
+     
       widget.controller.animateTo(widget.selectedindex += 1);
     } else {
       Fluttertoast.showToast(msg: "Error");

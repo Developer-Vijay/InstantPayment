@@ -27,9 +27,6 @@ class _SelectDthOperatorState extends State<SelectDthOperator> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      getDthOperatorList();
-    });
   }
 
 // variable inializer
@@ -48,79 +45,38 @@ class _SelectDthOperatorState extends State<SelectDthOperator> {
 // Dth Operator Api
 
   getDthOperatorList() async {
-    //  showDialog(
-    //       barrierDismissible: false,
-    //       context: context,
-    //       builder: (_) => Container(
-    //         color: Colors.white,
-    //             child: Center(child: CircularProgressIndicator(),)
-    //           ));
-    //  showDialog(
-    //         barrierDismissible: false,
-    //         context: context,
-    //         builder: (_) => new AlertDialog(
-    //                 content: Row(
-    //               children: [
-    //                 CircularProgressIndicator(),
-    //                 Padding(
-    //                   padding: const EdgeInsets.symmetric(horizontal: 12),
-    //                   child: Text("Loading"),
-    //                 ),
-    //               ],
-    //             )));
-    final prefs = await SharedPreferences.getInstance();
-    retrieveLogin = prefs.getString('loginInfo');
-    logindata = jsonDecode(retrieveLogin);
-    sessionToken = logindata['sessionToken'];
-    refreshtoken = logindata['refreshToken'];
-    loginId = logindata['user']['_id'];
-    print(refreshtoken);
-    try {
-      var response = await http.get(
-          Uri.parse(ADMIN_API +
-              '/getOperatorList' +
-              '?operatorType=DTH&subdomain=instantpay'),
-          headers: {
-            'Content-type': 'application/json',
-            'authorization': sessionToken,
-            'refreshToken': refreshtoken
-          });
-      responseData = jsonDecode(response.body);
-      jsonResponse = response.body;
-      if (response.statusCode == 200) {
-        setState(() {
-          checker = true;
-          checker2 = false;
-        });
-        // Fluttertoast.showToast(msg: "Operator List Fetched Successfully");
-        // Navigator.pop(context);
-      } else {
-        // Navigator.pop(context);
-        setState(() {
-          checker = true;
-          checker2 = true;
-        });
-        // Fluttertoast.showToast(msg: "Sorry Something went wrong");
+    return dthMemorizer.runOnce(() async {
+      final prefs = await SharedPreferences.getInstance();
+      retrieveLogin = prefs.getString('loginInfo');
+      logindata = jsonDecode(retrieveLogin);
+      sessionToken = logindata['sessionToken'];
+      refreshtoken = logindata['refreshToken'];
+      loginId = logindata['user']['_id'];
+      print(refreshtoken);
+      try {
+        var response = await http.get(
+            Uri.parse(ADMIN_API +
+                '/getOperatorList' +
+                '?operatorType=DTH&subdomain=instantpay'),
+            headers: {
+              'Content-type': 'application/json',
+              'authorization': sessionToken,
+              'refreshToken': refreshtoken
+            });
+        responseData = jsonDecode(response.body);
+        jsonResponse = response.body;
+        if (response.statusCode == 200) {
+          return responseData;
+        } else {
+          print("error in dth");
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 
   getOperatorDetails(var id) async {
-    // showDialog(
-    //     barrierDismissible: false,
-    //     context: context,
-    //     builder: (_) => new AlertDialog(
-    //             content: Row(
-    //           children: [
-    //             CircularProgressIndicator(),
-    //             Padding(
-    //               padding: const EdgeInsets.symmetric(horizontal: 12),
-    //               child: Text("Loading"),
-    //             ),
-    //           ],
-    //         )));
     try {
       var response = await http.get(
           Uri.parse(SERVICE_API +
@@ -169,40 +125,46 @@ class _SelectDthOperatorState extends State<SelectDthOperator> {
               ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: responseData != null
-                      ? DropdownButtonFormField(
-                          decoration:
-                              InputDecoration(errorText: operatorValidate),
-                          isDense: false,
-                          isExpanded: true,
-                          hint: Text("Select an Operator"),
-                          value: selected,
-                          items: List.generate(
-                            responseData.length,
-                            (index) => DropdownMenuItem(
-                                value: index,
-                                child: Text(responseData[index]['name'])),
-                          ),
-                          onChanged: (value) {
-                            int index = value;
-                            setState(() {
-                              selected = index;
-                              operatorId = responseData[index]
-                                  ['activeAPIOperatorCodeId'];
-                              print(operatorId);
-                              operatorName = responseData[index]['name'];
-                              getOperatorDetails(operatorId);
-                            });
-                          })
-                      : DropdownButtonFormField(
-                          decoration:
-                              InputDecoration(errorText: operatorValidate),
-                          isDense: false,
-                          isExpanded: true,
-                          hint: Text("Select an Operator"),
-                          value: selected,
-                          items: [],
-                          onChanged: (value) {})),
+                  child: FutureBuilder(
+                      future: this.getDthOperatorList(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return DropdownButtonFormField(
+                              decoration:
+                                  InputDecoration(errorText: operatorValidate),
+                              isDense: false,
+                              isExpanded: true,
+                              hint: Text("Select an Operator"),
+                              value: selected,
+                              items: List.generate(
+                                snapshot.data.length,
+                                (index) => DropdownMenuItem(
+                                    value: index,
+                                    child: Text(snapshot.data[index]['name'])),
+                              ),
+                              onChanged: (value) {
+                                int index = value;
+                                setState(() {
+                                  selected = index;
+                                  operatorId = snapshot.data[index]
+                                      ['activeAPIOperatorCodeId'];
+                                  print(operatorId);
+                                  operatorName = snapshot.data[index]['name'];
+                                  getOperatorDetails(operatorId);
+                                });
+                              });
+                        } else {
+                          return DropdownButtonFormField(
+                              decoration:
+                                  InputDecoration(errorText: operatorValidate),
+                              isDense: false,
+                              isExpanded: true,
+                              hint: Text("Select an Operator"),
+                              value: selected,
+                              items: [],
+                              onChanged: (value) {});
+                        }
+                      })),
               SizedBox(
                 height: 5 * SizeConfig.heightMultiplier,
               ),

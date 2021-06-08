@@ -62,7 +62,6 @@ class _AddBalancePageState extends State<AddBalancePage> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
-        print(_image);
       });
     } else {
       Fluttertoast.showToast(msg: "No Image is Selected");
@@ -77,6 +76,8 @@ class _AddBalancePageState extends State<AddBalancePage> {
       getbankDetails();
     });
   }
+
+  List transfer = ["Cash Deposit", "NEFT", "RTGS", "IMPS", "Fund Transfer"];
 
   getbankDetails() async {
     final prefs = await SharedPreferences.getInstance();
@@ -93,13 +94,10 @@ class _AddBalancePageState extends State<AddBalancePage> {
     });
     bankData = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      print("bank fetched");
-      print(bankData);
-    } else {
-      print("bank  not fetched");
-    }
+    } else {}
   }
 
+  int selected1;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -155,63 +153,23 @@ class _AddBalancePageState extends State<AddBalancePage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TextField(
-                controller: transferController,
-                readOnly: true,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(8),
-                    hintText: dropdownValue,
-                    errorText: transferValidate,
-                    hintStyle: TextStyle(fontWeight: FontWeight.w600),
-                    suffixIcon: PopupMenuButton(
-                      onSelected: (value) {
-                        if (value == 0) {
-                          setState(() {
-                            transferController.text = "Cash Deposit";
-                          });
-                        } else if (value == 1) {
-                          setState(() {
-                            transferController.text = "NEFT";
-                          });
-                        } else if (value == 2) {
-                          setState(() {
-                            transferController.text = "RTGS";
-                          });
-                        } else if (value == 3) {
-                          setState(() {
-                            transferController.text = "IMPS";
-                          });
-                        } else if (value == 4) {
-                          setState(() {
-                            transferController.text = "Fund Transfer";
-                          });
-                        }
-                      },
-                      icon: Icon(Icons.arrow_drop_down),
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          child: Text("Cash Deposit"),
-                          value: 0,
-                        ),
-                        PopupMenuItem(
-                          child: Text("NEFT"),
-                          value: 1,
-                        ),
-                        PopupMenuItem(
-                          child: Text("RTGS"),
-                          value: 2,
-                        ),
-                        PopupMenuItem(
-                          child: Text("IMPS"),
-                          value: 3,
-                        ),
-                        PopupMenuItem(
-                          child: Text("Fund Transfer"),
-                          value: 4,
-                        ),
-                      ],
-                    )),
-              ),
+              child: DropdownButtonFormField(
+                  decoration: InputDecoration(errorText: transferValidate),
+                  isDense: false,
+                  isExpanded: true,
+                  hint: Text("Select Transfer Type"),
+                  value: selected1,
+                  items: List.generate(
+                    transfer.length,
+                    (index) => DropdownMenuItem(
+                        value: index, child: Text(transfer[index])),
+                  ),
+                  onChanged: (value) {
+                    int index = value;
+                    setState(() {
+                      selected1 = index;
+                    });
+                  }),
             ),
             SizedBox(
               height: 4 * SizeConfig.heightMultiplier,
@@ -237,7 +195,6 @@ class _AddBalancePageState extends State<AddBalancePage> {
                           setState(() {
                             selected = index;
                             bankId = bankData['bankList'][index]['_id'];
-                            print(bankId);
                             bankName = bankData['bankList'][index]['name'];
                           });
                         })
@@ -417,7 +374,7 @@ class _AddBalancePageState extends State<AddBalancePage> {
       });
     }
 
-    if (transferController.text.isEmpty) {
+    if (selected1 == null) {
       setState(() {
         transferValidate = "Transfer type is needed";
         isValidate = true;
@@ -441,7 +398,7 @@ class _AddBalancePageState extends State<AddBalancePage> {
       });
     }
 
-    if (isValidate == false && _image != null) {
+    if (isValidate == false && _image != null && selected1 != null) {
       showDialog(
           barrierDismissible: false,
           context: context,
@@ -485,8 +442,6 @@ class _AddBalancePageState extends State<AddBalancePage> {
       try {
         var encodedBody = jsonEncode(jsonData);
 
-        print("?????");
-
         var uri = Uri.parse(PORTAL_API + '/paymentRequest');
         var request = http.MultipartRequest(
           'POST',
@@ -503,11 +458,7 @@ class _AddBalancePageState extends State<AddBalancePage> {
         request.fields['jsonData'] = encodedBody;
 
         var response = await request.send();
-        print(response.stream);
-        print(response.statusCode);
         final res = await http.Response.fromStream(response);
-        print("?????????");
-        print(res.body);
         var decodedData = jsonDecode(res.body);
         if (response.statusCode == 200) {
           setState(() {
@@ -524,14 +475,10 @@ class _AddBalancePageState extends State<AddBalancePage> {
           Fluttertoast.showToast(msg: "File size is too Large");
           Navigator.pop(context);
         } else {
-          print(response.statusCode);
-
           Fluttertoast.showToast(msg: "${decodedData['message']}");
           Navigator.pop(context);
         }
-      } catch (e) {
-        print(e);
-      }
+      } catch (e) {}
     }
   }
 

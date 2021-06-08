@@ -32,36 +32,6 @@ class _AnimationState extends State<Animation> {
     getSession();
   }
 
-  // DateTime _currentDate;
-  // String getdate;
-  // var current;
-  // checkDate() async {
-  //   SharedPreferences date = await SharedPreferences.getInstance();
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   _currentDate = DateTime.now();
-  //   getdate = DateFormat("dd-MM-yyyy").format(_currentDate);
-  //   current = date.getString('date');
-  //   print(getdate);
-  //   print("////");
-  //   print(current);
-  //   print("/////");
-  //   if (current == getdate) {
-  //     current = date.setString('date', getdate);
-  //   } else {
-  //     current = date.setString('date', getdate);
-  //     prefs.setInt('counter', 1);
-
-  //     setState(() {
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (context) => Login(),
-  //           ));
-  //       prefs.setBool('isAuthenticated', false);
-  //     });
-  //   }
-  // }
-
   var retrieveLogin;
   var sessionToken;
   var refreshToken;
@@ -73,21 +43,16 @@ class _AnimationState extends State<Animation> {
   var getDate = DateTime.now();
   var currentDate;
   getSession() async {
-    //Local Session
     final prefs = await SharedPreferences.getInstance();
     var passcode = prefs.getString('passcode');
     initScreen = prefs.getInt('initScreen');
 
     setState(() {
       currentDate = DateFormat("dd/MM/yyyy").format(getDate);
-      print(currentDate);
       logindate = prefs.getString('LoginDate');
-      print(logindate);
     });
-    //  currentDate = DateFormat("dd/MM/yyyy").format(getDate);
     var auth = prefs.getBool('isAuthenticated');
     logindate = prefs.getString('LoginDate');
-    print(initScreen);
     if (initScreen == null) {
       prefs.setInt('initScreen', 1);
       Future.delayed(Duration(seconds: 2), () {
@@ -104,16 +69,8 @@ class _AnimationState extends State<Animation> {
                       walletAmount: walletAmount,
                     )));
       });
-    } else if (currentDate != logindate) {
-      // setState(() {
-      prefs.setBool("Authenticated", false);
-
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login()));
-      });
-      // });
-    } else if (passcode == null) {
+    }
+    else if (passcode == null) {
       Future.delayed(Duration(seconds: 2), () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => SetPasscode()));
@@ -130,7 +87,6 @@ class _AnimationState extends State<Animation> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

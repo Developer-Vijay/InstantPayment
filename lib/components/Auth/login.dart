@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:netly/Components/Auth/otp_validate.dart';
 import 'package:netly/Components/Resources/images.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
@@ -114,7 +115,9 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                       errorText: isNameValidate,
-                      labelStyle: TextStyle(fontFamily: 'Orelega One'),
+                      labelStyle:  GoogleFonts.oregano(),
+                        // fontSize: 2.2 * SizeConfig.textMultiplier,
+                        // color: Apptheme.whitetextcolor),
                       contentPadding: EdgeInsets.all(5),
                       suffixIcon: Icon(
                         Icons.person,
@@ -146,9 +149,9 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                       errorText: isPasswordValidate,
-                      labelStyle: TextStyle(
-                          fontWeight: FontWeight.w100,
-                          fontFamily: 'Orelega One'),
+                      labelStyle:  GoogleFonts.oregano(),
+                        // fontSize: 2.2 * SizeConfig.textMultiplier,
+                        // color: Apptheme.whitetextcolor),
                       contentPadding: EdgeInsets.all(6),
                       suffixIcon: InkWell(
                           onTap: () {
@@ -182,15 +185,13 @@ class _LoginState extends State<Login> {
                 onPressed: () {
                   login();
                 },
-                child: Text(
-                  "LOGIN",
-                  style: TextStyle(
-                      fontFamily: 'Orelega One',
-                      fontSize: 2.2 * SizeConfig.textMultiplier,
-                      color: Apptheme.whitetextcolor),
-                ),
+                child: Text("LOGIN",
+                    style: GoogleFonts.oregano(
+                        fontSize: 2.2 * SizeConfig.textMultiplier,
+                        color: Apptheme.whitetextcolor)),
               ),
             ),
+
             SizedBox(
               height: 2.5 * SizeConfig.heightMultiplier,
             ),
@@ -200,10 +201,9 @@ class _LoginState extends State<Login> {
                   onPressed: () {},
                   child: Text(
                     "Forgot Password ?",
-                    style: TextStyle(
-                        fontFamily: 'Orelega One',
-                        color: Apptheme.blacktextColor,
-                        fontWeight: FontWeight.w400),
+                    style:  GoogleFonts.oregano(
+                        fontSize: 2.2 * SizeConfig.textMultiplier,
+                        color: Apptheme.whitetextcolor)
                   ),
                 ))
           ],
@@ -266,19 +266,17 @@ class _LoginState extends State<Login> {
           Fluttertoast.showToast(
               msg: "${responseData['otp']}", toastLength: Toast.LENGTH_LONG);
 
-          print(responseData['otp']);
-          print(responseData['data']);
           prefs.setBool('Authenticated', true);
 
           prefs.setString('userName', _usernameController.text);
           prefs.setString('password', _passwordController.text);
           prefs.setInt('otp', responseData['otp']);
-
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => OtpValidate()));
         }
       } else {
         Navigator.pop(context);
+        print(response.statusCode);
         Fluttertoast.showToast(msg: responseData['message']);
       }
     }

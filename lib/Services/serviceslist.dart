@@ -172,10 +172,7 @@ class ReportList {
 
 List<ReportList> reportlist=[
   ReportList(icon: "assets/icon/bill.svg",title:"Recharges",subtitle: "See Mobile Recharge Report",params: "Recharge" ),
-  // ReportList(icon: "assets/icon/parabolic-dishes.svg",title:"Dth Recharge",subtitle: "See Dth Recharge Report" ),
-  ReportList(icon: "assets/icon/tower.svg",title:"Electricity bill",subtitle: "See Electricity bill Report",params: "BillPayment" ),
-  // ReportList(icon: "assets/icon/card.svg",title:"Data Card bill",subtitle: "See Data Card bill Report" ),
-  // ReportList(icon:"assets/icon/gas.svg",title: "Gas bill",subtitle: "See Gas bill Report " ),
+  ReportList(icon: "assets/icon/tower.svg",title:"bill Payment",subtitle: "See Electricity bill Report",params: "billPayment" ),
   ReportList(icon: "assets/icon/money-transfer.svg",title:"Money Transfer Report",subtitle: "See Money Transfer Report",params: "Money Transfer" ),
   ReportList(icon: "assets/icon/aep.svg",title:"AEPS Report",subtitle: "See AEPS Report",params: "AEPS" ),
   ReportList(icon: "assets/icon/atm-machine.svg",title:"Micro Atm Report",subtitle: "See Micro Atm Report",params: "MicroATM" ),

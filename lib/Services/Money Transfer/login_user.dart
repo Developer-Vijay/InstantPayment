@@ -195,7 +195,7 @@ class _LoginUserState extends State<LoginUser> {
                   show == false
                       ? Future.delayed(
                           Duration(
-                            microseconds: 800,
+                            milliseconds: 800,
                           ), () {
                           loginuser();
                         })
@@ -371,7 +371,6 @@ class _LoginUserState extends State<LoginUser> {
           );
           Fluttertoast.showToast(msg: responseData['message']);
           print(responseData);
-          // Navigator.pop(context);
         }
       }
     } else {
@@ -417,7 +416,6 @@ class _LoginUserState extends State<LoginUser> {
         "createdBy": loginId
       };
       var encodeddata = jsonEncode(data);
-      // print(encodeddata);
       var response = await http.post(SERVICE_API + '/mobileVerification',
           headers: {
             "Content-type": "application/json",
@@ -491,7 +489,6 @@ class _LoginUserState extends State<LoginUser> {
           Fluttertoast.showToast(msg: jsonData['message']);
         } else if (jsonData['errorExist'] == true) {
           Fluttertoast.showToast(msg: jsonData['message']);
-          print("3");
           setState(() {
             show = true;
           });
@@ -510,7 +507,6 @@ class _LoginUserState extends State<LoginUser> {
                   spent: jsonData['availAPICapacity']['spentMoney'],
                 ),
               ));
-          // Navigator.pop(context);
         }
       } else {
         print(response.statusCode);
@@ -541,7 +537,6 @@ class _LoginUserState extends State<LoginUser> {
           "refreshToken": refreshToken
         });
     responseData = jsonDecode(response.body);
-    // final List data = jsonDecode(response.body);
     if (response.statusCode == 200) {
       print("/////");
       print(responseData);
@@ -553,6 +548,27 @@ class _LoginUserState extends State<LoginUser> {
       });
 
       if (named.isEmpty) {
+        for (int i = 0; i <= k - 1; i++) {
+          named.add(
+            Name(
+                name: responseData['beneficiaryList'][i]['name'],
+                accountnumber: responseData['beneficiaryList'][i]
+                    ['account_number'],
+                bankname: responseData['beneficiaryList'][i]['bank_name'],
+                beneId: responseData['beneficiaryList'][i]['beneId'],
+                ifscCode: responseData['beneficiaryList'][i]['isfc'],
+                mobileNumber: responseData['beneficiaryList'][i]
+                    ['customer_number']),
+          );
+        }
+      }
+      else if(numberController.text == named[0].mobileNumber){
+        print("Yey");
+      }
+       else if (numberController.text != named[0].mobileNumber) {
+      
+       named.clear();
+        
         for (int i = 0; i <= k - 1; i++) {
           named.add(
             Name(
