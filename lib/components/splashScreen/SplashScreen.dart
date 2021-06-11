@@ -40,6 +40,7 @@ class _AnimationState extends State<Animation> {
   var responseData;
   var walletAmount;
   var logindate;
+  var otpValidate;
   var getDate = DateTime.now();
   var currentDate;
   getSession() async {
@@ -50,6 +51,7 @@ class _AnimationState extends State<Animation> {
     setState(() {
       currentDate = DateFormat("dd/MM/yyyy").format(getDate);
       logindate = prefs.getString('LoginDate');
+      otpValidate = prefs.getInt('otp');
     });
     var auth = prefs.getBool('isAuthenticated');
     logindate = prefs.getString('LoginDate');
@@ -69,8 +71,12 @@ class _AnimationState extends State<Animation> {
                       walletAmount: walletAmount,
                     )));
       });
-    }
-    else if (passcode == null) {
+    } else if (otpValidate != 1 && passcode == null) {
+      Future.delayed(Duration(seconds: 2), () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Login()));
+      });
+    } else if (otpValidate == 1 || passcode == null) {
       Future.delayed(Duration(seconds: 2), () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => SetPasscode()));
@@ -87,6 +93,7 @@ class _AnimationState extends State<Animation> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

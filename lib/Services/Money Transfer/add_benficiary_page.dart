@@ -7,6 +7,7 @@ import 'package:netly/Services/serviceslist.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 // ignore: must_be_immutable
 class BenificaryPage extends StatefulWidget {
@@ -62,6 +63,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
   var refreshToken;
   var loginId;
   int j;
+  String bankNamed;
 
   getUserData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -76,9 +78,9 @@ class _BenificaryPageState extends State<BenificaryPage> {
       print("?????????");
     });
   }
-
+var data;
   final List<DropdownMenuItem> items = [];
-  List data = [];
+  List data1 = [];
   getBankList() async {
     var response = await http.get(SERVICE_API + '/getBankList', headers: {
       "Content-type": "application/json",
@@ -91,25 +93,24 @@ class _BenificaryPageState extends State<BenificaryPage> {
         print("////////");
         setState(() {
           j = responseData['bankList'].length;
+
           // data = responseData['bankList'];
         });
         print(responseData);
-
+        bankIfscList = [];
         print(ifscCode);
         for (int i = 0; i <= j - 1; i++) {
+          bankIfscList.add(BankList(
+              bankName: " ${responseData['bankList'][i]['bankName']}",
+              ifscCode: responseData['bankList'][i]['ifscCode'],
+              index: i));
           bankdata = "$bankdata-${responseData['bankList'][i]['bankName']}-";
           isfcData = "$isfcData-${responseData['bankList'][i]['ifscCode']}-";
         }
         print(bankdata);
         print(isfcData);
         String wordPair = "";
-        bankdata
-            // .toLowerCase()
-
-            // .replaceAll(" "," ")
-            // .replaceAll(".", "")
-            .split("-")
-            .forEach((word) {
+        bankdata.split("-").forEach((word) {
           if (wordPair.isEmpty) {
             wordPair = word + " ";
           } else {
@@ -143,7 +144,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
   String dropdownValue = 'select Bank Name';
   String isfcData = "";
   bool isValidate = false;
-
+ 
   List<String> searchedlist = ['s', 'b'];
   // search(index) {
   //   final list = responseData['bankList'][index]['bankName']
@@ -151,7 +152,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
   //       .toList();
   // }
   List<DropdownMenuItem> unis = [];
-
+  List<BankList> bankIfscList = [];
   @override
   Widget build(BuildContext context) {
     // codeController.text = ifscCode;
@@ -235,44 +236,53 @@ class _BenificaryPageState extends State<BenificaryPage> {
               height: 2 * SizeConfig.heightMultiplier,
             ),
             Padding(
-              padding: const EdgeInsets.all(8),
-              child: j == null
-                  ? DropdownButtonFormField(
-                      isDense: false,
-                      isExpanded: true,
-                      hint: Text("Select an Bank"),
-                      items: [],
-                      onChanged: (value) {},
-                    )
-                  : DropdownButtonFormField(
-                      // itemHeight: ,
-                      decoration: InputDecoration(errorText: bankValidate),
-                      isDense: false,
-                      isExpanded: true,
-                      hint: Text("Select an Bank"),
-                      value: selected,
-                      items: List.generate(
-                        j,
-                        (index) => DropdownMenuItem(
-                            value: index,
-                            child: Text(
-                                responseData['bankList'][index]['bankName'])),
-                      ),
-                      onChanged: (value) {
-                        int index = value;
-                        setState(() {
-                          selected = index;
-                          bankId = responseData['bankList'][index]['bankId'];
-                          print(bankId);
-                          bankName =
-                              responseData['bankList'][index]['bankName'];
-                          ifscCode =
-                              responseData['bankList'][index]['ifscCode'];
-                          codeController.text =
-                              responseData['bankList'][index]['ifscCode'];
-                        });
-                      }),
-            ),
+                padding: const EdgeInsets.all(8),
+                child: j == null
+                    ? DropdownButtonFormField(
+                        isDense: false,
+                        isExpanded: true,
+                        hint: Text("Select an Bank"),
+                        items: [],
+                        onChanged: (value) {},
+                      )
+                    : SearchableDropdown.single(
+                        isExpanded: true,
+
+                        // label: Text("Bank Name"),
+                        hint: Text("Select a bank"),
+                        onChanged: (value) {
+                         
+                          setState(() {
+                            data = value;
+                            print(bankIfscList[5].bankName);
+
+                            print("???????");
+                          });
+                          int k = bankIfscList.length;
+                          for (int i = 0; i <= k - 1; i++) {
+                            print(i);
+                            print(bankIfscList[i].bankName);
+                            print("***************");
+                            // print(data.replaceAll(' ', ''));
+                            if (data == null) {
+                              print("Null");
+                            } else if (bankIfscList[i]
+                                    .bankName
+                                    .replaceAll(' ', '') ==
+                                data.replaceAll(' ', '')) {
+                              print("matched");
+                              setState(() {
+                                bankNamed = bankIfscList[i].bankName;
+                                ifscCode = bankIfscList[i].ifscCode;
+                                codeController.text = bankIfscList[i].ifscCode;
+                                print(codeController.text);
+                              });
+                            } else {
+                              print(" not matched");
+                            }
+                          }
+                        },
+                        items: items)),
 
             SizedBox(
               height: 0 * SizeConfig.heightMultiplier,
@@ -330,42 +340,22 @@ class _BenificaryPageState extends State<BenificaryPage> {
               height: 2 * SizeConfig.heightMultiplier,
             ),
 
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: 46 * SizeConfig.widthMultiplier,
-                    child: MaterialButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      color: Apptheme.PrimaryColor,
-                      textColor: Apptheme.whitetextcolor,
-                      onPressed: () {
-                        verifyBene();
-                      },
-                      child: Text("Verify Bene"),
-                    ),
-                  ),
+            // Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Container(
+                width: 50 * SizeConfig.widthMultiplier,
+                child: MaterialButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  color: Apptheme.PrimaryColor,
+                  textColor: Apptheme.whitetextcolor,
+                  onPressed: () {
+                    addBene();
+                  },
+                  child: Text("Add Bene"),
                 ),
-                Spacer(),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Container(
-                    width: 46 * SizeConfig.widthMultiplier,
-                    child: MaterialButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      color: Apptheme.PrimaryColor,
-                      textColor: Apptheme.whitetextcolor,
-                      onPressed: () {
-                        addBene();
-                      },
-                      child: Text("Add Bene"),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
 
             SizedBox(
@@ -377,7 +367,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
     );
   }
 
-  Future addBene() async {
+  addBene() async {
     if (codeController.text.isEmpty) {
       setState(() {
         codeValidate = 'IFSC code cannot be empty';
@@ -390,9 +380,10 @@ class _BenificaryPageState extends State<BenificaryPage> {
       });
     }
 
-    if (selected == null) {
+    if (data == null) {
       setState(() {
-        bankValidate = 'It cannot be empty';
+        // bankValidate = 'It cannot be empty';
+        Fluttertoast.showToast(msg: "Please Select a bank First");
         isValidate = true;
       });
     } else {
@@ -426,7 +417,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
       });
     }
 
-    if (isValidate == false) {
+    if (isValidate == false && data!=null) {
       showDialog(
           barrierDismissible: false,
           context: context,
@@ -441,7 +432,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
                 ],
               )));
       Map addData = {
-        "bankName": bankName,
+        "bankName": bankNamed,
         "IFSCCode": codeController.text,
         "accountNumber": accountController.text,
         "beneficiaryName": nameController.text,
@@ -471,7 +462,7 @@ class _BenificaryPageState extends State<BenificaryPage> {
   }
 
 // verify bene
-  Future verifyBene() async {
+  verifyBene() async {
     if (banknameController.text.isEmpty) {
       setState(() {
         bankValidate = 'It cannot be empty';
@@ -524,12 +515,6 @@ class _BenificaryPageState extends State<BenificaryPage> {
           add[0].firstName,
         )) {
       Fluttertoast.showToast(msg: "Verified api integration will work here");
-      // showModalBottomSheet(
-      //   context: context,
-      //   isScrollControlled: true,
-      //   builder: (context) => Container(
-      //       height: 50 * SizeConfig.heightMultiplier, child: VerifiedData()),
-      // );
     } else {
       Fluttertoast.showToast(msg: "Not Verified");
     }

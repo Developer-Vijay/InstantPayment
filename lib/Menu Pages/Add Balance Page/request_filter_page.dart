@@ -126,12 +126,9 @@ class _RequestFilterPageState extends State<RequestFilterPage> {
                         builder: (context) => PaymentRequestReport(
                           fromDate: selectedDate.toLocal(),
                           toDate: toDate.toLocal(),
-                          // fromDate:
-                          //     DateFormat("yyyy-MM-dd").format(selectedDate),
-                          // toDate: DateFormat("yyyy-MM-dd").format(toDate),
+                          
                         ),
                       ));
-                      // Navigator.pop(context);
                 },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),

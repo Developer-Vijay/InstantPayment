@@ -131,7 +131,6 @@ class _PaymentRequestReportState extends State<PaymentRequestReport> {
                 minWidth: 20 * SizeConfig.widthMultiplier,
                 child: Text("Request"),
                 textColor: Apptheme.whitetextcolor,
-                // color: Apptheme.PrimaryColor,
                 onPressed: () {
                   Navigator.push(
                       context,

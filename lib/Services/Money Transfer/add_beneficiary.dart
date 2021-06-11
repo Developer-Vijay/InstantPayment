@@ -29,7 +29,12 @@ class _AddBeneficiaryState extends State<AddBeneficiary>
     controller = TabController(
       length: list.length,
       vsync: this,
+
+      
     );
+    print("*******");
+    print(widget.data);
+    print("************");
 
     setState(() {
       number = widget.data;
@@ -91,12 +96,14 @@ class _AddBeneficiaryState extends State<AddBeneficiary>
             children: [
               RecipientPage(
                 data: widget.data,
+                limit: widget.limit,
                 controller: controller,
+                spent: widget.spent,
                 apiData: widget.responseData,
                 selectedIndex: selectedIndex,
               ),
               BenificaryPage(
-                data: widget.data,
+                data: number,
                 limit: widget.limit,
                 spent: widget.spent,
                 bankData: bankData,
