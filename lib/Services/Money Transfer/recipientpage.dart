@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Services/Money%20Transfer/transfer_money.dart';
-import 'package:netly/Services/serviceslist.dart';
 import 'package:netly/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,11 +12,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RecipientPage extends StatefulWidget {
   final data;
   final apiData;
-
+  final limit;
+  final spent;
   TabController controller;
   int selectedIndex;
 
-  RecipientPage({this.controller, this.selectedIndex, this.data, this.apiData});
+  RecipientPage(
+      {this.controller,
+      this.selectedIndex,
+      this.data,
+      this.apiData,
+      this.limit,
+      this.spent});
 
   @override
   _RecipientPageState createState() => _RecipientPageState();
@@ -39,12 +45,6 @@ class _RecipientPageState extends State<RecipientPage> {
       filter = searhed.text;
     });
     print(widget.data);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    searhed.dispose();
   }
 
   var responseData;
@@ -328,8 +328,40 @@ class _RecipientPageState extends State<RecipientPage> {
       child: ListView(
         shrinkWrap: true,
         children: [
+          Container(
+            height: SizeConfig.heightMultiplier * 5.5,
+            color: Apptheme.PrimaryColor,
+            padding: EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Text(
+                  "Monthly Limit:",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  width: 2.1 * SizeConfig.widthMultiplier,
+                ),
+                Text("${widget.limit}",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
+                Spacer(),
+                Text("Spent:",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
+                SizedBox(
+                  width: 2.1 * SizeConfig.widthMultiplier,
+                ),
+                Text("${widget.spent}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ))
+              ],
+            ),
+          ),
           SizedBox(
-            height: 3 * SizeConfig.heightMultiplier,
+            height: 1 * SizeConfig.heightMultiplier,
           ),
           InkWell(
               onTap: () {
@@ -397,7 +429,7 @@ class _RecipientPageState extends State<RecipientPage> {
                                     name: name.name,
                                     number: name.mobileNumber,
                                     accountNumber: name.accountnumber,
-                                    ifscCode: name.ifscCode,
+                                    ifscCode: name.ifscCodes,
                                     beneId: name.beneId),
                               ));
                         },
@@ -430,7 +462,6 @@ class _RecipientPageState extends State<RecipientPage> {
                                     child: Text(name.bankname),
                                   ),
                                   Spacer(),
-                                 
                                   IconButton(
                                     onPressed: () {
                                       deleteRequest(named[index].beneId,
@@ -452,11 +483,7 @@ class _RecipientPageState extends State<RecipientPage> {
                               child: Row(
                                 children: [
                                   Container(
-                                    child:
-                                        // responseData['beneficiaryList'] == null
-                                        //     ? Text("Bank Account Number",
-                                        //         style: TextStyle(fontWeight: FontWeight.w500))
-                                        Text("${name.accountnumber}"),
+                                    child: Text("${name.accountnumber}"),
                                   ),
                                   Spacer(),
                                 ],
@@ -552,7 +579,7 @@ class Searchbar extends SearchDelegate<String> {
                               name: name.name,
                               number: name.mobileNumber,
                               accountNumber: name.accountnumber,
-                              ifscCode: name.ifscCode,
+                              ifscCode: name.ifscCodes,
                               beneId: name.beneId),
                         ));
                   },
@@ -569,11 +596,6 @@ class Searchbar extends SearchDelegate<String> {
                                 style: TextStyle(fontWeight: FontWeight.w500),
                               ),
                             ),
-                            Spacer(),
-                            Icon(
-                              Icons.check,
-                              color: Colors.green[600],
-                            )
                           ],
                         ),
                       ),
@@ -587,25 +609,6 @@ class Searchbar extends SearchDelegate<String> {
                             Container(
                               child: Text(name.bankname),
                             ),
-                            Spacer(),
-                            InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => TransferMoney(
-                                            bankname: name.bankname,
-                                            name: name.name,
-                                            number: name.mobileNumber,
-                                            accountNumber: name.accountnumber,
-                                            ifscCode: name.ifscCode,
-                                            beneId: name.beneId),
-                                      ));
-                                },
-                                child: Icon(
-                                  Icons.send_outlined,
-                                  color: Apptheme.PrimaryColor,
-                                )),
                           ],
                         ),
                       ),
@@ -617,21 +620,9 @@ class Searchbar extends SearchDelegate<String> {
                         child: Row(
                           children: [
                             Container(
-                              child:
-                                  // responseData['beneficiaryList'] == null
-                                  //     ? Text("Bank Account Number",
-                                  //         style: TextStyle(fontWeight: FontWeight.w500))
-                                  Text("${name.accountnumber}"),
+                              child: Text("${name.accountnumber}"),
                             ),
                             Spacer(),
-                            InkWell(
-                                onTap: () {
-                                  banklist.remove(banklist[index]);
-                                },
-                                child: Icon(
-                                  Icons.delete_outline,
-                                  color: Apptheme.textColo1r,
-                                ))
                           ],
                         ),
                       ),

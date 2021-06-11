@@ -23,11 +23,18 @@ const SERVICE_API = API_BASE_URL + 'service';
 const COMMON_API = API_BASE_URL + 'common';
 const PORTAL_API = API_BASE_URL + 'portal';
 
+class BankList{
+  int index;
+  String bankName;
+  var ifscCode;
+   BankList({this.bankName,this.ifscCode,this.index});
+}
+
 class Name {
   var name;
   var accountnumber;
   var bankname;
-  var ifscCode;
+  var ifscCodes;
   var beneId;
   var mobileNumber;
   Name(
@@ -36,7 +43,8 @@ class Name {
       this.bankname,
       this.beneId,
       this.mobileNumber,
-      this.ifscCode});
+      this.ifscCodes});
 }
-
 List<Name> named = [];
+
+

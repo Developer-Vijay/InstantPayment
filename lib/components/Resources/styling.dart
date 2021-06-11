@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 
 class Apptheme {
@@ -23,11 +24,14 @@ class Apptheme {
   // ignore: non_constant_identifier_names
   static final LightTextTheme = TextTheme(headline6: maintextColor);
 
-  static final TextStyle loginPageTitle = TextStyle(
-      fontSize: 3 * SizeConfig.textMultiplier,
-      color: Apptheme.blacktextColor,
-      fontFamily: 'Orelega One',
-      fontWeight: FontWeight.w400);
+  static final TextStyle loginPageTitle = GoogleFonts.oregano(
+    fontWeight: FontWeight.w400,
+    fontSize: 3 * SizeConfig.textMultiplier,
+    color: Apptheme.blacktextColor,
+  );
+  // TextStyle(
+
+  //    );
 
   final Shader linearGradient = LinearGradient(
     colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],

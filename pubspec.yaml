@@ -48,7 +48,8 @@ dependencies:
   pin_code_fields:
   image_picker:
   socket_io_client:
-  google_fonts:   
+  google_fonts:
+  searchable_dropdown:    
   
          
          

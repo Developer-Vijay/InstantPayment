@@ -76,10 +76,12 @@ class _LoginState extends State<Login> {
               alignment: Alignment.center,
               child: Text(
                 Strings.loginpageheadingtitile,
-                style: TextStyle(
-                    fontFamily: 'Orelega One',
+                style: GoogleFonts.oregano(
                     fontWeight: FontWeight.w400,
                     fontSize: 2.571 * SizeConfig.textMultiplier),
+                // TextStyle(
+                //     fontFamily: 'Orelega One',
+                //     ),
               ),
             ),
             SizedBox(
@@ -115,9 +117,9 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                       errorText: isNameValidate,
-                      labelStyle:  GoogleFonts.oregano(),
-                        // fontSize: 2.2 * SizeConfig.textMultiplier,
-                        // color: Apptheme.whitetextcolor),
+                      labelStyle: GoogleFonts.oregano(),
+                      // fontSize: 2.2 * SizeConfig.textMultiplier,
+                      // color: Apptheme.whitetextcolor),
                       contentPadding: EdgeInsets.all(5),
                       suffixIcon: Icon(
                         Icons.person,
@@ -149,9 +151,9 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                       errorText: isPasswordValidate,
-                      labelStyle:  GoogleFonts.oregano(),
-                        // fontSize: 2.2 * SizeConfig.textMultiplier,
-                        // color: Apptheme.whitetextcolor),
+                      labelStyle: GoogleFonts.oregano(),
+                      // fontSize: 2.2 * SizeConfig.textMultiplier,
+                      // color: Apptheme.whitetextcolor),
                       contentPadding: EdgeInsets.all(6),
                       suffixIcon: InkWell(
                           onTap: () {
@@ -199,12 +201,10 @@ class _LoginState extends State<Login> {
                 alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {},
-                  child: Text(
-                    "Forgot Password ?",
-                    style:  GoogleFonts.oregano(
-                        fontSize: 2.2 * SizeConfig.textMultiplier,
-                        color: Apptheme.whitetextcolor)
-                  ),
+                  child: Text("Forgot Password ?",
+                      style: GoogleFonts.oregano(
+                          fontSize: 2.2 * SizeConfig.textMultiplier,
+                          color: Apptheme.whitetextcolor)),
                 ))
           ],
         )),

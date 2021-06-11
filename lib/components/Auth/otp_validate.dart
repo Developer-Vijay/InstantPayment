@@ -228,6 +228,7 @@ class _OtpValidateState extends State<OtpValidate> {
         prefs.setString('LoginDate', saveDate);
         final retrieve2 = jsonDecode(login);
         prefs.setBool('isAuthenticated', true);
+        prefs.setInt('otp',1);
         print("////");
         print(clientInfo);
         print(retrieve2['sessionToken']);

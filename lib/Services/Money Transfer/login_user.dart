@@ -496,7 +496,7 @@ class _LoginUserState extends State<LoginUser> {
         } else {
           Fluttertoast.showToast(msg: jsonData['message']);
           print("2");
-          numberController.clear();
+
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -546,7 +546,8 @@ class _LoginUserState extends State<LoginUser> {
 
         serverResponse = responseData;
       });
-
+      // List<Name> bendata = [];
+      // named.clear();
       if (named.isEmpty) {
         for (int i = 0; i <= k - 1; i++) {
           named.add(
@@ -556,19 +557,20 @@ class _LoginUserState extends State<LoginUser> {
                     ['account_number'],
                 bankname: responseData['beneficiaryList'][i]['bank_name'],
                 beneId: responseData['beneficiaryList'][i]['beneId'],
-                ifscCode: responseData['beneficiaryList'][i]['isfc'],
+                ifscCodes: responseData['beneficiaryList'][i]['isfc'],
                 mobileNumber: responseData['beneficiaryList'][i]
                     ['customer_number']),
           );
         }
       }
+
       else if(numberController.text == named[0].mobileNumber){
         print("Yey");
       }
        else if (numberController.text != named[0].mobileNumber) {
-      
+
        named.clear();
-        
+
         for (int i = 0; i <= k - 1; i++) {
           named.add(
             Name(
@@ -577,12 +579,13 @@ class _LoginUserState extends State<LoginUser> {
                     ['account_number'],
                 bankname: responseData['beneficiaryList'][i]['bank_name'],
                 beneId: responseData['beneficiaryList'][i]['beneId'],
-                ifscCode: responseData['beneficiaryList'][i]['isfc'],
+                ifscCodes: responseData['beneficiaryList'][i]['isfc'],
                 mobileNumber: responseData['beneficiaryList'][i]
                     ['customer_number']),
           );
         }
-      } else {
+      }
+      else {
         print("No Need");
       }
     } else {
