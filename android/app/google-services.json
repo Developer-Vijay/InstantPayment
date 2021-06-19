@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "872059223707",
-    "project_id": "netly-d4eb9",
-    "storage_bucket": "netly-d4eb9.appspot.com"
+    "project_number": "150470633269",
+    "project_id": "instantpayment-3130e",
+    "storage_bucket": "instantpayment-3130e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:872059223707:android:5bd8c0bce2e5497a3f903e",
+        "mobilesdk_app_id": "1:150470633269:android:c1072ffb884f3c8b798e7c",
         "android_client_info": {
-          "package_name": "com.webphiser.netly"
+          "package_name": "com.instant.payments"
         }
       },
       "oauth_client": [
         {
-          "client_id": "872059223707-2sj8427jsdq10jp2jbt4f8e60qih3g35.apps.googleusercontent.com",
+          "client_id": "150470633269-dppbo6aa2mit5u3ci33vbgmjj9svlulm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAXQPydFWmHXbdTvG8P6LCpNJ-c16iWWn0"
+          "current_key": "AIzaSyCoWMAFUIQQELR57xbOm01xQ60NxDCikLo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "872059223707-2sj8427jsdq10jp2jbt4f8e60qih3g35.apps.googleusercontent.com",
+              "client_id": "150470633269-dppbo6aa2mit5u3ci33vbgmjj9svlulm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
