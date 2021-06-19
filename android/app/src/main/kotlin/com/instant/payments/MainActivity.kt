@@ -1,4 +1,4 @@
-package com.webphiser.netly
+package com.instant.payments
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.plugins.GeneratedPluginRegistrant
