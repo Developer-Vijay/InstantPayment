@@ -19,7 +19,7 @@ class _ChangePasscodeState extends State<ChangePasscode> {
 
   TextEditingController oldPasscodeController = TextEditingController();
   TextEditingController newPasscodeController = TextEditingController();
-
+  bool show = false;
   var oldValidate;
   var newValidate;
   var passcode;
@@ -70,16 +70,27 @@ class _ChangePasscodeState extends State<ChangePasscode> {
                 maxLength: 4,
                 maxLines: 1,
                 enabled: true,
-                obscureText: true,
+                obscureText: show,
                 decoration: InputDecoration(
                   counterText: "",
                   contentPadding: EdgeInsets.only(left: 10),
                   border: InputBorder.none,
                   errorText: newValidate,
-                  suffixIcon: Icon(
-                    Icons.lock,
-                    size: 2.4 * SizeConfig.heightMultiplier,
-                  ),
+                  suffixIcon: InkWell(
+                      onTap: () {
+                        setState(() {
+                          show = !show;
+                        });
+                      },
+                      child: show == true
+                          ? Icon(
+                              Icons.lock,
+                              size: 2.6 * SizeConfig.heightMultiplier,
+                            )
+                          : Icon(
+                              Icons.lock_open_sharp,
+                              size: 2.6 * SizeConfig.heightMultiplier,
+                            )),
                   labelText: "New Passcode",
                 ),
               ),

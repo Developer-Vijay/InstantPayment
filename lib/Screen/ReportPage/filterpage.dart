@@ -34,7 +34,7 @@ class _FilterState extends State<Filter> {
   }
 
   var params;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +44,6 @@ class _FilterState extends State<Filter> {
       body: ListView(
         shrinkWrap: true,
         children: [
-         
           SizedBox(
             height: 2 * SizeConfig.heightMultiplier,
           ),
@@ -137,7 +136,7 @@ class _FilterState extends State<Filter> {
                   color: Apptheme.PrimaryColor,
                   textColor: Apptheme.whitetextcolor,
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReportPage(

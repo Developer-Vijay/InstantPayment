@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/ReportPage/filterpage.dart';
+import 'package:netly/Screen/home_screen.dart';
 import 'package:netly/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -103,11 +105,28 @@ class _ReportPageState extends State<ReportPage> {
       });
       Navigator.pop(context);
     }
-    // } catch (e) {
-    //   print(e);
-    // }
   }
+  // Future<bool> _onbackPressed() async {
+  //   return showDialog(
+  //       context: context,
+  //       builder: (contex) => AlertDialog(
+  //             title: Text("Do you Really want to exit"),
+  //             actions: [
+  //               TextButton(
+  //                 child: Text("Yes"),
+  //                 onPressed: () {
 
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: Text("No"),
+  //                 onPressed: () {
+  //                   Navigator.pop(context, false);
+  //                 },
+  //               ),
+  //             ],
+  //           ));
+  // }
   searchReportType(var param, var string) async {
     showDialog(
         barrierDismissible: false,
@@ -695,231 +714,203 @@ class _ReportPageState extends State<ReportPage> {
   final textstyle = TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: datachecker == false
-          ? Scaffold(
-              body: Center(
-              child: CircularProgressIndicator(),
-            ))
-          : Scaffold(
-              floatingActionButton: FloatingActionButton(
-                child: Icon(
-                  Icons.filter_alt_rounded,
-                  color: Colors.white,
+    return WillPopScope(
+      onWillPop: () {
+        return Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ));
+      },
+      child: SafeArea(
+        child: datachecker == false
+            ? Scaffold(
+                body: Center(
+                child: CircularProgressIndicator(),
+              ))
+            : Scaffold(
+                floatingActionButton: FloatingActionButton(
+                  child: Icon(
+                    Icons.filter_alt_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        elevation: 4.0,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        context: context,
+                        builder: (context) => Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(10.0),
+                                    topRight: const Radius.circular(10.0))),
+                            height: 40 * SizeConfig.heightMultiplier,
+                            child: Filter(
+                              param: widget.params,
+                              title: widget.data,
+                            )));
+                  },
                 ),
-                onPressed: () {
-                  showModalBottomSheet(
-                      elevation: 4.0,
-                      isScrollControlled: true,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      context: context,
-                      builder: (context) => Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: const Radius.circular(10.0),
-                                  topRight: const Radius.circular(10.0))),
-                          height: 40 * SizeConfig.heightMultiplier,
-                          child: Filter(
-                            param: widget.params,
-                            title: widget.data,
-                          )));
-                },
-              ),
-              body: Container(
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 0,
-                      child: Container(
-                          width: 133 * SizeConfig.widthMultiplier,
-                          color: Apptheme.PrimaryColor,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      "Total Result Found from",
-                                      style: TextStyle(
-                                          fontSize:
-                                              2.2 * SizeConfig.textMultiplier,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  // Spacer(),
-                                  // Padding(
-                                  //   padding:
-                                  //       const EdgeInsets.only(top: 4, right: 4),
-                                  //   child: InkWell(
-                                  //     onTap: () {
-                                  //       showModalBottomSheet(
-                                  //           elevation: 4.0,
-                                  //           isScrollControlled: true,
-                                  //           shape: RoundedRectangleBorder(
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(20),
-                                  //           ),
-                                  //           context: context,
-                                  //           builder: (context) => Container(
-                                  //               decoration: BoxDecoration(
-                                  //                   borderRadius:
-                                  //                       BorderRadius.only(
-                                  //                           topLeft: const Radius
-                                  //                               .circular(10.0),
-                                  //                           topRight: const Radius
-                                  //                               .circular(10.0))),
-                                  //               height: 40 *
-                                  //                   SizeConfig.heightMultiplier,
-                                  //               child: Filter(
-                                  //                 param: widget.params,
-                                  //                 title: widget.data,
-                                  //               )));
-                                  //     },
-                                  //     child: Container(
-                                  //       width: 24 * SizeConfig.widthMultiplier,
-                                  //       decoration: BoxDecoration(
-                                  //           color: Colors.white,
-                                  //           borderRadius:
-                                  //               BorderRadius.circular(20)),
-                                  //       child: Center(child: Text("Filter")),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "$fromDate",
-                                          style: textstyle,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 40),
-                                        child: Text(
-                                          "to",
-                                          style: textstyle,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "$toDate",
-                                          style: textstyle,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      height: 5 * SizeConfig.heightMultiplier,
-                                      width: 60 * SizeConfig.widthMultiplier,
-                                      child: TextField(
-                                        controller: seaarchController,
-                                        decoration: InputDecoration(
-                                            hintText: "Search",
-                                            hintStyle: TextStyle(
-                                                fontSize: 2 *
-                                                    SizeConfig.textMultiplier),
-                                            border: InputBorder.none,
-                                            suffixIcon: InkWell(
-                                              onTap: () {
-                                                seaarchController.clear();
-                                              },
-                                              child: Icon(
-                                                Icons.close,
-                                                size: 2.5 *
-                                                    SizeConfig.textMultiplier,
-                                              ),
-                                            ),
-                                            prefixIcon: InkWell(
-                                              onTap: () {
-                                                searchReportType(widget.params,
-                                                    seaarchController.text);
-                                              },
-                                              child: Icon(
-                                                Icons.search,
-                                                size: 2.5 *
-                                                    SizeConfig.textMultiplier,
-                                              ),
-                                            )),
+                body: Container(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 0,
+                        child: Container(
+                            width: 133 * SizeConfig.widthMultiplier,
+                            color: Apptheme.PrimaryColor,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Total Result Found from",
+                                        style: TextStyle(
+                                            fontSize:
+                                                2.2 * SizeConfig.textMultiplier,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      "Total Transactions :",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize:
-                                              2.2 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: datarecieved == null
-                                        ? Text("₹ 0",
-                                            style: TextStyle(
-                                                fontFamily: 'arvo',
-                                                color: Colors.white,
-                                                fontSize: 2.2 *
-                                                    SizeConfig.textMultiplier,
-                                                fontWeight: FontWeight.w600))
-                                        : Text(
-                                            "₹ ${datarecieved['totalTransactionAmount']}",
-                                            style: TextStyle(
-                                                fontFamily: 'arvo',
-                                                color: Colors.white,
-                                                fontSize: 2.2 *
-                                                    SizeConfig.textMultiplier,
-                                                fontWeight: FontWeight.w600),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "$fromDate",
+                                            style: textstyle,
                                           ),
-                                  ),
-                                ],
-                              ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 40),
+                                          child: Text(
+                                            "to",
+                                            style: textstyle,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "$toDate",
+                                            style: textstyle,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        height: 5 * SizeConfig.heightMultiplier,
+                                        width: 60 * SizeConfig.widthMultiplier,
+                                        child: TextField(
+                                          controller: seaarchController,
+                                          decoration: InputDecoration(
+                                              hintText: "Search",
+                                              hintStyle: TextStyle(
+                                                  fontSize: 2 *
+                                                      SizeConfig
+                                                          .textMultiplier),
+                                              border: InputBorder.none,
+                                              suffixIcon: InkWell(
+                                                onTap: () {
+                                                  seaarchController.clear();
+                                                },
+                                                child: Icon(
+                                                  Icons.close,
+                                                  size: 2.5 *
+                                                      SizeConfig.textMultiplier,
+                                                ),
+                                              ),
+                                              prefixIcon: InkWell(
+                                                onTap: () {
+                                                  searchReportType(
+                                                      widget.params,
+                                                      seaarchController.text);
+                                                },
+                                                child: Icon(
+                                                  Icons.search,
+                                                  size: 2.5 *
+                                                      SizeConfig.textMultiplier,
+                                                ),
+                                              )),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Total Transactions :",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                2.2 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: datarecieved == null
+                                          ? Text("₹ 0",
+                                              style: TextStyle(
+                                                  fontFamily: 'arvo',
+                                                  color: Colors.white,
+                                                  fontSize: 2.2 *
+                                                      SizeConfig.textMultiplier,
+                                                  fontWeight: FontWeight.w600))
+                                          : Text(
+                                              "₹ ${datarecieved['totalTransactionAmount']}",
+                                              style: TextStyle(
+                                                  fontFamily: 'arvo',
+                                                  color: Colors.white,
+                                                  fontSize: 2.2 *
+                                                      SizeConfig.textMultiplier,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          width: 133 * SizeConfig.widthMultiplier,
+                          child: ListView(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            children: [
+                              rechargeAndBillpayments(),
                             ],
-                          )),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        width: 133 * SizeConfig.widthMultiplier,
-                        child: ListView(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          children: [
-                            rechargeAndBillpayments(),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
+                    ],
+                  ),
+                )),
+      ),
     );
   }
 }
