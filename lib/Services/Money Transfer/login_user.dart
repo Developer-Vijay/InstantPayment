@@ -557,7 +557,7 @@ class _LoginUserState extends State<LoginUser> {
                     ['account_number'],
                 bankname: responseData['beneficiaryList'][i]['bank_name'],
                 beneId: responseData['beneficiaryList'][i]['beneId'],
-                ifscCodes: responseData['beneficiaryList'][i]['isfc'],
+                ifscCodes: responseData['beneficiaryList'][i]['ifsc'],
                 mobileNumber: responseData['beneficiaryList'][i]
                     ['customer_number']),
           );
@@ -579,7 +579,7 @@ class _LoginUserState extends State<LoginUser> {
                     ['account_number'],
                 bankname: responseData['beneficiaryList'][i]['bank_name'],
                 beneId: responseData['beneficiaryList'][i]['beneId'],
-                ifscCodes: responseData['beneficiaryList'][i]['isfc'],
+                ifscCodes: responseData['beneficiaryList'][i]['ifsc'],
                 mobileNumber: responseData['beneficiaryList'][i]
                     ['customer_number']),
           );
