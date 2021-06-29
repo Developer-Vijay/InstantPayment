@@ -114,7 +114,12 @@ List<ProfileList> profile = [
       hasnavigation: true,
       icon: Icon(Icons.settings),
       title: "Settings",
-      index: 1),
+      index: 2),
+       ProfileList(
+      hasnavigation: true,
+      icon: Icon(Icons.logout),
+      title: "LogOut",
+      index: 3),
 ];
 
 class TableData {

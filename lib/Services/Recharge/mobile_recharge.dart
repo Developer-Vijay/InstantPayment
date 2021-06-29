@@ -28,8 +28,8 @@ class _MobileRechargeState extends State<MobileRecharge> {
   @override
   void initState() {
     super.initState();
+    getPrepaidList();
     selectedradiotile = 0;
-   
   }
 
   int selected;
@@ -50,6 +50,7 @@ class _MobileRechargeState extends State<MobileRecharge> {
   var responseData;
   var totalData;
   var data;
+  var prepaidResponseData;
   var postPaidResponseData;
   bool showPostpaid = false;
   bool checker = false;
@@ -57,68 +58,75 @@ class _MobileRechargeState extends State<MobileRecharge> {
 
 // postpaid
   getPostpaidList() async {
-    return postpaidMemorizer.runOnce(() async {
-      final prefs = await SharedPreferences.getInstance();
-      var retrieveLogin = prefs.getString('loginInfo');
-      var loginData = jsonDecode(retrieveLogin);
-      String session = loginData['sessionToken'];
-      try {
-        var response = await http.get(
-            Uri.parse(ADMIN_API +
-                '/getOperatorList' +
-                '?operatorType=Postpaid&subdomain=instantpay'),
-            headers: {
-              "Content-type": "application/json",
-              "authorization": session
-            });
-        postPaidResponseData = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          print(postPaidResponseData);
-          setState(() {
-            showPostpaid = true;
+    // return postpaidMemorizer.runOnce(() async {
+    final prefs = await SharedPreferences.getInstance();
+    var retrieveLogin = prefs.getString('loginInfo');
+    var loginData = jsonDecode(retrieveLogin);
+    String session = loginData['sessionToken'];
+    try {
+      var response = await http.get(
+          Uri.parse(ADMIN_API +
+              '/getOperatorList' +
+              '?operatorType=Postpaid&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": session
           });
-          return postPaidResponseData;
-        } else {
-          Fluttertoast.showToast(msg: "Erroer");
-        }
-      } catch (e) {
-        print(e);
+      postPaidResponseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(postPaidResponseData);
+        // postpaidMemorizer = AsyncMemoizer();
+        setState(() {
+          postPaidResponseData = jsonDecode(response.body);
+
+          showPostpaid = true;
+        });
+        // return postPaidResponseData;
+      } else {
+        Fluttertoast.showToast(msg: "Erroer");
       }
-    });
+    } catch (e) {
+      print(e);
+    }
+    // });
   }
 
 // prepaid
   getPrepaidList() async {
-    return prepaidMemorizer.runOnce(() async {
-      final prefs = await SharedPreferences.getInstance();
+    // return prepaidMemorizer.runOnce(() async {
+    final prefs = await SharedPreferences.getInstance();
 
-      retrieveLogin = prefs.getString('loginInfo');
+    retrieveLogin = prefs.getString('loginInfo');
 
-      logindata = jsonDecode(retrieveLogin);
+    logindata = jsonDecode(retrieveLogin);
 
-      sessionToken = logindata['sessionToken'];
-      try {
-        var response = await http.get(
-            Uri.parse(ADMIN_API +
-                '/getOperatorList' +
-                '?operatorType=Prepaid&subdomain=instantpay'),
-            headers: {
-              "Content-type": "application/json",
-              "authorization": sessionToken
-            });
-        responseData = jsonDecode(response.body);
-        print("loading...");
-        if (response.statusCode == 200) {
-          print(responseData);
-          return responseData;
-        } else {
-          print(response.statusCode);
-          print("not fetched");
-        }
-      } catch (e) {
-        print(e);
+    sessionToken = logindata['sessionToken'];
+    try {
+      var response = await http.get(
+          Uri.parse(ADMIN_API +
+              '/getOperatorList' +
+              '?operatorType=Prepaid&subdomain=instantpay'),
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken
+          });
+      responseData = jsonDecode(response.body);
+      print("loading...");
+      if (response.statusCode == 200) {
+        // prepaidMemorizer = AsyncMemoizer();
+        setState(() {
+          prepaidResponseData = responseData;
+        });
+        print(responseData);
+        // return responseData;
+      } else {
+        print(response.statusCode);
+        print("not fetched");
       }
-    });
+    } catch (e) {
+      print(e);
+    }
+    // });
   }
 
   var operatorsId;
@@ -141,9 +149,11 @@ class _MobileRechargeState extends State<MobileRecharge> {
       jsonresponse = (response.body);
       if (response.statusCode == 200) {
         setState(() {
-          operatorsId = responsed['_id'];
+          operatorsId = int.parse(responsed['_id']);
         });
-
+        print("??????????????");
+print(operatorId);
+print("Data");
         print(jsonresponse);
       } else {
         Navigator.pop(context);
@@ -212,96 +222,176 @@ class _MobileRechargeState extends State<MobileRecharge> {
                         color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(8)),
                     child: showPostpaid == false
-                        ? FutureBuilder(
-                            future: this.getPrepaidList(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return DropdownButtonFormField(
-                                    decoration: InputDecoration(
-                                        errorText: operatorValidate),
-                                    isDense: false,
-                                    isExpanded: true,
-                                    hint: Text("Select an Operator"),
-                                    value: selected,
-                                    items: List.generate(
-                                      snapshot.data.length,
-                                      (index) => DropdownMenuItem(
-                                          value: index,
-                                          child: Text(
-                                              snapshot.data[index]['name'])),
-                                    ),
-                                    onChanged: (value) {
-                                      int index = value;
-                                      setState(() {
-                                        selected = index;
-                                        operatorId = snapshot.data[index]
-                                            ['activeAPIOperatorCodeId'];
-                                        print(operatorId);
-                                        operatorName =
-                                            snapshot.data[index]['name'];
-                                        getOperartordetails(operatorId);
-                                      });
-                                    });
-                              } else {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(8)),
-                                  child: DropdownButtonFormField(
-                                    hint: Text("Select an Operator"),
-                                    items: [],
-                                    isDense: false,
-                                    isExpanded: true,
-                                    onChanged: (value) {},
-                                  ),
-                                );
-                              }
-                            })
-                        : FutureBuilder(
-                            future: this.getPostpaidList(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return DropdownButtonFormField(
-                                    decoration: InputDecoration(
-                                        errorText: operatorValidate),
-                                    isDense: false,
-                                    isExpanded: true,
-                                    hint: Text("Select an Operator"),
-                                    value: selected,
-                                    items: List.generate(
-                                      snapshot.data.length,
-                                      (index) => DropdownMenuItem(
-                                          value: index,
-                                          child: Text(
-                                              snapshot.data[index]['name'])),
-                                    ),
-                                    onChanged: (value) {
-                                      int index = value;
-                                      setState(() {
-                                        selected = index;
-                                        operatorId = snapshot.data[index]
-                                            ['activeAPIOperatorCodeId'];
-                                        print(operatorId);
-                                        operatorName =
-                                            snapshot.data[index]['name'];
-                                        getOperartordetails(operatorId);
-                                      });
-                                    });
-                              } else {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(8)),
-                                  child: DropdownButtonFormField(
-                                    hint: Text("Select an Operator"),
-                                    items: [],
-                                    isDense: false,
-                                    isExpanded: true,
-                                    onChanged: (value) {},
-                                  ),
-                                );
-                              }
-                            })),
+                        ? prepaidResponseData != null
+                            ? DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                    errorText: operatorValidate),
+                                isDense: false,
+                                isExpanded: true,
+                                hint: Text("Select an Operator"),
+                                value: selected,
+                                items: List.generate(
+                                  prepaidResponseData.length,
+                                  (index) => DropdownMenuItem(
+                                      value: index,
+                                      child: Text(
+                                          prepaidResponseData[index]['name'])),
+                                ),
+                                onChanged: (value) {
+                                  int index = value;
+                                  setState(() {
+                                    selected = index;
+                                    operatorId = prepaidResponseData[index]
+                                        ['activeAPIOperatorCodeId'];
+                                    print(operatorId);
+                                    operatorName =
+                                        prepaidResponseData[index]['name'];
+                                    getOperartordetails(operatorId);
+                                  });
+                                })
+                            : Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[50],
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: DropdownButtonFormField(
+                                  hint: Text("Select an Operator"),
+                                  items: [],
+                                  isDense: false,
+                                  isExpanded: true,
+                                  onChanged: (value) {},
+                                ),
+                              )
+                        : postPaidResponseData != null
+                            ? DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                    errorText: operatorValidate),
+                                isDense: false,
+                                isExpanded: true,
+                                hint: Text("Select an Operator"),
+                                value: selected,
+                                items: List.generate(
+                                  postPaidResponseData.length,
+                                  (index) => DropdownMenuItem(
+                                      value: index,
+                                      child: Text(
+                                          postPaidResponseData[index]['name'])),
+                                ),
+                                onChanged: (value) {
+                                  int index = value;
+                                  setState(() {
+                                    selected = index;
+                                    operatorId = postPaidResponseData[index]
+                                        ['activeAPIOperatorCodeId'];
+                                    print(operatorId);
+                                    operatorName =
+                                        postPaidResponseData[index]['name'];
+                                    getOperartordetails(operatorId);
+                                  });
+                                })
+                            : Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[50],
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: DropdownButtonFormField(
+                                  hint: Text("Select an Operator"),
+                                  items: [],
+                                  isDense: false,
+                                  isExpanded: true,
+                                  onChanged: (value) {},
+                                ),
+                              )
+
+                    // FutureBuilder(
+                    //     future: this.getPrepaidList(),
+                    //     builder: (context, snapshot) {
+                    //       if (snapshot.hasData) {
+                    //         return DropdownButtonFormField(
+                    //             decoration: InputDecoration(
+                    //                 errorText: operatorValidate),
+                    //             isDense: false,
+                    //             isExpanded: true,
+                    //             hint: Text("Select an Operator"),
+                    //             value: selected,
+                    //             items: List.generate(
+                    //               snapshot.data.length,
+                    //               (index) => DropdownMenuItem(
+                    //                   value: index,
+                    //                   child: Text(
+                    //                       snapshot.data[index]['name'])),
+                    //             ),
+                    //             onChanged: (value) {
+                    //               int index = value;
+                    //               setState(() {
+                    //                 selected = index;
+                    //                 operatorId = snapshot.data[index]
+                    //                     ['activeAPIOperatorCodeId'];
+                    //                 print(operatorId);
+                    //                 operatorName =
+                    //                     snapshot.data[index]['name'];
+                    //                 getOperartordetails(operatorId);
+                    //               });
+                    //             });
+                    //       } else {
+                    //         return Container(
+                    //           decoration: BoxDecoration(
+                    //               color: Colors.grey[50],
+                    //               borderRadius: BorderRadius.circular(8)),
+                    //           child: DropdownButtonFormField(
+                    //             hint: Text("Select an Operator"),
+                    //             items: [],
+                    //             isDense: false,
+                    //             isExpanded: true,
+                    //             onChanged: (value) {},
+                    //           ),
+                    //         );
+                    //       }
+                    //     })
+                    // : FutureBuilder(
+                    //     future: this.getPostpaidList(),
+                    //     builder: (context, snapshot) {
+                    //       if (snapshot.hasData) {
+                    //         return DropdownButtonFormField(
+                    //             decoration: InputDecoration(
+                    //                 errorText: operatorValidate),
+                    //             isDense: false,
+                    //             isExpanded: true,
+                    //             hint: Text("Select an Operator"),
+                    //             value: selected,
+                    //             items: List.generate(
+                    //               snapshot.data.length,
+                    //               (index) => DropdownMenuItem(
+                    //                   value: index,
+                    //                   child: Text(
+                    //                       snapshot.data[index]['name'])),
+                    //             ),
+                    //             onChanged: (value) {
+                    //               int index = value;
+                    //               setState(() {
+                    //                 selected = index;
+                    //                 operatorId = snapshot.data[index]
+                    //                     ['activeAPIOperatorCodeId'];
+                    //                 print(operatorId);
+                    //                 operatorName =
+                    //                     snapshot.data[index]['name'];
+                    //                 getOperartordetails(operatorId);
+                    //               });
+                    //             });
+                    //       } else {
+                    //         return Container(
+                    //           decoration: BoxDecoration(
+                    //               color: Colors.grey[50],
+                    //               borderRadius: BorderRadius.circular(8)),
+                    //           child: DropdownButtonFormField(
+                    //             hint: Text("Select an Operator"),
+                    //             items: [],
+                    //             isDense: false,
+                    //             isExpanded: true,
+                    //             onChanged: (value) {},
+                    //           ),
+                    //         );
+                    //       }
+                    //     })
+                    ),
               ),
               SizedBox(
                 height: 5 * SizeConfig.heightMultiplier,
@@ -446,6 +536,7 @@ class _MobileRechargeState extends State<MobileRecharge> {
       item['value'] = mobilenumberController.text;
     });
     jsonbody['transactionAmount'] = int.parse(amountController.text);
+    // jsonbody['_id']=int.parse(operatorId);
     print("//////");
     print(jsonbody);
     print("//////");
@@ -474,6 +565,7 @@ class _MobileRechargeState extends State<MobileRecharge> {
             });
         var responsedData = jsonDecode(response.body);
         if (response.statusCode == 200) {
+          print(response.body);
           if (responsedData['errorExist'] == false) {
             Navigator.push(
                 context,

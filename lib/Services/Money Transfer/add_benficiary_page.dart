@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
-import 'package:netly/Components/Resources/styling.dart';
-import 'package:netly/Services/serviceslist.dart';
+import 'package:netly/Services/Money%20Transfer/add_beneficiary.dart';
+import 'package:netly/components/Resources/styling.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
@@ -28,6 +28,9 @@ class BenificaryPage extends StatefulWidget {
   _BenificaryPageState createState() => _BenificaryPageState();
 }
 
+bool checker = false;
+int counter = 0;
+
 class _BenificaryPageState extends State<BenificaryPage> {
   @override
   void initState() {
@@ -46,7 +49,8 @@ class _BenificaryPageState extends State<BenificaryPage> {
   }
 
   String bankdata = "";
-
+  var serverResponse;
+  var done;
   var responseData;
   var bankValidate;
   var number;
@@ -78,7 +82,8 @@ class _BenificaryPageState extends State<BenificaryPage> {
       print("?????????");
     });
   }
-var data;
+
+  var data;
   final List<DropdownMenuItem> items = [];
   List data1 = [];
   getBankList() async {
@@ -144,7 +149,7 @@ var data;
   String dropdownValue = 'select Bank Name';
   String isfcData = "";
   bool isValidate = false;
- 
+
   List<String> searchedlist = ['s', 'b'];
   // search(index) {
   //   final list = responseData['bankList'][index]['bankName']
@@ -251,7 +256,6 @@ var data;
                         // label: Text("Bank Name"),
                         hint: Text("Select a bank"),
                         onChanged: (value) {
-                         
                           setState(() {
                             data = value;
                             print(bankIfscList[5].bankName);
@@ -340,22 +344,44 @@ var data;
               height: 2 * SizeConfig.heightMultiplier,
             ),
 
-            // Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Container(
-                width: 50 * SizeConfig.widthMultiplier,
-                child: MaterialButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  color: Apptheme.PrimaryColor,
-                  textColor: Apptheme.whitetextcolor,
-                  onPressed: () {
-                    addBene();
-                  },
-                  child: Text("Add Bene"),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Container(
+                    width: 40 * SizeConfig.widthMultiplier,
+                    child: MaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      color: Apptheme.PrimaryColor,
+                      textColor: Apptheme.whitetextcolor,
+                      onPressed: () {
+                        verifyBene();
+                      },
+                      child: Text("Verify Bene"),
+                    ),
+                  ),
                 ),
-              ),
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Container(
+                    width: 40 * SizeConfig.widthMultiplier,
+                    child: MaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      color: Apptheme.PrimaryColor,
+                      textColor: Apptheme.whitetextcolor,
+                      onPressed: () {
+                        addBene();
+
+                        // await getBeneList(context);
+                      },
+                      child: Text("Add Bene"),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             SizedBox(
@@ -417,7 +443,7 @@ var data;
       });
     }
 
-    if (isValidate == false && data!=null) {
+    if (isValidate == false && data != null) {
       showDialog(
           barrierDismissible: false,
           context: context,
@@ -452,8 +478,25 @@ var data;
       var responsedData = jsonDecode(response.body);
       if (response.statusCode == 200) {
         Fluttertoast.showToast(msg: responsedData['message']);
-        widget.controller.animateTo(widget.selectedIndex = 0);
-        Navigator.pop(context);
+        // setState(() {
+        //   done = responsedData;
+        // });
+        getBeneList(context);
+        // if ( serverResponse != null) {
+        //   // setState(() {
+        //     // Navigator.push(
+        //     //     context,
+        //     //     MaterialPageRoute(
+        //     //       builder: (context) => AddBeneficiary(
+        //     //         data: number,
+        //     //         limit: widget.limit,
+        //     //         responseData: serverResponse,
+        //     //         spent: widget.spent,
+        //     //       ),
+        //     //     ));
+        //   // });
+        // }
+        // Navigator.pop(context);
       } else {
         Fluttertoast.showToast(msg: responseData['message']);
         Navigator.pop(context);
@@ -461,11 +504,86 @@ var data;
     }
   }
 
+  // Login Api
+
+  getBeneList(context) async {
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    refreshToken = logindata['refreshToken'];
+    loginId = logindata['user']['_id'];
+    print("?????????");
+    print(loginId);
+    print("?????????");
+    var response = await http.get(
+        SERVICE_API + '/getBeneficiary' + '?mobileNumber=$number',
+        headers: {
+          "Content-type": "application/json",
+          "authorization": sessionToken,
+          "refreshToken": refreshToken
+        });
+    responseData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      print("/////");
+      print(responseData);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddBeneficiary(
+              data: number,
+              limit: widget.limit,
+              responseData: responseData,
+              spent: widget.spent,
+            ),
+          ));
+
+      named.clear();
+
+      for (int i = 0; i <= responseData['beneficiaryList'].length - 1; i++) {
+        named.add(
+          Name(
+              name: responseData['beneficiaryList'][i]['name'],
+              accountnumber: responseData['beneficiaryList'][i]
+                  ['account_number'],
+              bankname: responseData['beneficiaryList'][i]['bank_name'],
+              beneId: responseData['beneficiaryList'][i]['beneId'],
+              ifscCodes: responseData['beneficiaryList'][i]['ifsc'],
+              mobileNumber: responseData['beneficiaryList'][i]
+                  ['customer_number']),
+        );
+      }
+      setState(() {
+        checker = true;
+      });
+    } else {
+      setState(() {
+        // allowNavigation = false;
+        Navigator.pop(context);
+      });
+      print(response.statusCode);
+    }
+  }
+
 // verify bene
   verifyBene() async {
-    if (banknameController.text.isEmpty) {
+    if (codeController.text.isEmpty) {
       setState(() {
-        bankValidate = 'It cannot be empty';
+        codeValidate = 'IFSC code cannot be empty';
+        isValidate = true;
+      });
+    } else {
+      setState(() {
+        codeValidate = null;
+        isValidate = false;
+      });
+    }
+
+    if (data == null) {
+      setState(() {
+        // bankValidate = 'It cannot be empty';
+        Fluttertoast.showToast(msg: "Please Select a bank First");
         isValidate = true;
       });
     } else {
@@ -498,25 +616,63 @@ var data;
         isValidate = false;
       });
     }
+    if (isValidate == false && data != null) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => new AlertDialog(
+                  content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text("Loading"),
+                  ),
+                ],
+              )));
+      Map addData = {
+        "bankName": bankNamed,
+        "IFSCCode": codeController.text,
+        "accountNumber": accountController.text,
+        "beneficiaryName": nameController.text,
+        "mobileNumber": number,
+        "selectRecipientCall": false,
+        "performedBy": loginId
+      };
+      var encodedDetail = jsonEncode(addData);
+      print(encodedDetail);
+      var response = await http.post(SERVICE_API + '/verifyBeneficiary',
+          headers: {
+            "Content-type": "application/json",
+            "authorization": sessionToken,
+            "refreshToken": refreshToken
+          },
+          body: encodedDetail);
+      var responsedData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        if (responsedData['errorExist'] == true) {
+          Fluttertoast.showToast(
+              msg: responsedData['message'],
+              backgroundColor: Apptheme.textColo1r,
+              textColor: Apptheme.whitetextcolor);
+          print(responsedData);
+        } else {
+          Fluttertoast.showToast(
+              msg: responsedData['message'],
+              backgroundColor: Colors.green,
+              textColor: Apptheme.whitetextcolor);
+          setState(() {
+            nameController.text = responsedData['beneficiaryName'];
+          });
+        }
 
-    if (codeController.text.isEmpty) {
-      setState(() {
-        codeValidate = 'IFSC code cannot be empty';
-        isValidate = true;
-      });
-    } else {
-      setState(() {
-        codeValidate = null;
-        isValidate = false;
-      });
-    }
-    if (isValidate == false &&
-        nameController.text.contains(
-          add[0].firstName,
-        )) {
-      Fluttertoast.showToast(msg: "Verified api integration will work here");
-    } else {
-      Fluttertoast.showToast(msg: "Not Verified");
+        // widget.controller.animateTo(widget.selectedIndex = 0);
+        Navigator.pop(context);
+      } else {
+        Fluttertoast.showToast(msg: responseData['message']);
+        print(responsedData);
+        Navigator.pop(context);
+      }
     }
   }
 }

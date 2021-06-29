@@ -1,13 +1,17 @@
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:screenshot/screenshot.dart';
 import 'Screen/home_screen.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 class SuccessPage extends StatefulWidget {
   final title;
   final responseData;
@@ -75,7 +79,9 @@ class _SuccessPageState extends State<SuccessPage> {
                       child: InkWell(
                         onTap: () async {
                           final image = await screenshotController.capture();
-                          return await saveImage(image);
+                          return await 
+                          // saveandShare(image);
+                          saveImage(image);
                         },
                         child: Text(
                           "Save",
@@ -298,8 +304,15 @@ class _SuccessPageState extends State<SuccessPage> {
         .replaceAll('.', '_')
         .replaceAll(':', '_');
     final name = 'Screenshot_$time';
-    final result = await ImageGallerySaver.saveImage(bytes, name: name );
-
+    final result = await ImageGallerySaver.saveImage(bytes, name: name);
+    Fluttertoast.showToast(msg: "ScreenShot Saved SuccessFully");
     return result('filePath');
+  }
+
+  Future saveandShare(Uint8List bytes) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final image = File('${directory.path}/flutter.png');
+    image.writeAsBytesSync(bytes);
+    await Share.shareFiles([image.path]);
   }
 }

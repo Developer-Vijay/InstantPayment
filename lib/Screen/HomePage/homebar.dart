@@ -6,8 +6,10 @@ import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/HomePage/banners.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:netly/Screen/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
+import 'package:async/async.dart';
 
 class Homebar extends StatefulWidget {
   final walletAmount;
@@ -20,6 +22,7 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // getWalletDetails();
   }
 
   var retrieveLogin;
@@ -31,7 +34,7 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
   var walletAmount;
   var amount;
   var status;
-
+  List money = [];
   getWalletDetails() async {
     return walletMemorizer.runOnce(() async {
       final prefs = await SharedPreferences.getInstance();
@@ -60,6 +63,9 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
         responseData = jsonDecode(response.body);
         if (response.statusCode == 200) {
           print(responseData['walletAmount']);
+
+          walletMemorizer = AsyncMemoizer();
+          print("??????");
 
           return responseData;
         } else {
@@ -115,24 +121,24 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
                             ],
                           )),
                           Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 14, top: 8),
-                            child: Badge(
-                              badgeColor: Colors.red,
-                              showBadge: true,
-                              padding: EdgeInsets.all(3),
-                              badgeContent: Text(
-                                "3",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 1.6 * SizeConfig.textMultiplier),
-                              ),
-                              child: Icon(
-                                Icons.notifications,
-                                color: Apptheme.whitetextcolor,
-                              ),
-                            ),
-                          )
+                          // Padding(
+                          //   padding: const EdgeInsets.only(right: 14, top: 8),
+                          //   child: Badge(
+                          //     badgeColor: Colors.red,
+                          //     showBadge: true,
+                          //     padding: EdgeInsets.all(3),
+                          //     badgeContent: Text(
+                          //       "3",
+                          //       style: TextStyle(
+                          //           color: Colors.white,
+                          //           fontSize: 1.6 * SizeConfig.textMultiplier),
+                          //     ),
+                          //     child: Icon(
+                          //       Icons.notifications,
+                          //       color: Apptheme.whitetextcolor,
+                          //     ),
+                          //   ),
+                          // )
                         ],
                       ),
                     ),
@@ -149,39 +155,42 @@ class _HomebarState extends State<Homebar> with TickerProviderStateMixin {
                               height: 2.1 * SizeConfig.heightMultiplier,
                             ),
                             Container(
+                                alignment: Alignment.center,
+                                width: 50 * SizeConfig.widthMultiplier,
                                 margin: EdgeInsets.only(left: 10),
                                 child: walletAmount == null
                                     ? FutureBuilder(
-                                        future: this.getWalletDetails(),
+                                        future: getWalletDetails(),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
-                                            return RichText(
-                                                text: TextSpan(
+                                            var money = snapshot
+                                                .data['walletAmount']
+                                                .toStringAsFixed(0);
+                                            return Text(
+                                              "₹$money",
                                               style: TextStyle(
-                                                  color: Apptheme.PrimaryColor,
+                                                  color:
+                                                      Apptheme.whitetextcolor,
                                                   fontWeight: FontWeight.w500,
+                                                  fontFamily: 'arvo',
                                                   fontSize: 5 *
                                                       SizeConfig
                                                           .textMultiplier),
-                                              children: [
-                                                TextSpan(
-                                                  style: TextStyle(
-                                                      fontFamily: 'arvo',
-                                                      color: Apptheme
-                                                          .whitetextcolor),
-                                                  text: "₹",
-                                                ),
-                                                TextSpan(
-                                                    style: TextStyle(
-                                                        fontFamily: 'arvo',
-                                                        color: Apptheme
-                                                            .whitetextcolor),
-                                                    text:
-                                                        "${snapshot.data['walletAmount']}.00")
-                                              ],
-                                            ));
+                                              overflow: TextOverflow.ellipsis,
+                                            );
                                           } else {
-                                            return CircularProgressIndicator();
+                                            return Text(
+                                              "₹0.",
+                                              style: TextStyle(
+                                                  color:
+                                                      Apptheme.whitetextcolor,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: 'arvo',
+                                                  fontSize: 5 *
+                                                      SizeConfig
+                                                          .textMultiplier),
+                                              overflow: TextOverflow.ellipsis,
+                                            );
                                           }
                                         })
                                     : Text(

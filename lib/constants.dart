@@ -1,18 +1,19 @@
 import 'package:async/async.dart';
 // Memorizer Section
 
-final AsyncMemoizer walletMemorizer = AsyncMemoizer();
-final AsyncMemoizer rechargeMemorizer = AsyncMemoizer();
-final AsyncMemoizer dthMemorizer = AsyncMemoizer();
-final AsyncMemoizer electricityMemorizer = AsyncMemoizer();
-final AsyncMemoizer dataMemorizer = AsyncMemoizer();
-final AsyncMemoizer gasMemorizer = AsyncMemoizer();
-final AsyncMemoizer benficaryBankMemorizer = AsyncMemoizer();
-final AsyncMemoizer bankMemorizer=AsyncMemoizer();
-final AsyncMemoizer moneyTransferMemorizer = AsyncMemoizer();
-final AsyncMemoizer addBalanceMemorizer = AsyncMemoizer();
-final AsyncMemoizer postpaidMemorizer = AsyncMemoizer();
-final AsyncMemoizer prepaidMemorizer = AsyncMemoizer();
+ AsyncMemoizer walletMemorizer = AsyncMemoizer();
+ AsyncMemoizer rechargeMemorizer = AsyncMemoizer();
+ AsyncMemoizer bannerMemorizer = AsyncMemoizer();
+ AsyncMemoizer dthMemorizer = AsyncMemoizer();
+ AsyncMemoizer electricityMemorizer = AsyncMemoizer();
+ AsyncMemoizer dataMemorizer = AsyncMemoizer();
+ AsyncMemoizer gasMemorizer = AsyncMemoizer();
+ AsyncMemoizer benficaryBankMemorizer = AsyncMemoizer();
+ AsyncMemoizer bankMemorizer=AsyncMemoizer();
+ AsyncMemoizer moneyTransferMemorizer = AsyncMemoizer();
+ AsyncMemoizer addBalanceMemorizer = AsyncMemoizer();
+ AsyncMemoizer postpaidMemorizer = AsyncMemoizer();
+ AsyncMemoizer prepaidMemorizer = AsyncMemoizer();
 
 // API Section
 
@@ -23,6 +24,8 @@ const SERVICE_API = API_BASE_URL + 'service';
 const COMMON_API = API_BASE_URL + 'common';
 const PORTAL_API = API_BASE_URL + 'portal';
 
+// Image Section
+const S3_BASE_PATH='https://instant-payment.s3.amazonaws.com/';
 class BankList{
   int index;
   String bankName;

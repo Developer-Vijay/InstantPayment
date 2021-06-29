@@ -1,6 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:netly/mobile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/Screen/ReportPage/filterpage.dart';
@@ -37,6 +44,8 @@ class _ReportPageState extends State<ReportPage> {
       print(widget.toDate);
     });
   }
+
+  ScreenshotController screenshotController = ScreenshotController();
 
   TextEditingController seaarchController = TextEditingController();
   @override
@@ -106,27 +115,7 @@ class _ReportPageState extends State<ReportPage> {
       Navigator.pop(context);
     }
   }
-  // Future<bool> _onbackPressed() async {
-  //   return showDialog(
-  //       context: context,
-  //       builder: (contex) => AlertDialog(
-  //             title: Text("Do you Really want to exit"),
-  //             actions: [
-  //               TextButton(
-  //                 child: Text("Yes"),
-  //                 onPressed: () {
 
-  //                 },
-  //               ),
-  //               TextButton(
-  //                 child: Text("No"),
-  //                 onPressed: () {
-  //                   Navigator.pop(context, false);
-  //                 },
-  //               ),
-  //             ],
-  //           ));
-  // }
   searchReportType(var param, var string) async {
     showDialog(
         barrierDismissible: false,
@@ -173,9 +162,16 @@ class _ReportPageState extends State<ReportPage> {
     }
   }
 
+  Future saveandShare(Uint8List bytes) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final image = File('${directory.path}/flutter.png');
+    image.writeAsBytesSync(bytes);
+    await Share.shareFiles([image.path]);
+  }
+
   // ignore: missing_return
   Widget rechargeAndBillpayments() {
-    if (data == "Recharges") {
+    if (data == "Recharge") {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: datarecieved['reports'] == null
@@ -214,31 +210,50 @@ class _ReportPageState extends State<ReportPage> {
                       DataColumn(label: Text("Status")),
                       DataColumn(label: Text("Created Date")),
                       DataColumn(label: Text("Updated Date")),
+                      DataColumn(label: Text("Action")),
                     ],
                     rows: List.generate(
                         datarecieved['reports']['docs'].length,
-                        (index) => DataRow(cells: [
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['transactionId']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['serviceType']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['mobileNumber']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['previousAmount']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['transactionAmount']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['balanceAmount']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['transactionType']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['status']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['creationDate']}")),
-                              DataCell(Text(
-                                  "${datarecieved['reports']['docs'][index]['updatedDate']}")),
-                            ]))),
+                        (index) => DataRow(
+                                onSelectChanged: (value) async {
+                                  // saveandShare();async {
+                                  final image =
+                                      await screenshotController.capture();
+                                  return await saveandShare(image);
+                                  // saveImage(image);
+                                },
+                                cells: [
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['transactionId']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['serviceType']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['mobileNumber']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['previousAmount']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['transactionAmount']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['balanceAmount']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['transactionType']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['status']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['creationDate']}")),
+                                  DataCell(Text(
+                                      "${datarecieved['reports']['docs'][index]['updatedDate']}")),
+                                  DataCell(MaterialButton(
+                                    minWidth: 30,
+
+                                    // color: Apptheme.PrimaryColor,textColor:Apptheme.whitetextcolor,
+                                    child: Icon(
+                                      Icons.share_outlined,
+                                      size: 20,
+                                    ),
+                                    onPressed: () {},
+                                  )),
+                                ]))),
       );
     } else if (data == "bill Payment") {
       return SingleChildScrollView(
@@ -282,29 +297,33 @@ class _ReportPageState extends State<ReportPage> {
                       ],
                       rows: List.generate(
                           datarecieved['reports']['docs'].length,
-                          (index) => DataRow(cells: [
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['transactionId']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['serviceType']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['mobileNumber']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['previousAmount']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['transactionAmount']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['balanceAmount']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['transactionType']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['status']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['creationDate']}")),
-                                DataCell(Text(
-                                    "${datarecieved['reports']['docs'][index]['updatedDate']}")),
-                              ]))));
-    } else if (data == "Money Transfer Report") {
+                          (index) => DataRow(
+                                  onSelectChanged: (value) {
+                                    print("Data");
+                                  },
+                                  cells: [
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['transactionId']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['serviceType']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['mobileNumber']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['previousAmount']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['transactionAmount']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['balanceAmount']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['transactionType']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['status']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['creationDate']}")),
+                                    DataCell(Text(
+                                        "${datarecieved['reports']['docs'][index]['updatedDate']}")),
+                                  ]))));
+    } else if (data == "Money Transfer") {
       return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: datarecieved['reports'] == null
@@ -348,34 +367,42 @@ class _ReportPageState extends State<ReportPage> {
                       ],
                       rows: List.generate(
                           datarecieved['reports']['docs'].length, (index) {
-                        return DataRow(cells: [
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['transactionId']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['accountNumber']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['previousAmount']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['transactionAmount']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['balanceAmount']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['bankName']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['mobile']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['beneName']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['status']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['transferMode']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['bankRefNo']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['creationDate']}")),
-                          DataCell(Text(
-                              "${datarecieved['reports']['docs'][index]['updatedDate']}")),
-                        ]);
+                        return DataRow(
+                            onSelectChanged: (value) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(),
+                                  ));
+                            },
+                            cells: [
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['transactionId']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['accountNumber']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['previousAmount']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['transactionAmount']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['balanceAmount']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['bankName']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['mobile']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['beneName']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['status']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['transferMode']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['bankRefNo']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['creationDate']}")),
+                              DataCell(Text(
+                                  "${datarecieved['reports']['docs'][index]['updatedDate']}")),
+                            ]);
                       })));
     } else if (data == "AEPS Report") {
       return SingleChildScrollView(
@@ -728,189 +755,249 @@ class _ReportPageState extends State<ReportPage> {
                 body: Center(
                 child: CircularProgressIndicator(),
               ))
-            : Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  child: Icon(
-                    Icons.filter_alt_rounded,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                        elevation: 4.0,
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        context: context,
-                        builder: (context) => Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: const Radius.circular(10.0),
-                                    topRight: const Radius.circular(10.0))),
-                            height: 40 * SizeConfig.heightMultiplier,
-                            child: Filter(
-                              param: widget.params,
-                              title: widget.data,
-                            )));
-                  },
-                ),
-                body: Container(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 0,
-                        child: Container(
-                            width: 133 * SizeConfig.widthMultiplier,
-                            color: Apptheme.PrimaryColor,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(
+            : SafeArea(
+              child: Screenshot(
+                controller: screenshotController,
+                child: Scaffold(
+                    floatingActionButton: FloatingActionButton(
+                      child: Icon(
+                        Icons.filter_alt_rounded,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                            elevation: 4.0,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            context: context,
+                            builder: (context) => Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: const Radius.circular(10.0),
+                                        topRight: const Radius.circular(10.0))),
+                                height: 40 * SizeConfig.heightMultiplier,
+                                child: Filter(
+                                  param: widget.params,
+                                  title: widget.data,
+                                )));
+                      },
+                    ),
+                    body: Container(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            flex: 0,
+                            child: Container(
+                                width: 133 * SizeConfig.widthMultiplier,
+                                color: Apptheme.PrimaryColor,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "Total Result Found from",
-                                        style: TextStyle(
-                                            fontSize:
-                                                2.2 * SizeConfig.textMultiplier,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Column(
+                                    Row(
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
-                                            "$fromDate",
-                                            style: textstyle,
+                                            "Total Result Found from",
+                                            style: TextStyle(
+                                                fontSize:
+                                                    2.2 * SizeConfig.textMultiplier,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                "$fromDate",
+                                                style: textstyle,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 40),
+                                              child: Text(
+                                                "to",
+                                                style: textstyle,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                "$toDate",
+                                                style: textstyle,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Spacer(),
                                         Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 40),
-                                          child: Text(
-                                            "to",
-                                            style: textstyle,
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            height: 5 * SizeConfig.heightMultiplier,
+                                            width: 60 * SizeConfig.widthMultiplier,
+                                            child: TextField(
+                                              controller: seaarchController,
+                                              decoration: InputDecoration(
+                                                  hintText: "Search",
+                                                  hintStyle: TextStyle(
+                                                      fontSize: 2 *
+                                                          SizeConfig
+                                                              .textMultiplier),
+                                                  border: InputBorder.none,
+                                                  suffixIcon: InkWell(
+                                                    onTap: () {
+                                                      seaarchController.clear();
+                                                    },
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      size: 2.5 *
+                                                          SizeConfig.textMultiplier,
+                                                    ),
+                                                  ),
+                                                  prefixIcon: InkWell(
+                                                    onTap: () {
+                                                      searchReportType(
+                                                          widget.params,
+                                                          seaarchController.text);
+                                                    },
+                                                    child: Icon(
+                                                      Icons.search,
+                                                      size: 2.5 *
+                                                          SizeConfig.textMultiplier,
+                                                    ),
+                                                  )),
+                                            ),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
-                                            "$toDate",
-                                            style: textstyle,
+                                            "Total Transactions :",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    2.2 * SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w600),
                                           ),
-                                        )
+                                        ),
+                                        Spacer(),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: datarecieved == null
+                                              ? Text("₹ 0",
+                                                  style: TextStyle(
+                                                      fontFamily: 'arvo',
+                                                      color: Colors.white,
+                                                      fontSize: 2.2 *
+                                                          SizeConfig.textMultiplier,
+                                                      fontWeight: FontWeight.w600))
+                                              : Text(
+                                                  "₹ ${datarecieved['totalTransactionAmount']}",
+                                                  style: TextStyle(
+                                                      fontFamily: 'arvo',
+                                                      color: Colors.white,
+                                                      fontSize: 2.2 *
+                                                          SizeConfig.textMultiplier,
+                                                      fontWeight: FontWeight.w600),
+                                                ),
+                                        ),
                                       ],
                                     ),
-                                    Spacer(),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        height: 5 * SizeConfig.heightMultiplier,
-                                        width: 60 * SizeConfig.widthMultiplier,
-                                        child: TextField(
-                                          controller: seaarchController,
-                                          decoration: InputDecoration(
-                                              hintText: "Search",
-                                              hintStyle: TextStyle(
-                                                  fontSize: 2 *
-                                                      SizeConfig
-                                                          .textMultiplier),
-                                              border: InputBorder.none,
-                                              suffixIcon: InkWell(
-                                                onTap: () {
-                                                  seaarchController.clear();
-                                                },
-                                                child: Icon(
-                                                  Icons.close,
-                                                  size: 2.5 *
-                                                      SizeConfig.textMultiplier,
-                                                ),
-                                              ),
-                                              prefixIcon: InkWell(
-                                                onTap: () {
-                                                  searchReportType(
-                                                      widget.params,
-                                                      seaarchController.text);
-                                                },
-                                                child: Icon(
-                                                  Icons.search,
-                                                  size: 2.5 *
-                                                      SizeConfig.textMultiplier,
-                                                ),
-                                              )),
-                                        ),
-                                      ),
-                                    ),
                                   ],
-                                ),
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "Total Transactions :",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                2.2 * SizeConfig.textMultiplier,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: datarecieved == null
-                                          ? Text("₹ 0",
-                                              style: TextStyle(
-                                                  fontFamily: 'arvo',
-                                                  color: Colors.white,
-                                                  fontSize: 2.2 *
-                                                      SizeConfig.textMultiplier,
-                                                  fontWeight: FontWeight.w600))
-                                          : Text(
-                                              "₹ ${datarecieved['totalTransactionAmount']}",
-                                              style: TextStyle(
-                                                  fontFamily: 'arvo',
-                                                  color: Colors.white,
-                                                  fontSize: 2.2 *
-                                                      SizeConfig.textMultiplier,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          width: 133 * SizeConfig.widthMultiplier,
-                          child: ListView(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            children: [
-                              rechargeAndBillpayments(),
-                            ],
+                                )),
                           ),
-                        ),
+                          Expanded(
+                            flex: 8,
+                            child: Container(
+                              width: 133 * SizeConfig.widthMultiplier,
+                              child: ListView(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                children: [
+                                  rechargeAndBillpayments(),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 20, top: 4),
+                              child: MaterialButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                color: Apptheme.PrimaryColor,
+                                textColor: Apptheme.whitetextcolor,
+                                child: Text("Save CSV"),
+                                onPressed: () {
+                                  getCsv();
+                                },
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                    ],
-                  ),
-                )),
+                    )),
+              ),
+            ),
       ),
     );
+  }
+
+  getCsv() async {
+    final prefs = await SharedPreferences.getInstance();
+    retrieveLogin = prefs.getString('loginInfo');
+    logindata = jsonDecode(retrieveLogin);
+    sessionToken = logindata['sessionToken'];
+    refreshToken = logindata['refreshToken'];
+    loginId = logindata['user']['_id'];
+    print(params);
+    print(fromDate);
+    print(toDate);
+    Map pdfdata = {
+      "filter": {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "userId": loginId,
+        "subdomain": "instantpay",
+        "reportType": params,
+        "searchString": seaarchController.text
+      }
+    };
+
+    var response = await http.post(COMMON_API + '/exportReport',
+        body: jsonEncode(pdfdata),
+        headers: {
+          "Content-type": "application/json",
+          "authorization": sessionToken,
+          "refreshToken": refreshToken
+        });
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(msg: "Saved Successfully");
+      print(response.body);
+      saveAndLaunchFile(response.bodyBytes, "Report_${DateTime.now()}.csv");
+    } else {
+      Fluttertoast.showToast(msg: "Something went Wrong");
+
+      print(response.statusCode);
+    }
   }
 }

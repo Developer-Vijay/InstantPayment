@@ -53,7 +53,12 @@ dependencies:
   flutter_launcher_icons:
   change_app_package_name:
   image_gallery_saver: 
-  permission_handler:          
+  permission_handler:
+  syncfusion_flutter_pdfviewer:
+  path_provider:
+  open_file:
+  share_plus:   
+
          
          
                    

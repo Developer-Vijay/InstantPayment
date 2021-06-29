@@ -171,11 +171,11 @@ class ReportList {
 }
 
 List<ReportList> reportlist=[
-  ReportList(icon: "assets/icon/bill.svg",title:"Recharges",subtitle: "See Mobile Recharge Report",params: "Recharge" ),
+  ReportList(icon: "assets/icon/bill.svg",title:"Recharge",subtitle: "See Mobile Recharge Report",params: "Recharge" ),
   ReportList(icon: "assets/icon/tower.svg",title:"bill Payment",subtitle: "See Electricity bill Report",params: "billPayment" ),
-  ReportList(icon: "assets/icon/money-transfer.svg",title:"Money Transfer Report",subtitle: "See Money Transfer Report",params: "Money Transfer" ),
+  ReportList(icon: "assets/icon/money-transfer.svg",title:"Money Transfer",subtitle: "See Money Transfer Report",params: "Money Transfer" ),
   ReportList(icon: "assets/icon/aep.svg",title:"AEPS Report",subtitle: "See AEPS Report",params: "AEPS" ),
-  ReportList(icon: "assets/icon/atm-machine.svg",title:"Micro Atm Report",subtitle: "See Micro Atm Report",params: "MicroATM" ),
+  ReportList(icon: "assets/icon/atm-machine.svg",title:"Micro Atm",subtitle: "See Micro Atm Report",params: "MicroATM" ),
   ReportList(icon: "assets/icon/digital-wallet.svg",title: "Wallet",subtitle: "See Wallet Report",params: "Wallet"),
   ReportList(icon: "assets/icon/wallet.svg",title: "InterWallet",subtitle: "See InterWallet Report",params: "Inter Wallet"),
   ReportList(icon: "assets/icon/commission.svg",title: "Commission",subtitle: "See Commison Report",params: "Commission")

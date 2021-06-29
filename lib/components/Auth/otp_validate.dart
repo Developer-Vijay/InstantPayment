@@ -22,27 +22,7 @@ class _OtpValidateState extends State<OtpValidate> {
   var otpValidate;
   var valued;
   bool _isValidate = false;
-  //   int time = 59;
-  // Timer placeTimer;
-  //  int _counter = 0;
-  // void startTimer() {
-  //   time = 59;
-  //   placeTimer = Timer.periodic(Duration(seconds: 1), (_) {
-  //     if (time == 0) {
-  //       setState(() {
-  //         placeTimer.cancel();
-  //         print("timer close");
-
-  //         _counter = 1;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         time--;
-  //         print(time);
-  //       });
-  //     }
-  //   });
-  // }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +189,7 @@ class _OtpValidateState extends State<OtpValidate> {
       });
       var responseData = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(msg: responseData['message']);
+        // Fluttertoast.showToast(msg: responseData['message']);
 
         final clientData = responseData['clientInfo'];
 

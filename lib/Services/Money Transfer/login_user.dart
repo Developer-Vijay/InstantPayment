@@ -119,100 +119,118 @@ class _LoginUserState extends State<LoginUser> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Money Transfer"),
-        ),
-        body: ListView(
-          children: [
-            SizedBox(
-              height: 2 * SizeConfig.heightMultiplier,
-            ),
-            // Phone Number
-            Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12),
-              child: TextField(
-                enableSuggestions: true,
-                controller: numberController,
-                maxLength: 10,
-                keyboardType: TextInputType.phone,
-                onChanged: (value) {
-                  getBeneList(context);
-                },
-                decoration: InputDecoration(
-                    errorText: numberValidate,
-                    counterText: "",
-                    labelText: "Please enter registered mobile number"),
+      child: WillPopScope(
+        onWillPop: () {
+          return Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ));
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            leading: InkWell(
+                child: Icon(Icons.arrow_back),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
+                      ));
+                }),
+            title: Text("Money Transfer"),
+          ),
+          body: ListView(
+            children: [
+              SizedBox(
+                height: 2 * SizeConfig.heightMultiplier,
               ),
-            ),
-            SizedBox(
-              height: 4 * SizeConfig.heightMultiplier,
-            ),
+              // Phone Number
+              Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12),
+                child: TextField(
+                  enableSuggestions: true,
+                  controller: numberController,
+                  maxLength: 10,
+                  keyboardType: TextInputType.phone,
+                  onChanged: (value) {
+                    getBeneList(context);
+                  },
+                  decoration: InputDecoration(
+                      errorText: numberValidate,
+                      counterText: "",
+                      labelText: "Please enter registered mobile number"),
+                ),
+              ),
+              SizedBox(
+                height: 4 * SizeConfig.heightMultiplier,
+              ),
 
-            Container(
-              child: show == false
-                  ? SizedBox()
-                  : Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 12),
-                      child: TextField(
-                        controller: firstNameController,
+              Container(
+                child: show == false
+                    ? SizedBox()
+                    : Padding(
+                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        child: TextField(
+                          controller: firstNameController,
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                              errorText: firstNameValidate,
+                              counterText: "",
+                              labelText: "First Name"),
+                        ),
+                      ),
+              ),
+              SizedBox(
+                height: 4 * SizeConfig.heightMultiplier,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12),
+                child: show == false
+                    ? SizedBox()
+                    : TextField(
+                        controller: lastNameController,
                         keyboardType: TextInputType.name,
                         decoration: InputDecoration(
-                            errorText: firstNameValidate,
+                            errorText: lastNameValidate,
                             counterText: "",
-                            labelText: "First Name"),
-                      ),
-                    ),
-            ),
-            SizedBox(
-              height: 4 * SizeConfig.heightMultiplier,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12),
-              child: show == false
-                  ? SizedBox()
-                  : TextField(
-                      controller: lastNameController,
-                      keyboardType: TextInputType.name,
-                      decoration: InputDecoration(
-                          errorText: lastNameValidate,
-                          counterText: "",
-                          labelText: "Last Name"),
-                    ),
-            ),
-            SizedBox(
-              height: 4 * SizeConfig.heightMultiplier,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: MaterialButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                height: 6 * SizeConfig.heightMultiplier,
-                textColor: Apptheme.whitetextcolor,
-                color: Apptheme.PrimaryColor,
-                onPressed: () {
-                  show == false
-                      ? Future.delayed(
-                          Duration(
-                            milliseconds: 800,
-                          ), () {
-                          loginuser();
-                        })
-                      : addUser();
-                },
-                child: show == true
-                    ? Text("Add",
-                        style: TextStyle(
-                            fontSize: 2.1 * SizeConfig.textMultiplier))
-                    : Text(
-                        "Login",
-                        style: TextStyle(
-                            fontSize: 2.1 * SizeConfig.textMultiplier),
+                            labelText: "Last Name"),
                       ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 4 * SizeConfig.heightMultiplier,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: MaterialButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  height: 6 * SizeConfig.heightMultiplier,
+                  textColor: Apptheme.whitetextcolor,
+                  color: Apptheme.PrimaryColor,
+                  onPressed: () {
+                    show == false
+                        ? Future.delayed(
+                            Duration(
+                              milliseconds: 800,
+                            ), () {
+                            loginuser();
+                          })
+                        : addUser();
+                  },
+                  child: show == true
+                      ? Text("Add",
+                          style: TextStyle(
+                              fontSize: 2.1 * SizeConfig.textMultiplier))
+                      : Text(
+                          "Login",
+                          style: TextStyle(
+                              fontSize: 2.1 * SizeConfig.textMultiplier),
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -562,14 +580,10 @@ class _LoginUserState extends State<LoginUser> {
                     ['customer_number']),
           );
         }
-      }
-
-      else if(numberController.text == named[0].mobileNumber){
+      } else if (numberController.text == named[0].mobileNumber) {
         print("Yey");
-      }
-       else if (numberController.text != named[0].mobileNumber) {
-
-       named.clear();
+      } else if (numberController.text != named[0].mobileNumber) {
+        named.clear();
 
         for (int i = 0; i <= k - 1; i++) {
           named.add(
@@ -584,8 +598,7 @@ class _LoginUserState extends State<LoginUser> {
                     ['customer_number']),
           );
         }
-      }
-      else {
+      } else {
         print("No Need");
       }
     } else {

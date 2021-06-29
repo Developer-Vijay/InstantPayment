@@ -141,7 +141,7 @@ class _RecipientPageState extends State<RecipientPage> {
                           onTap: () {},
                           child: Icon(
                             Icons.delete_outline,
-                            color: Apptheme.textColo1r,
+                            color: Apptheme.PrimaryColor,
                           ))
                     ],
                   ),
@@ -213,7 +213,7 @@ class _RecipientPageState extends State<RecipientPage> {
             )));
     var data = jsonEncode(deletefields);
     print(data);
-    var response = await http.post(SERVICE_API + '/requestToDeleteBeneficiary',
+    var response = await http.post(SERVICE_API + '/deleteBeneficiary',
         headers: {
           "Content-type": "application/json",
           "authorization": sessionToken,
@@ -224,6 +224,10 @@ class _RecipientPageState extends State<RecipientPage> {
     if (response.statusCode == 200) {
       Navigator.pop(context);
       Fluttertoast.showToast(msg: delete['message']);
+      print("????????????/");
+
+      print(delete);
+      print("????????????/");
       print(delete);
     } else {
       Navigator.pop(context);
@@ -248,7 +252,7 @@ class _RecipientPageState extends State<RecipientPage> {
             )));
     var data = jsonEncode(deletefields);
     print(data);
-    var response = await http.post(SERVICE_API + '/deleteBeneficiary',
+    var response = await http.post(SERVICE_API + '/requestToDeleteBeneficiary',
         headers: {
           "Content-type": "application/json",
           "authorization": sessionToken,
@@ -258,6 +262,7 @@ class _RecipientPageState extends State<RecipientPage> {
     var requestDelete = jsonDecode(response.body);
     if (response.statusCode == 200) {
       if (requestDelete['needOTPverification'] == true) {
+        print(requestDelete);
         Navigator.pop(context);
         showDialog(
           barrierDismissible: false,
@@ -298,6 +303,7 @@ class _RecipientPageState extends State<RecipientPage> {
                     color: Apptheme.PrimaryColor,
                     textColor: Apptheme.whitetextcolor,
                     onPressed: () {
+                      // deleteRequest();
                       deleteBeneficiary(id, numberss);
                       print(id);
                     },
@@ -311,10 +317,11 @@ class _RecipientPageState extends State<RecipientPage> {
             ),
           ),
         );
-      } else {}
-      print(requestDelete);
-      Fluttertoast.showToast(msg: requestDelete['message']);
-      Navigator.pop(context);
+      } else {
+        print(requestDelete);
+        Fluttertoast.showToast(msg: requestDelete['message']);
+        Navigator.pop(context);
+      }
     } else {
       print(response.statusCode);
       Fluttertoast.showToast(msg: requestDelete['message']);

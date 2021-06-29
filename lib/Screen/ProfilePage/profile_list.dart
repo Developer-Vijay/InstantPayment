@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:netly/Components/Resources/sizeconfig.dart';
 import 'package:netly/Components/Resources/styling.dart';
 import 'package:netly/SetPassword/change_password.dart';
+import 'package:netly/components/Auth/login.dart';
 import 'package:netly/list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,15 +25,22 @@ class _ProfilePageState extends State<ProfilePage> {
   var logindata;
   var email;
   var name;
-  var phonenumber;
+  var phone;
   var photo;
+  var retrieveClient;
+  var showClient;
   void getUserData() async {
     final prefs = await SharedPreferences.getInstance();
     retrieveLogin = prefs.getString('loginInfo');
     logindata = jsonDecode(retrieveLogin);
+    retrieveClient = prefs.getString('clientInfo');
+    showClient = jsonDecode(retrieveClient);
+    print(showClient);
+    // print(logindata);
     setState(() {
       name = logindata['user']['userName'];
       email = logindata['user']['email'];
+      phone = showClient['phone'];
     });
   }
 
@@ -88,12 +96,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        child: Text(
-                          "9818069709",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 2.6 * SizeConfig.textMultiplier),
-                        ),
+                        child: phone == null
+                            ? Text("9818069709")
+                            : Text(
+                                phone,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 2.6 * SizeConfig.textMultiplier),
+                              ),
                       ),
                       SizedBox(
                         height: 1.5 * SizeConfig.heightMultiplier,
@@ -155,6 +165,41 @@ class _ProfilePageState extends State<ProfilePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChangePasscode()));
+                    } else if (profile[index].index == 3) {
+                      showDialog(
+                          context: context,
+                          builder: (contex) => AlertDialog(
+                                title: Text("Do you Really want to Logout"),
+                                actions: [
+                                  TextButton(
+                                    child: Text("Yes"),
+                                    onPressed: () async {
+                                      final prefs =
+                                          await SharedPreferences.getInstance();
+                                      setState(() {
+                                        prefs.remove('passcode');
+                                        prefs.remove('loginInfo');
+                                        prefs.remove('LoginDate');
+                                        prefs.remove('clientInfo');
+                                        prefs.remove('Authenticated');
+                                        prefs.remove('otp');
+                                      });
+
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Login(),
+                                          ));
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text("No"),
+                                    onPressed: () {
+                                      Navigator.pop(context, false);
+                                    },
+                                  ),
+                                ],
+                              ));
                     }
                   },
                   leading: Container(

@@ -36,9 +36,7 @@ class _AnimationState extends State<Animation> {
   @override
   void initState() {
     super.initState();
-      getSession();
-   
-  
+    getSession();
   }
 
   var passcode;
@@ -160,10 +158,9 @@ class _AnimationState extends State<Animation> {
   getSession() async {
     final prefs = await SharedPreferences.getInstance();
     initScreen = prefs.getInt('initScreen');
-          passcode = prefs.getString('passcode');
+    passcode = prefs.getString('passcode');
 
     setState(() {
-
       currentDate = DateFormat("dd/MM/yyyy").format(getDate);
       logindate = prefs.getString('LoginDate');
       otpValidate = prefs.getInt('otp');
@@ -179,9 +176,9 @@ class _AnimationState extends State<Animation> {
     } else if (auth == true && passcode != null) {
       Future.delayed(Duration(seconds: 2), () {
         prefs.setBool("walletStatus", true);
- Future.delayed(Duration.zero, () {
-      this.screenlock(context);
-    });
+        Future.delayed(Duration.zero, () {
+          this.screenlock(context);
+        });
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -191,11 +188,18 @@ class _AnimationState extends State<Animation> {
       });
     } else if (otpValidate != 1 && passcode == null) {
       Future.delayed(Duration(seconds: 2), () {
-    
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Login()));
       });
-    } else if (otpValidate == 1 || passcode == null) {
+    } 
+    else if(otpValidate ==null &&  passcode == null)
+    {
+       Future.delayed(Duration(seconds: 2), () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Login()));
+      });
+    }
+    else if (otpValidate == 1 || passcode == null) {
       Future.delayed(Duration(seconds: 2), () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => SetPasscode()));
@@ -219,10 +223,43 @@ class _AnimationState extends State<Animation> {
         body: Column(
       children: [
         SizedBox(
-          height: 43 * SizeConfig.heightMultiplier,
+          height: 25 * SizeConfig.heightMultiplier,
         ),
-        Center(
-          child: Image.asset("assets/images/splashpageimage.png",height: 29 * SizeConfig.imageSizeMultiplier),
+        Column(
+          children: [
+            Center(
+              child: Image.asset("assets/images/splashpageimage.png",
+                  height: 25 * SizeConfig.imageSizeMultiplier),
+            ),
+            SizedBox(height: 5 * SizeConfig.heightMultiplier),
+            Text(
+              "InstantPayment",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 5 * SizeConfig.textMultiplier),
+            ),
+            SizedBox(height: 40 * SizeConfig.heightMultiplier),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                alignment: Alignment.center,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Developed by ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      " WebPhisher",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
         )
       ],
     ));
