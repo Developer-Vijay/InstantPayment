@@ -164,7 +164,7 @@ class _ReportPageState extends State<ReportPage> {
 
   Future saveandShare(Uint8List bytes) async {
     final directory = await getApplicationDocumentsDirectory();
-    final image = File('${directory.path}/flutter.png');
+    final image = File('${directory.path}/report.png');
     image.writeAsBytesSync(bytes);
     await Share.shareFiles([image.path]);
   }
@@ -451,7 +451,7 @@ class _ReportPageState extends State<ReportPage> {
                           DataCell(Text(
                               "${datarecieved['reports']['docs'][index]['transactionId']}")),
                           DataCell(Text(
-                              "{datarecieved['reports']['docs'][index]['_id']}")),
+                              "${datarecieved['reports']['docs'][index]['_id']}")),
                           DataCell(Text(
                               "${datarecieved['reports']['docs'][index]['previousAmount']}")),
                           DataCell(Text(
@@ -520,7 +520,7 @@ class _ReportPageState extends State<ReportPage> {
                           DataCell(Text(
                               "${datarecieved['reports']['docs'][index]['transactionId']}")),
                           DataCell(Text(
-                              "{datarecieved['reports']['docs'][index]['_id']}")),
+                              "${datarecieved['reports']['docs'][index]['_id']}")),
                           DataCell(Text(
                               "${datarecieved['reports']['docs'][index]['previousAmount']}")),
                           DataCell(Text(
@@ -756,208 +756,224 @@ class _ReportPageState extends State<ReportPage> {
                 child: CircularProgressIndicator(),
               ))
             : SafeArea(
-              child: Screenshot(
-                controller: screenshotController,
-                child: Scaffold(
-                    floatingActionButton: FloatingActionButton(
-                      child: Icon(
-                        Icons.filter_alt_rounded,
-                        color: Colors.white,
+                child: Screenshot(
+                  controller: screenshotController,
+                  child: Scaffold(
+                      floatingActionButton: FloatingActionButton(
+                        child: Icon(
+                          Icons.filter_alt_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              elevation: 4.0,
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              context: context,
+                              builder: (context) => Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: const Radius.circular(10.0),
+                                          topRight:
+                                              const Radius.circular(10.0))),
+                                  height: 40 * SizeConfig.heightMultiplier,
+                                  child: Filter(
+                                    param: widget.params,
+                                    title: widget.data,
+                                  )));
+                        },
                       ),
-                      onPressed: () {
-                        showModalBottomSheet(
-                            elevation: 4.0,
-                            isScrollControlled: true,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            context: context,
-                            builder: (context) => Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: const Radius.circular(10.0),
-                                        topRight: const Radius.circular(10.0))),
-                                height: 40 * SizeConfig.heightMultiplier,
-                                child: Filter(
-                                  param: widget.params,
-                                  title: widget.data,
-                                )));
-                      },
-                    ),
-                    body: Container(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            flex: 0,
-                            child: Container(
-                                width: 133 * SizeConfig.widthMultiplier,
-                                color: Apptheme.PrimaryColor,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            "Total Result Found from",
-                                            style: TextStyle(
-                                                fontSize:
-                                                    2.2 * SizeConfig.textMultiplier,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "$fromDate",
-                                                style: textstyle,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 40),
-                                              child: Text(
-                                                "to",
-                                                style: textstyle,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "$toDate",
-                                                style: textstyle,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Spacer(),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            height: 5 * SizeConfig.heightMultiplier,
-                                            width: 60 * SizeConfig.widthMultiplier,
-                                            child: TextField(
-                                              controller: seaarchController,
-                                              decoration: InputDecoration(
-                                                  hintText: "Search",
-                                                  hintStyle: TextStyle(
-                                                      fontSize: 2 *
-                                                          SizeConfig
-                                                              .textMultiplier),
-                                                  border: InputBorder.none,
-                                                  suffixIcon: InkWell(
-                                                    onTap: () {
-                                                      seaarchController.clear();
-                                                    },
-                                                    child: Icon(
-                                                      Icons.close,
-                                                      size: 2.5 *
-                                                          SizeConfig.textMultiplier,
-                                                    ),
-                                                  ),
-                                                  prefixIcon: InkWell(
-                                                    onTap: () {
-                                                      searchReportType(
-                                                          widget.params,
-                                                          seaarchController.text);
-                                                    },
-                                                    child: Icon(
-                                                      Icons.search,
-                                                      size: 2.5 *
-                                                          SizeConfig.textMultiplier,
-                                                    ),
-                                                  )),
+                      body: Container(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              flex: 0,
+                              child: Container(
+                                  width: 133 * SizeConfig.widthMultiplier,
+                                  color: Apptheme.PrimaryColor,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              "Total Result Found from",
+                                              style: TextStyle(
+                                                  fontSize: 2.2 *
+                                                      SizeConfig.textMultiplier,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            "Total Transactions :",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize:
-                                                    2.2 * SizeConfig.textMultiplier,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: datarecieved == null
-                                              ? Text("₹ 0",
-                                                  style: TextStyle(
-                                                      fontFamily: 'arvo',
-                                                      color: Colors.white,
-                                                      fontSize: 2.2 *
-                                                          SizeConfig.textMultiplier,
-                                                      fontWeight: FontWeight.w600))
-                                              : Text(
-                                                  "₹ ${datarecieved['totalTransactionAmount']}",
-                                                  style: TextStyle(
-                                                      fontFamily: 'arvo',
-                                                      color: Colors.white,
-                                                      fontSize: 2.2 *
-                                                          SizeConfig.textMultiplier,
-                                                      fontWeight: FontWeight.w600),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  "$fromDate",
+                                                  style: textstyle,
                                                 ),
-                                        ),
-                                      ],
-                                    ),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 40),
+                                                child: Text(
+                                                  "to",
+                                                  style: textstyle,
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  "$toDate",
+                                                  style: textstyle,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Spacer(),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              height: 5 *
+                                                  SizeConfig.heightMultiplier,
+                                              width: 60 *
+                                                  SizeConfig.widthMultiplier,
+                                              child: TextField(
+                                                controller: seaarchController,
+                                                decoration: InputDecoration(
+                                                    hintText: "Search",
+                                                    hintStyle: TextStyle(
+                                                        fontSize: 2 *
+                                                            SizeConfig
+                                                                .textMultiplier),
+                                                    border: InputBorder.none,
+                                                    suffixIcon: InkWell(
+                                                      onTap: () {
+                                                        seaarchController
+                                                            .clear();
+                                                      },
+                                                      child: Icon(
+                                                        Icons.close,
+                                                        size: 2.5 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                      ),
+                                                    ),
+                                                    prefixIcon: InkWell(
+                                                      onTap: () {
+                                                        searchReportType(
+                                                            widget.params,
+                                                            seaarchController
+                                                                .text);
+                                                      },
+                                                      child: Icon(
+                                                        Icons.search,
+                                                        size: 2.5 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                      ),
+                                                    )),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              "Total Transactions :",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 2.2 *
+                                                      SizeConfig.textMultiplier,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: datarecieved == null
+                                                ? Text("₹ 0",
+                                                    style: TextStyle(
+                                                        fontFamily: 'arvo',
+                                                        color: Colors.white,
+                                                        fontSize: 2.2 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w600))
+                                                : Text(
+                                                    "₹ ${datarecieved['totalTransactionAmount']}",
+                                                    style: TextStyle(
+                                                        fontFamily: 'arvo',
+                                                        color: Colors.white,
+                                                        fontSize: 2.2 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                            Expanded(
+                              flex: 8,
+                              child: Container(
+                                width: 133 * SizeConfig.widthMultiplier,
+                                child: ListView(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  children: [
+                                    rechargeAndBillpayments(),
                                   ],
-                                )),
-                          ),
-                          Expanded(
-                            flex: 8,
-                            child: Container(
-                              width: 133 * SizeConfig.widthMultiplier,
-                              child: ListView(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                children: [
-                                  rechargeAndBillpayments(),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 20, top: 4),
-                              child: MaterialButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                color: Apptheme.PrimaryColor,
-                                textColor: Apptheme.whitetextcolor,
-                                child: Text("Save CSV"),
-                                onPressed: () {
-                                  getCsv();
-                                },
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 20, top: 4),
+                                child: MaterialButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  color: Apptheme.PrimaryColor,
+                                  textColor: Apptheme.whitetextcolor,
+                                  child: Text("Save CSV"),
+                                  onPressed: () {
+                                    getCsv();
+                                  },
+                                ),
                               ),
-                            ),
-                          )
-                        ],
-                      ),
-                    )),
+                            )
+                          ],
+                        ),
+                      )),
+                ),
               ),
-            ),
       ),
     );
   }
